@@ -1,0 +1,647 @@
+/* ------------------------------
+   Глобальная тёмная тема
+------------------------------ */
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #222;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ------------------------------
+     Шапка
+------------------------------ */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  background: #111;
+  border-bottom: 1px solid #333;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.reload-btn {
+  background: #333;
+  color: #fff;
+  border: 1px solid #555;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.reload-btn:hover {
+  background: #444;
+}
+
+/* ------------------------------
+    Панель управления (вкладки + поиск)
+------------------------------ */
+.controls {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 24px;
+  align-items: center;
+  flex-wrap: wrap;
+  background: #1a1a1a;
+  border-bottom: 1px solid #333;
+}
+
+.chip-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.chip-label {
+  color: #bbb;
+}
+
+.chip {
+  padding: 6px 14px;
+  background: #333;
+  border-radius: 20px;
+  cursor: pointer;
+  color: #fff;
+  border: 1px solid #555;
+  font-size: 13px;
+}
+.chip:hover {
+  background: #444;
+}
+
+.period-active,
+.priority-active,
+.tab-active {
+  background: #33543c;
+  border-color: #4ade80;
+}
+
+/* Поиск */
+.search-group {
+  display: flex;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+#search-input {
+  min-width: 260px;
+  max-width: 360px;
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #555;
+  background: #121212;
+  color: #fff;
+  font-size: 13px;
+}
+
+#search-input::placeholder {
+  color: #777;
+}
+
+#search-input:focus {
+  outline: none;
+  border-color: #4ade80;
+}
+
+/* ------------------------------
+       Таблицы
+------------------------------ */
+
+.table-wrapper {
+  margin-top: 16px;
+  background: #181818;
+  border-radius: 8px;
+  padding: 0;
+  overflow: auto;
+  max-height: calc(100vh - 150px);
+  border: 1px solid #333;
+}
+
+.funnel-table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+  font-size: 13px;
+  color: #f3f3f3;
+}
+
+/* Шапка: липкая */
+.funnel-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: #202020;
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 1px solid #444;
+  white-space: nowrap;
+}
+
+/* Тело */
+.funnel-table tbody td {
+  padding: 6px 12px;
+  border-bottom: 1px solid #333;
+  white-space: nowrap;
+}
+
+/* Зебра */
+.funnel-table tbody tr:nth-child(odd) {
+  background: #1b1b1b;
+}
+.funnel-table tbody tr:nth-child(even) {
+  background: #222;
+}
+
+/* Ховер */
+.funnel-table tbody tr:hover {
+  background: #262626;
+  cursor: pointer;
+}
+
+/* Первая колонка */
+.funnel-table thead th:first-child,
+.funnel-table tbody td:first-child {
+  width: 40px;
+  text-align: left;
+}
+
+/* ------------------------------
+   Сортировка + стрелки
+------------------------------ */
+.sortable {
+  cursor: pointer;
+  color: #ddd;
+  position: relative;
+  padding-right: 18px;
+}
+.sortable:hover {
+  color: #4ade80;
+}
+
+.sortable::after {
+  content: "";
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 4px solid transparent;
+}
+
+.sortable.sort-asc::after {
+  border-bottom-color: #4ade80;
+  margin-top: -4px;
+}
+
+.sortable.sort-desc::after {
+  border-top-color: #4ade80;
+  margin-top: 4px;
+}
+
+/* активная колонка сортировки подсвечена */
+.sortable.sort-asc,
+.sortable.sort-desc {
+  color: #4ade80;
+}
+
+/* ------------------------------
+   Цвета трендов и уровней
+------------------------------ */
+td small {
+  color: #bbb;
+  font-size: 12px;
+}
+
+.metric-up {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.metric-down {
+  color: #ff5252;
+  font-weight: 600;
+}
+
+.level-good {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.level-warn {
+  color: #ffbf00;
+  font-weight: 600;
+}
+
+.level-bad {
+  color: #ff5252;
+  font-weight: 600;
+}
+
+/* ------------------------------
+   Боковая панель
+------------------------------ */
+
+.details-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 380px;
+  height: 100%;
+  background: #1b1b1b;
+  color: #fff;
+  border-left: 1px solid #333;
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.25s ease-out, opacity 0.25s ease-out;
+  padding: 20px;
+  z-index: 9999;
+  overflow-y: auto;
+}
+
+.details-panel.visible {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.close-btn {
+  background: #333;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+/* Метрики в панели */
+.metrics-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.metrics-list li {
+  padding: 3px 0;
+}
+
+/* инпут минимальной партии */
+.min-batch-input {
+  margin-left: 6px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #555;
+  background: #111;
+  color: #fff;
+  font-size: 12px;
+  width: 80px;
+}
+
+/* График */
+.chart-container {
+  margin-top: 12px;
+  min-height: 200px;
+  border-top: 1px solid #333;
+  padding-top: 8px;
+}
+
+.chart-bottom {
+  padding-bottom: 24px;
+}
+
+/* ------------------------------
+   Прогрузчик
+------------------------------ */
+
+.loader-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 24px;
+  background: #1a1a1a;
+  border-bottom: 1px solid #333;
+}
+
+.loader-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.loader-status {
+  font-size: 12px;
+  color: #aaa;
+}
+
+/* кнопка прогрузки с прогрессом */
+.loader-btn {
+  position: relative;
+  overflow: hidden;
+  min-width: 170px;
+}
+
+.loader-btn-progress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0%;
+  background: #4ade80;
+  opacity: 0.25;
+  pointer-events: none;
+  transition: width 0.15s linear;
+}
+
+.loader-btn span {
+  position: relative;
+  z-index: 1;
+}
+
+/* шестерёнка */
+.icon-btn {
+  background: #333;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-btn:hover {
+  background: #444;
+}
+
+/* сглаживание: цвета */
+.smooth-good {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.smooth-bad {
+  color: #ff5252;
+  font-weight: 600;
+}
+
+/* ------------------------------
+   Модалка настроек
+------------------------------ */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  filter: blur(10px);
+}
+
+.modal-dialog {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #202020;
+  border-radius: 8px;
+  padding: 16px 18px 12px 18px;
+  border: 1px solid #444;
+  max-width: 620px;
+  width: calc(100% - 40px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.modal-body {
+  font-size: 13px;
+}
+
+.modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 20px;
+  margin-bottom: 10px;
+}
+
+.modal-grid label {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  color: #ddd;
+}
+
+.modal-grid input {
+  margin-top: 4px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  border: 1px solid #555;
+  background: #111;
+  color: #fff;
+  font-size: 12px;
+}
+
+.modal-hint {
+  color: #aaa;
+  font-size: 11px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+/* ------------------------------
+   Адаптив
+------------------------------ */
+@media (max-width: 900px) {
+  .details-panel {
+    width: 100%;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .search-group {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  #search-input {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .funnel-table th,
+  .funnel-table td {
+    padding: 6px 10px;
+  }
+
+  .modal-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Utility */
+.hidden {
+  display: none;
+}
+
+.row-disabled {
+  opacity: 0.45;
+}
+
+/* группы в таблице прогрузчика */
+.loader-group-header td {
+  padding: 6px 12px;
+  background: #141414;
+  border-bottom: 1px solid #333;
+  font-weight: 600;
+  color: #bbb;
+}
+
+.loader-group-header span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.loader-group-spacer td {
+  padding: 10px 0;
+  border: none;
+  background: transparent;
+}
+
+/* строки, отключённые из расчёта прогрузки */
+.row-disabled {
+  opacity: 0.45;
+}
+
+/* ------------------------------
+   Кнопки с "фейковым" прогрессом
+------------------------------ */
+
+.btn-with-progress {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-with-progress .btn-progress-fill {
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    rgba(74, 222, 128, 0),
+    rgba(74, 222, 128, 0.35),
+    rgba(74, 222, 128, 0)
+  );
+  opacity: 0;
+  pointer-events: none;
+}
+
+.btn-with-progress.btn-loading .btn-progress-fill {
+  opacity: 1;
+  animation: btn-progress-move 1.1s linear infinite;
+}
+
+@keyframes btn-progress-move {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ------------------------------
+   Ячейка артикула + иконка копирования
+------------------------------ */
+
+.offer-td {
+  max-width: 220px;
+}
+
+.offer-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.offer-text {
+  white-space: nowrap;
+}
+
+.copy-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  line-height: 1;
+  min-width: 16px;
+  height: 16px;
+  opacity: 0;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  transition: opacity 0.15s ease, border-color 0.15s ease, background 0.15s ease,
+    transform 0.15s ease;
+}
+
+.offer-td:hover .copy-icon {
+  opacity: 0.75;
+}
+
+.copy-icon:hover {
+  border-color: #4ade80;
+}
+
+.copy-icon.copied {
+  opacity: 1;
+  border-color: #4ade80;
+  background: rgba(74, 222, 128, 0.2);
+  transform: scale(1.1);
+}

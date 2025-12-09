@@ -1,0 +1,48 @@
+# ------------------------------
+# 🔐 СЕКРЕТЫ
+# ------------------------------
+.env
+*.env
+ozonApi.js        
+config.js         
+
+# ------------------------------
+# 📦 ПАПКИ / МОДУЛИ
+# ------------------------------
+node_modules/
+dist/
+build/
+.cache/
+
+# ------------------------------
+# 📊 ЛОГИ И ИСТОРИИ
+# ------------------------------
+salesHistory.json
+loaderHistory.json
+funnelHistory.json
+loaderDisabled.json
+skuSettings.json
+
+# ------------------------------
+# 📁 EXCEL / ИМПОРТЫ
+# ------------------------------
+public/cut/*.xlsx
+public/cut/*.xls
+*.xlsx
+*.xls
+
+# ------------------------------
+# 🔧 РАБОЧИЕ ФАЙЛЫ
+# ------------------------------
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ------------------------------
+# 🙅 НЕ НУЖНО В РЕПО
+# ------------------------------
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

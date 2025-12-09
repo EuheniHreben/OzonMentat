@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Воронка по SKU (Lite)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+
+  <body>
+    <header class="header">
+      <h1 id="page-title">📊 Воронка по SKU (Lite)</h1>
+    </header>
+
+    <!-- Верхний бар: вкладки + поиск -->
+    <section class="controls">
+      <div class="chip-group">
+        <button id="tab-funnel" class="chip tab-chip tab-active" type="button">
+          Воронка
+        </button>
+        <button id="tab-loader" class="chip tab-chip" type="button">
+          Прогрузчик
+        </button>
+      </div>
+
+      <div class="search-group">
+        <input
+          id="search-input"
+          type="text"
+          placeholder="Поиск по артикулу / SKU (например: 200 3 20)"
+        />
+      </div>
+    </section>
+
+    <!-- Вьюха воронки -->
+    <div id="view-funnel">
+      <main class="table-wrapper">
+        <!-- Подшапка воронки -->
+        <div id="funnel-header" class="loader-header">
+          <div class="loader-left">
+            <button
+              id="reload-btn"
+              class="reload-btn btn-with-progress"
+              type="button"
+            >
+              Обновить данные
+            </button>
+
+            <div class="chip-group">
+              <span class="chip-label">Период:</span>
+              <button
+                class="chip period-chip period-active"
+                data-days="7"
+                type="button"
+              >
+                7 дней
+              </button>
+              <button class="chip period-chip" data-days="30" type="button">
+                30 дней
+              </button>
+            </div>
+
+            <div class="chip-group">
+              <span class="chip-label">Приоритет:</span>
+              <button
+                class="chip priority-chip priority-active"
+                data-prio="all"
+                type="button"
+              >
+                Все
+              </button>
+              <button
+                class="chip priority-chip"
+                data-prio="высокий"
+                type="button"
+              >
+                Высокий
+              </button>
+              <button
+                class="chip priority-chip"
+                data-prio="средний"
+                type="button"
+              >
+                Средний
+              </button>
+              <button
+                class="chip priority-chip"
+                data-prio="низкий"
+                type="button"
+              >
+                Низкий
+              </button>
+            </div>
+          </div>
+        </div>
+        <table id="funnel-table" class="funnel-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th class="sortable" data-field="offer_id">Артикул</th>
+              <th class="sortable" data-field="impressions">Показы</th>
+              <th class="sortable" data-field="clicks">Клики</th>
+              <th class="sortable" data-field="ctr">CTR %</th>
+              <th class="sortable" data-field="orders">Заказы</th>
+              <th class="sortable" data-field="conv">Конв. %</th>
+              <th class="sortable" data-field="revenue">Выручка</th>
+              <th class="sortable" data-field="ad_spend">Реклама</th>
+              <th class="sortable" data-field="drr">DRR %</th>
+              <th class="sortable" data-field="avg_check">Чек</th>
+              <th class="sortable" data-field="ozon_stock">Остатки</th>
+              <th class="sortable" data-field="returns">Возвраты</th>
+              <th class="sortable" data-field="refund_rate">Возвраты %</th>
+              <th>Приоритет</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </main>
+    </div>
+
+    <!-- Вьюха прогрузчика -->
+    <div id="view-loader" class="hidden">
+      <main class="table-wrapper">
+        <div class="loader-header">
+          <div class="loader-left">
+            <button
+              id="loader-run"
+              class="reload-btn loader-btn btn-with-progress"
+              type="button"
+            >
+              <span>Запустить прогрузку</span>
+            </button>
+
+            <span id="loader-status" class="loader-status"></span>
+          </div>
+
+          <button
+            id="loader-settings"
+            class="icon-btn"
+            type="button"
+            title="Настройки прогрузчика"
+          >
+            ⚙️
+          </button>
+        </div>
+
+        <table id="loader-table" class="funnel-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th class="sortable" data-field="offer_id">Артикул</th>
+              <th>В расчёте</th>
+              <th class="sortable" data-field="orders">Заказы</th>
+              <th class="sortable" data-field="revenue">Выручка</th>
+              <th class="sortable" data-field="ozon_stock">Остатки</th>
+              <th class="sortable" data-field="in_transit">В пути</th>
+              <th class="sortable" data-field="week_sales_raw">
+                Продажи (короткий)
+              </th>
+              <th class="sortable" data-field="week_sales_long_raw">
+                Продажи (длинный)
+              </th>
+              <th class="sortable" data-field="week_sales_effective">
+                Сглажено
+              </th>
+              <th class="sortable" data-field="target_demand">Цель спроса</th>
+              <th class="sortable" data-field="demand_factor">Кэфф. спроса</th>
+              <th class="sortable" data-field="need_raw">Расчёт</th>
+              <th class="sortable" data-field="NeedGoods">Поставка</th>
+            </tr>
+          </thead>
+
+          <tbody></tbody>
+        </table>
+      </main>
+    </div>
+
+    <!-- Боковая панель (для воронки) -->
+    <aside id="details-panel" class="details-panel">
+      <div class="details-header">
+        <h2 id="details-title">—</h2>
+        <button id="details-close" class="close-btn">✕</button>
+      </div>
+
+      <div class="details-content">
+        <p><strong>Период:</strong> <span id="d-period"></span></p>
+
+        <h3>⚡ Метрики</h3>
+        <ul class="metrics-list">
+          <li>
+            <strong>Показы:</strong>
+            <span id="d-imp"></span>
+          </li>
+          <li>
+            <strong>Клики:</strong>
+            <span id="d-clicks"></span>
+          </li>
+          <li>
+            <strong>CTR:</strong>
+            <span id="d-ctr"></span>
+          </li>
+          <li>
+            <strong>Заказы:</strong>
+            <span id="d-orders"></span>
+            <small id="d-orders-delta" class="metric-delta"></small>
+          </li>
+          <li>
+            <strong>Конверсия:</strong>
+            <span id="d-conv"></span>
+          </li>
+          <li>
+            <strong>Выручка:</strong>
+            <span id="d-revenue"></span>
+            <small id="d-revenue-delta" class="metric-delta"></small>
+          </li>
+          <li>
+            <strong>DRR:</strong>
+            <span id="d-drr"></span>
+          </li>
+          <li>
+            <strong>Остатки:</strong>
+            <span id="d-stock"></span>
+          </li>
+          <li>
+            <strong>Возвраты:</strong>
+            <span id="d-returns"></span>
+          </li>
+          <li>
+            <strong>Возвраты %:</strong>
+            <span id="d-refund"></span>
+            <small id="d-refund-delta" class="metric-delta"></small>
+          </li>
+          <li>
+            <strong>Мин. партия:</strong>
+            <input
+              id="d-min-batch"
+              class="min-batch-input"
+              type="number"
+              min="0"
+              step="1"
+            />
+          </li>
+        </ul>
+
+        <h3>🩺 Диагностика</h3>
+        <p id="d-diagnosis"></p>
+
+        <h3>🎯 Совет</h3>
+        <p id="d-rec"></p>
+
+        <h3>📊 Срез по SKU</h3>
+        <div class="chart-container chart-bottom">
+          <canvas id="sku-chart"></canvas>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Модалка настроек прогрузчика -->
+    <div id="config-modal" class="modal hidden">
+      <div id="config-backdrop" class="modal-backdrop"></div>
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h2>Настройки прогрузчика</h2>
+          <button id="config-close" class="close-btn">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-grid">
+            <label>
+              Коэф. спроса (DEMAND_FACTOR)
+              <input id="cfg-demand" type="number" step="0.1" min="0" />
+            </label>
+            <label>
+              Период продаж 1 (DAYS)
+              <input id="cfg-days" type="number" step="1" min="1" />
+            </label>
+            <label>
+              Период продаж 2 (DAYS_LONG)
+              <input id="cfg-days-long" type="number" step="1" min="1" />
+            </label>
+            <label>
+              Мин. запас (MIN_STOCK)
+              <input id="cfg-min-stock" type="number" step="1" min="0" />
+            </label>
+            <label>
+              Размер упаковки (PACK_SIZE)
+              <input id="cfg-pack-size" type="number" step="1" min="1" />
+            </label>
+            <label>
+              Сглаживание (ALPHA)
+              <input id="cfg-alpha" type="number" step="0.05" min="0" max="1" />
+            </label>
+            <label>
+              Множитель всплеска
+              <input id="cfg-spike-mult" type="number" step="0.5" min="0" />
+            </label>
+            <label>
+              Лимит всплеска
+              <input id="cfg-spike-cap" type="number" step="0.1" min="0" />
+            </label>
+            <label>
+              Макс. дней запаса
+              <input id="cfg-max-days" type="number" step="1" min="1" />
+            </label>
+            <label>
+              История прогрузок (дней)
+              <input
+                id="cfg-max-loader-history"
+                type="number"
+                step="1"
+                min="1"
+              />
+            </label>
+            <label>
+              История воронки (дней)
+              <input
+                id="cfg-max-funnel-history"
+                type="number"
+                step="1"
+                min="1"
+              />
+            </label>
+          </div>
+          <p class="modal-hint">
+            При изменении параметров новый расчёт будет использовать эти
+            значения. Конфиг сохраняется в <code>loaderConfig.json</code>.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button id="config-save" class="reload-btn" type="button">
+            Сохранить
+          </button>
+        </div>
+      </div>
+    </div>
+    <script src="/dataService.js"></script>
+    <script src="/store.js"></script>
+    <script src="/app.js"></script>
+  </body>
+</html>

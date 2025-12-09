@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "exceljs": "^4.4.0",
+    "express": "^5.1.0",
+    "googleapis": "^167.0.0"
+  }
+}
