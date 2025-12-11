@@ -1,3 +1,5 @@
+// app.js
+
 let allRows = [];
 let filteredRows = [];
 let currentSort = { field: null, dir: 1 };
@@ -607,9 +609,10 @@ function renderTable(rows) {
 }
 
 // ------------------------------
-// маленький график по SKU
+// маленький график по SKU — жизнь товара
 // ------------------------------
-function drawSkuChart({ orders, stock, refundRate }) {
+
+function drawSkuChart(points) {
   const canvas = document.getElementById("sku-chart");
   if (!canvas || typeof Chart === "undefined") return;
 
@@ -620,16 +623,23 @@ function drawSkuChart({ orders, stock, refundRate }) {
     skuChart = null;
   }
 
-  const returnsPercent = (refundRate || 0) * 100;
+  const safePoints = Array.isArray(points) ? points : [];
+
+  const labels = safePoints.map((p) => {
+    // показываем только день и месяц: 12-03
+    return (p.date || "").slice(5);
+  });
+
+  const data = safePoints.map((p) => Number(p.orders || 0));
 
   skuChart = new Chart(ctx, {
-    type: "bar",
+    type: "bar", // можно "line", если захочешь линию
     data: {
-      labels: ["Заказы", "Остатки", "Возвраты %"],
+      labels,
       datasets: [
         {
-          label: "Показатели",
-          data: [orders || 0, stock || 0, returnsPercent],
+          label: "Заказано, шт",
+          data,
           borderWidth: 1,
         },
       ],
@@ -650,6 +660,37 @@ function drawSkuChart({ orders, stock, refundRate }) {
       },
     },
   });
+}
+
+async function loadDailySalesChart(row) {
+  const skuKey = row.sku || row.offer_id;
+  if (!skuKey) {
+    drawSkuChart([]);
+    return;
+  }
+
+  // очищаем текущий график на время загрузки
+  drawSkuChart([]);
+
+  try {
+    // возьмём, например, 14 дней истории
+    const days = 14;
+    const res = await fetch(
+      `/api/funnel/daily-sales?sku=${encodeURIComponent(skuKey)}&days=${days}`
+    );
+    const json = await res.json();
+
+    if (!json.ok || !Array.isArray(json.points)) {
+      console.warn("daily-sales ответ без points", json);
+      drawSkuChart([]);
+      return;
+    }
+
+    drawSkuChart(json.points);
+  } catch (e) {
+    console.error("Ошибка загрузки дневного графика:", e);
+    drawSkuChart([]);
+  }
 }
 
 // ------------------------------
@@ -681,6 +722,188 @@ function setDelta(id, change, inverse = false) {
 }
 
 // ------------------------------
+// статус по слоям воронки (для вертикальной схемы)
+// ------------------------------
+function setLayerStatus(layerKey, data) {
+  const statusEl = document.getElementById(`d-layer-${layerKey}-status`);
+  const layerEl = document.querySelector(
+    `.funnel-layer[data-layer="${layerKey}"]`
+  );
+
+  if (!statusEl || !layerEl || !data) return;
+
+  statusEl.textContent = data.text || "";
+
+  statusEl.classList.remove("ok", "warn", "bad");
+  layerEl.classList.remove("layer-ok", "layer-warn", "layer-bad");
+
+  if (data.statusClass) {
+    statusEl.classList.add(data.statusClass);
+
+    if (data.statusClass === "ok") layerEl.classList.add("layer-ok");
+    else if (data.statusClass === "warn") layerEl.classList.add("layer-warn");
+    else if (data.statusClass === "bad") layerEl.classList.add("layer-bad");
+  }
+}
+
+function evaluateFunnelLayers(row) {
+  const impressions = row.impressions || 0;
+  const clicks = row.clicks || 0;
+  const orders = row.orders || 0;
+  const revenue = row.revenue || 0;
+  const ad_spend = row.ad_spend || 0;
+  const refundRate = row.refund_rate || 0;
+  const drr = row.drr || 0;
+  const stock = row.ozon_stock || 0;
+
+  const CTR_LOW = 0.03; // 3%
+  const CONV_LOW = 0.05; // 5%
+  const REFUND_WARN = 0.05; // 5%
+  const REFUND_BAD = 0.1; // 10%
+  const DRR_WARN = 0.3; // 30%
+  const DRR_BAD = 0.5; // 50%
+  const MIN_ORDERS_FOR_REFUND = 5;
+
+  // ---------- Слой 1: Показы ----------
+  let traffic = { statusClass: "ok", text: "ОК" };
+
+  if (impressions === 0 && clicks === 0 && orders === 0 && revenue === 0) {
+    traffic = {
+      statusClass: "bad",
+      text: "Нет трафика",
+    };
+  } else {
+    const ctr = row.ctr || 0;
+    if (ctr < CTR_LOW) {
+      traffic = {
+        statusClass: "warn",
+        text: "Низкий CTR",
+      };
+    }
+  }
+
+  // ---------- Слой 2: Карточка ----------
+  let card = { statusClass: "ok", text: "ОК" };
+
+  if (clicks === 0) {
+    card = {
+      statusClass: "warn",
+      text: "Нет данных по кликам",
+    };
+  } else if (clicks > 0 && orders === 0) {
+    card = {
+      statusClass: "bad",
+      text: "Клики есть, заказов нет",
+    };
+  } else {
+    const conv = row.conv || 0;
+    if (conv < CONV_LOW) {
+      card = {
+        statusClass: "warn",
+        text: "Низкая конверсия",
+      };
+    }
+  }
+
+  // ---------- Слой 3: Послепродажа ----------
+  let post = { statusClass: "ok", text: "ОК" };
+
+  if (orders < MIN_ORDERS_FOR_REFUND) {
+    post = {
+      statusClass: "warn",
+      text: "Мало данных по возвратам",
+    };
+  } else if (refundRate >= REFUND_BAD) {
+    post = {
+      statusClass: "bad",
+      text: "Критично много возвратов",
+    };
+  } else if (refundRate >= REFUND_WARN) {
+    post = {
+      statusClass: "warn",
+      text: "Повышенные возвраты",
+    };
+  }
+
+  // ---------- Слой 4: Реклама ----------
+  let ads = { statusClass: "ok", text: "ОК" };
+
+  if (!ad_spend || ad_spend === 0) {
+    ads = {
+      statusClass: "ok",
+      text: "Реклама не активна",
+    };
+  } else if (drr >= DRR_BAD) {
+    ads = {
+      statusClass: "bad",
+      text: "DRR слишком высокий",
+    };
+  } else if (drr >= DRR_WARN) {
+    ads = {
+      statusClass: "warn",
+      text: "DRR повышенный",
+    };
+  }
+
+  // ---------- Слой 5: Остатки / наличие ----------
+  let stockLayer = { statusClass: "ok", text: "ОК", daysOfStock: null };
+
+  if (!stock && !orders) {
+    stockLayer = {
+      statusClass: "warn",
+      text: "Нет данных по запасам",
+      daysOfStock: null,
+    };
+  } else if (!stock && orders > 0) {
+    stockLayer = {
+      statusClass: "bad",
+      text: "Товар закончился",
+      daysOfStock: 0,
+    };
+  } else if (stock > 0 && orders === 0) {
+    // спроса нет, но запас есть — пока считаем нормой
+    stockLayer = {
+      statusClass: "ok",
+      text: "Запас есть, мало данных по спросу",
+      daysOfStock: null,
+    };
+  } else {
+    const days = periodDays || 7;
+    const dailyOrders = orders / days;
+    if (dailyOrders <= 0) {
+      stockLayer = {
+        statusClass: "ok",
+        text: "Запас есть, спрос нестабилен",
+        daysOfStock: null,
+      };
+    } else {
+      const daysOfStock = stock / dailyOrders;
+
+      stockLayer.daysOfStock = daysOfStock;
+
+      if (daysOfStock <= 3) {
+        stockLayer.statusClass = "bad";
+        stockLayer.text = "Закончится ≤ 3 дней";
+      } else if (daysOfStock <= 7) {
+        stockLayer.statusClass = "warn";
+        stockLayer.text = "Мало запаса (≤ 7 дн.)";
+      } else {
+        stockLayer.statusClass = "ok";
+        stockLayer.text = "Запас здоров";
+      }
+    }
+  }
+
+  return {
+    traffic,
+    card,
+    post,
+    ads,
+    stock: stockLayer,
+  };
+}
+
+// ------------------------------
 // ключ для localStorage по мин. партии
 // ------------------------------
 function getMinBatchStorageKey(row) {
@@ -701,9 +924,11 @@ function showDetails(row) {
     if (el) el.textContent = val;
   };
 
+  // Заголовок + период
   set("details-title", row.offer_id || "-");
   set("d-period", periodDays + " дней");
 
+  // Базовые метрики (текущий период)
   set("d-imp", formatNumber(row.impressions || 0));
   set("d-clicks", formatNumber(row.clicks || 0));
   set("d-ctr", formatPercent((row.ctr || 0) * 100));
@@ -714,15 +939,26 @@ function showDetails(row) {
   set("d-stock", formatNumber(row.ozon_stock || 0));
   set("d-returns", formatNumber(row.returns || 0));
   set("d-refund", formatPercent((row.refund_rate || 0) * 100));
+  set("d-adspend", formatNumber(row.ad_spend || 0));
 
+  // Диагностика + совет (из бэка)
   set("d-diagnosis", row.mainProblem || row.diagnosis || "-");
   set("d-rec", row.recommendation || "-");
 
+  // Динамика vs предыдущий период
   setDelta("d-orders-delta", row.orders_change);
   setDelta("d-revenue-delta", row.revenue_change);
   setDelta("d-refund-delta", row.refund_change, true);
 
-  // Мин. партия (инпут) — берём из localStorage, иначе дефолт MIN_STOCK_DEFAULT
+  // Динамика vs долгосрочного среднего
+  if (row.conv_vs_avg_long !== undefined) {
+    setDelta("d-conv-delta", row.conv_vs_avg_long);
+  }
+  if (row.drr_vs_avg_long !== undefined) {
+    setDelta("d-drr-delta", row.drr_vs_avg_long, true);
+  }
+
+  // Мин. партия — берём из localStorage, иначе дефолт MIN_STOCK_DEFAULT
   const minInput = document.getElementById("d-min-batch");
   if (minInput) {
     const key = getMinBatchStorageKey(row);
@@ -751,11 +987,23 @@ function showDetails(row) {
     };
   }
 
-  drawSkuChart({
-    orders: row.orders || 0,
-    stock: row.ozon_stock || 0,
-    refundRate: row.refund_rate || 0,
-  });
+  // Логика по слоям воронки (включая новый слой stock)
+  const layers = evaluateFunnelLayers(row);
+  setLayerStatus("traffic", layers.traffic);
+  setLayerStatus("card", layers.card);
+  setLayerStatus("post", layers.post);
+  setLayerStatus("ads", layers.ads);
+  setLayerStatus("stock", layers.stock);
+
+  // Заполнение "Дней запаса"
+  if (layers.stock && typeof layers.stock.daysOfStock === "number") {
+    set("d-stock-days", layers.stock.daysOfStock.toFixed(1) + " дн.");
+  } else {
+    set("d-stock-days", "—");
+  }
+
+  // График "жизнь SKU" — берём дневные продажи с бэка
+  loadDailySalesChart(row);
 
   panel.classList.add("visible");
 }

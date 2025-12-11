@@ -31,6 +31,28 @@ body {
   font-size: 20px;
 }
 
+button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  box-shadow: 0px 3px #4ade80;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  margin: 6px 0;
+  letter-spacing: 2px;
+  position: relative;
+  top: 0;
+  transition: all 0.1s ease-in;
+}
+
+button:active {
+  box-shadow: 0px 1px #4ade80;
+  top: 1px;
+}
+
 .reload-btn {
   background: #333;
   color: #fff;
@@ -265,6 +287,7 @@ td small {
   background: #1b1b1b;
   color: #fff;
   border-left: 1px solid #333;
+  box-shadow: 30px -10px 100px #4ade80;
   transform: translateX(100%);
   opacity: 0;
   pointer-events: none;
@@ -283,8 +306,65 @@ td small {
 .details-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 8px;
+  gap: 8px;
+}
+
+.details-header-left h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.details-period {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: #ccc;
+}
+
+/* бейдж этапа */
+.details-stage-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  margin-top: 6px;
+  background: #252525;
+  border: 1px solid #444;
+  color: #eee;
+}
+
+.details-stage-pill::before {
+  content: "●";
+  font-size: 10px;
+}
+
+/* оттенки для разных этапов (подбираем по ключевым словам на фронте) */
+.details-stage-pill.stage-traffic {
+  border-color: #60a5fa;
+  color: #bfdbfe;
+}
+.details-stage-pill.stage-card {
+  border-color: #f97316;
+  color: #fed7aa;
+}
+.details-stage-pill.stage-ads {
+  border-color: #a855f7;
+  color: #e9d5ff;
+}
+.details-stage-pill.stage-after {
+  border-color: #facc15;
+  color: #fef9c3;
+}
+.details-stage-pill.stage-scale {
+  border-color: #22c55e;
+  color: #bbf7d0;
+}
+.details-stage-pill.stage-watch {
+  border-color: #64748b;
+  color: #cbd5f5;
 }
 
 .close-btn {
@@ -296,20 +376,38 @@ td small {
   cursor: pointer;
 }
 
-/* Метрики в панели */
-.metrics-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+/* Метрики / воронка в панели */
+.details-content h3 {
+  margin-top: 14px;
+  margin-bottom: 8px;
 }
 
-.metrics-list li {
-  padding: 3px 0;
+/* список метрик внутри слоёв */
+.metrics-list {
+  margin: 0;
+  padding: 0;
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13px;
+  padding: 2px 0;
+}
+
+.metric-label {
+  color: #ccc;
+}
+
+.metric-value {
+  font-variant-numeric: tabular-nums;
 }
 
 /* инпут минимальной партии */
 .min-batch-input {
-  margin-left: 6px;
+  margin-left: auto;
   padding: 2px 6px;
   border-radius: 4px;
   border: 1px solid #555;
@@ -329,6 +427,101 @@ td small {
 
 .chart-bottom {
   padding-bottom: 24px;
+}
+
+/* ------------------------------
+   Вертикальная воронка в боковой панели
+------------------------------ */
+
+.funnel-layers {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.funnel-layer {
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 8px 10px;
+  background: #141414;
+}
+
+.funnel-layer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.funnel-layer-title {
+  font-weight: 600;
+}
+
+.funnel-layer-status {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.funnel-layer-status.ok {
+  color: #4caf50;
+}
+
+.funnel-layer-status.warn {
+  color: #ffbf00;
+}
+
+.funnel-layer-status.bad {
+  color: #ff5252;
+}
+
+.funnel-layer-body {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.funnel-metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 1px 0;
+}
+
+.funnel-metric-label {
+  color: #bbb;
+}
+
+.funnel-metric-value {
+  text-align: right;
+}
+
+.funnel-layer {
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 8px 10px;
+  background: #141414;
+}
+
+/* Цвет бордера для слоёв воронки в зависимости от статуса */
+.funnel-layer.layer-ok {
+  border-color: rgba(34, 197, 94, 0.8); /* зелёный */
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.25);
+}
+
+.funnel-layer.layer-warn {
+  border-color: rgba(234, 179, 8, 0.9); /* жёлтый */
+  box-shadow: 0 0 0 1px rgba(234, 179, 8, 0.25);
+}
+
+.funnel-layer.layer-bad {
+  border-color: rgba(248, 113, 113, 0.9); /* красный */
+  box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.25);
+}
+
+.funnel-layer-settings {
+  border-style: dashed;
+  border-color: #555;
 }
 
 /* ------------------------------
@@ -354,6 +547,10 @@ td small {
 .loader-status {
   font-size: 12px;
   color: #aaa;
+}
+
+.loader-status a {
+  color: #fff;
 }
 
 /* кнопка прогрузки с прогрессом */
@@ -385,7 +582,6 @@ td small {
   background: #333;
   color: #fff;
   border: 1px solid #555;
-  border-radius: 50%;
   width: 32px;
   height: 32px;
   font-size: 16px;
@@ -644,4 +840,10 @@ td small {
   border-color: #4ade80;
   background: rgba(74, 222, 128, 0.2);
   transform: scale(1.1);
+}
+
+.chart-container canvas {
+  width: 100% !important;
+  height: 220px !important;
+  display: block;
 }
