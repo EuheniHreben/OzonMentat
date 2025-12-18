@@ -70,5 +70,19 @@
   "1f5836e3-5f05-420c-92af-d4f17d88e28f": {
     "createdAt": 1765975170755,
     "days": 7
+  },
+  "c3aad80a-08a9-43e2-b2b8-162e37ae9ffc": {
+    "createdAt": 1766052587183,
+    "dateFrom": "2025-12-12",
+    "dateTo": "2025-12-18",
+    "days": 7,
+    "campaignsCount": 10
+  },
+  "5fe42787-69d3-4f10-a56f-78c7e3fe0a98": {
+    "createdAt": 1766052654668,
+    "dateFrom": "2025-12-12",
+    "dateTo": "2025-12-18",
+    "days": 7,
+    "campaignsCount": 10
   }
 }

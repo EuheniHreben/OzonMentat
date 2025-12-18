@@ -45,12 +45,21 @@ function getPendingReports() {
   const now = Date.now();
 
   return Object.entries(store)
-    .filter(([, v]) => now - v.createdAt < MAX_AGE_MS)
+    .filter(([, v]) => now - (v.createdAt || 0) < MAX_AGE_MS)
     .map(([uuid, meta]) => ({ uuid, meta }));
+}
+
+// иногда отчёт может зависнуть; это “жёсткая метла”
+// (используй руками, если нужно)
+function clearAll() {
+  try {
+    saveStore({});
+  } catch {}
 }
 
 module.exports = {
   addReport,
   removeReport,
   getPendingReports,
+  clearAll,
 };

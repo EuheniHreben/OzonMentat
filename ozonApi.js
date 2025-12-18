@@ -14,6 +14,8 @@ const {
   AD_CACHE_TTL_MS,
 } = require("./config");
 
+const DEBUG_ADS = String(process.env.DEBUG_ADS || "") === "1";
+
 // =====================================================
 // Seller API — базовый POST
 // =====================================================
@@ -44,8 +46,34 @@ async function ozonPost(pathUrl, body) {
 }
 
 // =====================================================
-// Даты
+// Utils: числа / даты
 // =====================================================
+function toNum(v) {
+  if (v == null) return 0;
+  if (typeof v === "number") return Number.isFinite(v) ? v : 0;
+
+  if (typeof v === "string") {
+    const cleaned = v
+      .replace(/\u00A0/g, " ")
+      .replace(/\u202F/g, " ")
+      .trim();
+
+    const m = cleaned.match(/-?\d[\d\s.,]*/);
+    if (!m) return 0;
+
+    const numLike = m[0].replace(/\s+/g, "").replace(",", ".");
+    const n = Number(numLike);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  if (typeof v === "object") {
+    if ("value" in v) return toNum(v.value);
+    if ("amount" in v) return toNum(v.amount);
+  }
+
+  return 0;
+}
+
 function formatDate(d) {
   return d.toISOString().slice(0, 10);
 }
@@ -85,7 +113,7 @@ async function analyticsBySku({ dateFrom, dateTo, metrics }) {
 
       if (!map[sku]) map[sku] = {};
       metrics.forEach((m, i) => {
-        map[sku][m] = (map[sku][m] || 0) + Number(row.metrics?.[i] || 0);
+        map[sku][m] = (map[sku][m] || 0) + toNum(row.metrics?.[i]);
       });
     }
 
@@ -111,7 +139,7 @@ async function getSalesMap(days = DAYS) {
 
   const out = {};
   for (const [sku, v] of Object.entries(raw)) {
-    out[sku] = Number(v.ordered_units || 0);
+    out[sku] = toNum(v.ordered_units);
   }
   return out;
 }
@@ -129,8 +157,8 @@ async function getWeekSalesMap(days = DAYS) {
   const out = {};
   for (const [sku, v] of Object.entries(raw)) {
     out[sku] = {
-      orders: Number(v.ordered_units || 0),
-      revenue: Number(v.revenue || 0),
+      orders: toNum(v.ordered_units),
+      revenue: toNum(v.revenue),
     };
   }
   return out;
@@ -148,7 +176,7 @@ async function getReturns(days = DAYS) {
 
   const out = {};
   for (const [sku, v] of Object.entries(raw)) {
-    out[sku] = Number(v.returns || 0);
+    out[sku] = toNum(v.returns);
   }
   return out;
 }
@@ -166,8 +194,8 @@ async function getImpressionsClicks(days = DAYS) {
   const out = {};
   for (const [sku, v] of Object.entries(raw)) {
     out[sku] = {
-      impressions: Number(v.hits_view_search || 0),
-      clicks: Number(v.hits_view_pdp || 0),
+      impressions: toNum(v.hits_view_search),
+      clicks: toNum(v.hits_view_pdp),
     };
   }
   return out;
@@ -196,8 +224,8 @@ async function getStocksMap() {
       if (!sku) continue;
 
       if (!map[sku]) map[sku] = { ozon_stock: 0, in_transit: 0 };
-      map[sku].ozon_stock += Number(r.free_to_sell_amount || 0);
-      map[sku].in_transit += Number(r.promised_amount || 0);
+      map[sku].ozon_stock += toNum(r.free_to_sell_amount);
+      map[sku].in_transit += toNum(r.promised_amount);
     }
 
     if (rows.length < LIMIT) break;
@@ -208,7 +236,7 @@ async function getStocksMap() {
 }
 
 // =====================================================
-// Performance API — LOCK + TOKEN
+// Performance API — LOCK + TOKEN + HELPERS
 // =====================================================
 let perfToken = null;
 let perfTokenExpiresAt = 0;
@@ -239,41 +267,115 @@ async function getPerfToken() {
     }),
   });
 
-  const json = await res.json();
+  const json = await res.json().catch(() => ({}));
   if (!json.access_token) return null;
 
   perfToken = json.access_token;
-  perfTokenExpiresAt = now + Number(json.expires_in || 3600) * 1000;
+  perfTokenExpiresAt = now + Number(json.expires_in || 1800) * 1000;
   return perfToken;
 }
 
-async function perfPost(pathUrl, body) {
+async function perfFetch(method, pathUrl, body) {
   return withPerfLock(async () => {
     const token = await getPerfToken();
-    if (!token) return null;
+    if (!token) return { ok: false, status: 0, text: "NO_TOKEN" };
+
+    const url = `${PERF_BASE_URL}${pathUrl}`;
 
     let attempt = 0;
     while (true) {
       attempt++;
-      const res = await fetch(`${PERF_BASE_URL}${pathUrl}`, {
-        method: "POST",
+
+      const res = await fetch(url, {
+        method,
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          ...(method === "POST" ? { "Content-Type": "application/json" } : {}),
+          Accept: "application/json",
         },
-        body: JSON.stringify(body || {}),
+        body: method === "POST" ? JSON.stringify(body || {}) : undefined,
       });
 
       if (res.status === 429) {
-        if (attempt >= 5) return null;
-        await sleep(5000 * attempt);
+        if (attempt >= 8) {
+          const text = await res.text().catch(() => "");
+          return { ok: false, status: 429, text };
+        }
+        await sleep(1500 * attempt);
         continue;
       }
 
-      if (!res.ok) return null;
-      return res.json();
+      const text = await res.text().catch(() => "");
+      if (!res.ok) return { ok: false, status: res.status, text };
+
+      return { ok: true, status: res.status, text };
     }
   });
+}
+
+async function perfGetJson(pathUrl) {
+  const r = await perfFetch("GET", pathUrl);
+  if (!r.ok) return null;
+  try {
+    return JSON.parse(r.text || "{}");
+  } catch {
+    return null;
+  }
+}
+
+async function perfPostJson(pathUrl, body) {
+  const r = await perfFetch("POST", pathUrl, body);
+  if (!r.ok) return null;
+  try {
+    return JSON.parse(r.text || "{}");
+  } catch {
+    return null;
+  }
+}
+
+// =====================================================
+// Performance API — REPORT LIFECYCLE
+// =====================================================
+async function waitReportOk(uuid, { timeoutMs = 120_000 } = {}) {
+  const start = Date.now();
+
+  while (Date.now() - start < timeoutMs) {
+    const st = await perfGetJson(
+      `/api/client/statistics/${encodeURIComponent(uuid)}`
+    );
+    const state = st?.state || "";
+
+    if (state === "OK" || state === "ERROR") return st;
+    await sleep(1200);
+  }
+
+  return { UUID: uuid, state: "TIMEOUT" };
+}
+
+async function downloadReportByLink(linkPath) {
+  const absUrl = linkPath.startsWith("http")
+    ? linkPath
+    : `${PERF_BASE_URL}${linkPath}`;
+
+  const token = await getPerfToken();
+  if (!token) return null;
+
+  const res = await fetch(absUrl, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+  });
+
+  if (!res.ok) return null;
+
+  const text = await res.text().catch(() => "");
+  try {
+    return JSON.parse(text || "{}");
+  } catch {
+    return null;
+  }
 }
 
 // =====================================================
@@ -281,7 +383,6 @@ async function perfPost(pathUrl, body) {
 // =====================================================
 const adSpendCache = new Map();
 const AD_CACHE_FILE = path.join(__dirname, "adSpendCache.json");
-
 let diskCacheLoaded = false;
 
 function loadAdCacheFromDisk() {
@@ -321,18 +422,19 @@ async function getAdSpend(days = DAYS) {
 
   const cached = adSpendCache.get(key);
   if (cached && Date.now() - cached.ts < AD_CACHE_TTL_MS) {
-    return cached.map;
+    const hasAny = cached.map && Object.keys(cached.map).length > 0;
+    if (hasAny) return cached.map;
+    if (DEBUG_ADS) console.log("[ads] cache hit but empty -> rebuilding");
   }
 
   if (!PERF_CLIENT_ID || !PERF_CLIENT_SECRET) return {};
 
   try {
-    const campaignsResp = await perfPost("/api/client/campaign", {
-      advObjectType: "SKU",
-    });
-
+    const campaignsResp = await perfGetJson(
+      "/api/client/campaign?advObjectType=SKU"
+    );
     const list = campaignsResp?.list || [];
-    const ids = list.map((c) => c.id).filter(Boolean);
+    const ids = list.map((c) => String(c.id || "").trim()).filter(Boolean);
 
     if (!ids.length) {
       adSpendCache.set(key, { ts: Date.now(), map: {} });
@@ -341,39 +443,81 @@ async function getAdSpend(days = DAYS) {
     }
 
     const chunks = [];
-    for (let i = 0; i < ids.length; i += 10) {
-      chunks.push(ids.slice(i, i + 10));
-    }
+    for (let i = 0; i < ids.length; i += 10) chunks.push(ids.slice(i, i + 10));
 
     const map = {};
 
     for (const campaigns of chunks) {
-      const stats = await perfPost("/api/client/statistics/json", {
+      const created = await perfPostJson("/api/client/statistics/json", {
         campaigns,
         dateFrom,
         dateTo,
         groupBy: "SKU",
       });
 
-      const rows = stats?.rows || [];
-      for (const r of rows) {
-        const sku = String(r.sku || "").trim();
-        if (!sku) continue;
-
-        if (!map[sku]) map[sku] = { ad_spend: 0, clicks: 0, impressions: 0 };
-
-        map[sku].ad_spend += Number(r.spend || 0);
-        map[sku].clicks += Number(r.clicks || 0);
-        map[sku].impressions += Number(r.impressions || 0);
+      const uuid = created?.UUID || created?.uuid;
+      if (!uuid) {
+        await sleep(1200);
+        continue;
       }
 
-      await sleep(1500);
+      const st = await waitReportOk(uuid, { timeoutMs: 120_000 });
+      if (st?.state !== "OK" || !st?.link) {
+        await sleep(1200);
+        continue;
+      }
+
+      const reportJson = await downloadReportByLink(st.link);
+      if (!reportJson) {
+        await sleep(1200);
+        continue;
+      }
+
+      for (const campaignKey of Object.keys(reportJson)) {
+        const rep = reportJson?.[campaignKey]?.report;
+        if (!rep) continue;
+
+        if (DEBUG_ADS) {
+          const totalSpend = toNum(rep?.totals?.moneySpent);
+          if (totalSpend > 0)
+            console.log("[ads] campaign has spend:", campaignKey, totalSpend);
+        }
+
+        const rows = rep.rows;
+        if (!Array.isArray(rows)) continue;
+
+        for (const r of rows) {
+          const sku = String(r?.sku || "").trim();
+          if (!sku) continue;
+
+          if (!map[sku]) map[sku] = { ad_spend: 0, clicks: 0, impressions: 0 };
+
+          const spend =
+            toNum(r?.moneySpent) ||
+            toNum(r?.spend) ||
+            toNum(r?.spent) ||
+            toNum(r?.money_spent);
+
+          const clicks =
+            toNum(r?.clicks) || toNum(r?.click) || toNum(r?.openCard) || 0;
+
+          const impr =
+            toNum(r?.views) || toNum(r?.impressions) || toNum(r?.shows) || 0;
+
+          map[sku].ad_spend += spend;
+          map[sku].clicks += clicks;
+          map[sku].impressions += impr;
+        }
+      }
+
+      await sleep(900);
     }
 
     adSpendCache.set(key, { ts: Date.now(), map });
     saveAdCacheToDisk();
     return map;
   } catch (e) {
+    if (DEBUG_ADS) console.log("[ads] ERROR:", e?.message || e);
     adSpendCache.set(key, { ts: Date.now(), map: {} });
     saveAdCacheToDisk();
     return {};
