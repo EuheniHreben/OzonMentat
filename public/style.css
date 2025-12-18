@@ -31,6 +31,7 @@ body {
   font-size: 20px;
 }
 
+/* Базовый стиль кнопок */
 button {
   display: inline-flex;
   justify-content: center;
@@ -53,6 +54,7 @@ button:active {
   top: 1px;
 }
 
+/* Кнопка обновления / primary */
 .reload-btn {
   background: #333;
   color: #fff;
@@ -199,7 +201,7 @@ button:active {
 /* Первая колонка */
 .funnel-table thead th:first-child,
 .funnel-table tbody td:first-child {
-  width: 40px;
+  width: 10px;
   text-align: left;
 }
 
@@ -219,7 +221,7 @@ button:active {
 .sortable::after {
   content: "";
   position: absolute;
-  right: 6px;
+  right: 20px;
   top: 50%;
   transform: translateY(-50%);
   border: 4px solid transparent;
@@ -287,12 +289,11 @@ td small {
   background: #1b1b1b;
   color: #fff;
   border-left: 1px solid #333;
-  box-shadow: 30px -10px 100px #4ade80;
   transform: translateX(100%);
   opacity: 0;
   pointer-events: none;
   transition: transform 0.25s ease-out, opacity 0.25s ease-out;
-  padding: 20px;
+  padding: 30px;
   z-index: 9999;
   overflow-y: auto;
 }
@@ -308,63 +309,8 @@ td small {
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 8px;
+  word-break: break-word;
   gap: 8px;
-}
-
-.details-header-left h2 {
-  margin: 0;
-  font-size: 18px;
-}
-
-.details-period {
-  margin: 6px 0 0;
-  font-size: 12px;
-  color: #ccc;
-}
-
-/* бейдж этапа */
-.details-stage-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-size: 11px;
-  margin-top: 6px;
-  background: #252525;
-  border: 1px solid #444;
-  color: #eee;
-}
-
-.details-stage-pill::before {
-  content: "●";
-  font-size: 10px;
-}
-
-/* оттенки для разных этапов (подбираем по ключевым словам на фронте) */
-.details-stage-pill.stage-traffic {
-  border-color: #60a5fa;
-  color: #bfdbfe;
-}
-.details-stage-pill.stage-card {
-  border-color: #f97316;
-  color: #fed7aa;
-}
-.details-stage-pill.stage-ads {
-  border-color: #a855f7;
-  color: #e9d5ff;
-}
-.details-stage-pill.stage-after {
-  border-color: #facc15;
-  color: #fef9c3;
-}
-.details-stage-pill.stage-scale {
-  border-color: #22c55e;
-  color: #bbf7d0;
-}
-.details-stage-pill.stage-watch {
-  border-color: #64748b;
-  color: #cbd5f5;
 }
 
 .close-btn {
@@ -376,33 +322,9 @@ td small {
   cursor: pointer;
 }
 
-/* Метрики / воронка в панели */
 .details-content h3 {
   margin-top: 14px;
   margin-bottom: 8px;
-}
-
-/* список метрик внутри слоёв */
-.metrics-list {
-  margin: 0;
-  padding: 0;
-}
-
-.metric-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 8px;
-  font-size: 13px;
-  padding: 2px 0;
-}
-
-.metric-label {
-  color: #ccc;
-}
-
-.metric-value {
-  font-variant-numeric: tabular-nums;
 }
 
 /* инпут минимальной партии */
@@ -445,6 +367,16 @@ td small {
   border-radius: 6px;
   padding: 8px 10px;
   background: #141414;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Мягкий hover-эффект */
+.funnel-layer:hover {
+  background: #191919;
+  transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.06);
+  border-color: #444;
+  cursor: pointer;
 }
 
 .funnel-layer-header {
@@ -494,13 +426,6 @@ td small {
 
 .funnel-metric-value {
   text-align: right;
-}
-
-.funnel-layer {
-  border: 1px solid #333;
-  border-radius: 6px;
-  padding: 8px 10px;
-  background: #141414;
 }
 
 /* Цвет бордера для слоёв воронки в зависимости от статуса */
@@ -553,23 +478,11 @@ td small {
   color: #fff;
 }
 
-/* кнопка прогрузки с прогрессом */
+/* кнопка прогрузки */
 .loader-btn {
   position: relative;
   overflow: hidden;
   min-width: 170px;
-}
-
-.loader-btn-progress {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 0%;
-  background: #4ade80;
-  opacity: 0.25;
-  pointer-events: none;
-  transition: width 0.15s linear;
 }
 
 .loader-btn span {
@@ -592,17 +505,6 @@ td small {
 }
 .icon-btn:hover {
   background: #444;
-}
-
-/* сглаживание: цвета */
-.smooth-good {
-  color: #4caf50;
-  font-weight: 600;
-}
-
-.smooth-bad {
-  color: #ff5252;
-  font-weight: 600;
 }
 
 /* ------------------------------
@@ -750,11 +652,6 @@ td small {
   background: transparent;
 }
 
-/* строки, отключённые из расчёта прогрузки */
-.row-disabled {
-  opacity: 0.45;
-}
-
 /* ------------------------------
    Кнопки с "фейковым" прогрессом
 ------------------------------ */
@@ -846,4 +743,73 @@ td small {
   width: 100% !important;
   height: 220px !important;
   display: block;
+}
+
+/* Затемнение фона при открытой боковой панели */
+.details-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease-out;
+  z-index: 9000;
+}
+
+/* активный фон */
+.details-backdrop.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Кнопка "Открыть папку..." — плавные переходы */
+#loader-open-cut-folder {
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+/* Базовый серый вид (папка пустая) */
+.btn-gray {
+  background: #444;
+  border-color: #666;
+  color: #747272;
+}
+
+/* Зелёный вид, когда в папке есть файлы */
+.btn-green {
+  background: #2ecc71 !important;
+  border-color: #27ae60 !important;
+  color: #fff !important;
+}
+
+.metric-up {
+  color: #2ecc71;
+  font-weight: 700;
+}
+
+.metric-down {
+  color: #e74c3c;
+  font-weight: 700;
+}
+
+/* ✅ жёлтый: и мелкие изменения, и 0% */
+.metric-mid {
+  color: #f1c40f;
+  font-weight: 700;
+}
+
+/* Остатки/DRR/возвраты окраска (если уже было — оставь как есть) */
+.level-good {
+  color: #2ecc71;
+  font-weight: 700;
+}
+
+.level-warn {
+  color: #f1c40f;
+  font-weight: 700;
+}
+
+.level-bad {
+  color: #e74c3c;
+  font-weight: 700;
 }

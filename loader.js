@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const Excel = require("exceljs");
+const { exec } = require("child_process");
 
 const {
   DEMAND_FACTOR,
@@ -20,6 +21,9 @@ const {
 
 const { getStocksMap, getSalesMap } = require("./ozonApi");
 const productInfo = require("./productInfo");
+
+// 📂 Папка, куда кладём файл(ы) резки
+const CUT_DIR = path.join(__dirname, "public", "cut");
 
 // дефолтный конфиг, если runtime не передали
 const defaultConfig = {
@@ -75,7 +79,7 @@ function autoDemandFactor({
   const prev = prevSmoothed > 0 ? prevSmoothed : weekSalesEff;
   let trend = 0;
   if (prev > 0) {
-    trend = (weekSalesEff - prev) / prev; // относительный рост/падение
+    trend = (weekSalesEff - prev) / prev;
   }
 
   if (spikeFlag) {
@@ -111,7 +115,6 @@ function loadDisabledMap() {
 }
 
 // 👉 добавляем запись об очередной прогрузке в loaderHistory.json
-// Логика: храним не больше N последних ДНЕЙ, где N задаётся конфигом.
 function appendLoaderHistory(entry, maxDaysFromConfig) {
   try {
     let history = [];
@@ -124,7 +127,7 @@ function appendLoaderHistory(entry, maxDaysFromConfig) {
     }
 
     const ts = entry.timestamp || new Date().toISOString();
-    const todayDate = ts.slice(0, 10); // YYYY-MM-DD
+    const todayDate = ts.slice(0, 10);
 
     if (history.length > 0) {
       const last = history[history.length - 1];
@@ -135,10 +138,8 @@ function appendLoaderHistory(entry, maxDaysFromConfig) {
       }
 
       if (lastDate === todayDate) {
-        // уже есть запись за этот день — заменяем её свежей
         history[history.length - 1] = entry;
       } else {
-        // новый день — добавляем запись
         history.push(entry);
       }
     } else {
@@ -165,16 +166,41 @@ function appendLoaderHistory(entry, maxDaysFromConfig) {
 }
 
 /**
- * Чтение Excel из public/cut.
- * Берём **все** .xlsx-файлы в папке.
- * В каждом ищем строку заголовков по словам "артикул" и "количество/кол-во/qty".
- * Возвращаем map: { skuKey: qty }, где qty — сумма по всем файлам.
+ * 📂 Открыть папку с cut-файлами
+ */
+function openCutFolder() {
+  try {
+    if (!fs.existsSync(CUT_DIR)) {
+      fs.mkdirSync(CUT_DIR, { recursive: true });
+    }
+
+    const platform = process.platform;
+    let cmd;
+
+    if (platform === "win32") cmd = `start "" "${CUT_DIR}"`;
+    else if (platform === "darwin") cmd = `open "${CUT_DIR}"`;
+    else cmd = `xdg-open "${CUT_DIR}"`;
+
+    exec(cmd, (err) => {
+      if (err) {
+        console.error("❌ Ошибка при открытии папки cut:", err.message);
+      } else {
+        console.log("✔️ Открыта папка с cut-файлами:", CUT_DIR);
+      }
+    });
+  } catch (e) {
+    console.error("❌ Ошибка в openCutFolder:", e.message);
+  }
+}
+
+/**
+ * Чтение Excel из CUT_DIR (суммируем все .xlsx)
  */
 async function readCutReservations() {
   const resultMap = {};
 
   try {
-    const dir = path.join(__dirname, "public", "cut");
+    const dir = CUT_DIR;
     if (!fs.existsSync(dir)) return {};
 
     const allFiles = fs.readdirSync(dir).filter((f) => f.endsWith(".xlsx"));
@@ -193,13 +219,12 @@ async function readCutReservations() {
         const sheet = workbook.worksheets[0];
         if (!sheet) continue;
 
-        // 1) Находим строку заголовков и номера колонок "артикул" и "количество"
         let headerRowIndex = null;
         let artColIndex = null;
         let qtyColIndex = null;
 
         sheet.eachRow((row, rowNumber) => {
-          if (headerRowIndex != null) return; // уже нашли
+          if (headerRowIndex != null) return;
 
           let foundArt = null;
           let foundQty = null;
@@ -269,14 +294,12 @@ async function readCutReservations() {
           const qty = Number(qtyRaw);
           if (!Number.isFinite(qty) || qty <= 0) continue;
 
-          // пробуем трактовать как sku
           let skuKey = null;
 
           const bySku = productInfo.getBySku(rawArt);
           if (bySku && bySku.sku != null) {
             skuKey = String(bySku.sku);
           } else {
-            // пробуем как offer_id
             const byOffer = getProductByOfferId(rawArt);
             if (byOffer && byOffer.sku != null) {
               skuKey = String(byOffer.sku);
@@ -313,6 +336,35 @@ async function readCutReservations() {
   }
 }
 
+// ✅ FIX: утилита для “истории сглаживания”, привязанной к DAYS
+function normalizeSalesHistory(history, daysKey) {
+  if (!history || typeof history !== "object") return {};
+  const out = history;
+
+  for (const sku of Object.keys(out)) {
+    const v = out[sku];
+
+    // старый формат: { smoothed, lastWeekSales }
+    if (
+      v &&
+      typeof v === "object" &&
+      !Array.isArray(v) &&
+      ("smoothed" in v || "lastWeekSales" in v) &&
+      !Object.keys(v).some((k) => /^\d+$/.test(k))
+    ) {
+      out[sku] = {
+        [daysKey]: {
+          lastWeekSales:
+            typeof v.lastWeekSales === "number" ? v.lastWeekSales : 0,
+          smoothed: typeof v.smoothed === "number" ? v.smoothed : 0,
+        },
+      };
+    }
+  }
+
+  return out;
+}
+
 async function runLoader(runtimeConfig = {}) {
   const cfg = { ...defaultConfig, ...runtimeConfig };
 
@@ -335,7 +387,6 @@ async function runLoader(runtimeConfig = {}) {
   console.log("✔️ Читаю зарезервированные поставки из public/cut...");
   const futureInTransitMap = await readCutReservations();
 
-  // теперь прогрузчик работает по ВСЕМ товарам из products.csv
   const allProducts =
     typeof productInfo.getAll === "function" ? productInfo.getAll() : [];
 
@@ -372,6 +423,10 @@ async function runLoader(runtimeConfig = {}) {
     salesHistory = {};
   }
 
+  // ✅ FIX: привязываем историю к cfg.DAYS
+  const daysKey = String(Number(cfg.DAYS) || 7);
+  salesHistory = normalizeSalesHistory(salesHistory, daysKey);
+
   const shipment = [];
   const allItems = [];
 
@@ -393,7 +448,6 @@ async function runLoader(runtimeConfig = {}) {
     const inTransitApi = stockInfo.in_transit || 0;
     const inTransitCut = futureInTransitMap[skuKey] || 0;
 
-    // ИТОГОВОЕ "в пути" = то, что уже в Ozon, + то, что зарезервировано в cut-файлах
     const in_transit = inTransitApi + inTransitCut;
 
     const hasAnyData =
@@ -403,9 +457,13 @@ async function runLoader(runtimeConfig = {}) {
       inTransitApi > 0 ||
       inTransitCut > 0;
 
+    // ✅ FIX: берём prevSmoothed именно для текущего DAYS
+    const prevBucket = salesHistory[skuKey] || {};
+    const prevRec = prevBucket[daysKey] || null;
+
     const prevSmoothed =
-      salesHistory[skuKey] && typeof salesHistory[skuKey].smoothed === "number"
-        ? salesHistory[skuKey].smoothed
+      prevRec && typeof prevRec.smoothed === "number"
+        ? prevRec.smoothed
         : salesShort;
 
     const alpha = cfg.SALES_SMOOTHING_ALPHA;
@@ -432,7 +490,9 @@ async function runLoader(runtimeConfig = {}) {
       weekSalesEffective = salesShort;
     }
 
-    salesHistory[skuKey] = {
+    // ✅ FIX: сохраняем историю по DAYS
+    if (!salesHistory[skuKey]) salesHistory[skuKey] = {};
+    salesHistory[skuKey][daysKey] = {
       lastWeekSales: salesShort,
       smoothed,
     };
@@ -458,6 +518,7 @@ async function runLoader(runtimeConfig = {}) {
 
     let target_demand = Math.ceil(weekSalesEffective * demand_factor);
 
+    // лимит по дням запаса
     const avgPerDay = weekSalesEffective / 7;
 
     if (avgPerDay > 0 && cfg.MAX_DAYS_OF_STOCK > 0) {
@@ -603,4 +664,5 @@ async function runLoader(runtimeConfig = {}) {
 
 module.exports = {
   runLoader,
+  openCutFolder,
 };

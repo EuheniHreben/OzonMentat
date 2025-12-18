@@ -1,8 +1,9 @@
 // config.js
-// Глобальный конфиг проекта: Ozon, спрос, история, Google Sheets
-
 require("dotenv").config();
 
+// ===============================
+// 🔐 Секреты (ТОЛЬКО из .env)
+// ===============================
 const CLIENT_ID = process.env.OZON_CLIENT_ID;
 const API_KEY = process.env.OZON_API_KEY;
 
@@ -12,41 +13,97 @@ if (!CLIENT_ID || !API_KEY) {
   );
 }
 
+const PERF_CLIENT_ID = process.env.OZON_PERF_CLIENT_ID || "";
+const PERF_CLIENT_SECRET = process.env.OZON_PERF_CLIENT_SECRET || "";
+const GOOGLE_SHEET_ID = process.env.GOOGLE_SHEET_ID || "";
+
+// ===============================
+// 🌐 API URLs
+// ===============================
+const BASE_URL = "https://api-seller.ozon.ru";
+const PERF_BASE_URL =
+  process.env.OZON_PERF_BASE_URL || "https://api-performance.ozon.ru";
+
+// ===============================
+// 🧠 Поведение системы (CONFIG)
+// ===============================
+const ADS_ENABLED = process.env.ADS_ENABLED !== "0";
+
+// анти-спам и защита API
+const FUNNEL_MIN_REFRESH_MS = Number(
+  process.env.FUNNEL_MIN_REFRESH_MS || 25_000
+);
+const ADS_COOLDOWN_MS = Number(process.env.ADS_COOLDOWN_MS || 60_000);
+
+// кэш рекламы
+const AD_CACHE_TTL_MS = Number(process.env.AD_CACHE_TTL_MS || 30 * 60 * 1000);
+
+// ===============================
+// 📊 Базовые настройки спроса
+// ===============================
+const DEMAND_FACTOR = 1.5;
+const DAYS = 7;
+const DAYS_LONG = 30;
+const MIN_STOCK_DEFAULT = 4;
+const PACK_SIZE_DEFAULT = 2;
+const MAX_DAYS_OF_STOCK = 30;
+
+// сглаживание / всплески
+const SALES_SMOOTHING_ALPHA = 0.5;
+const SPIKE_MULTIPLIER = 3;
+const SPIKE_CAP_MULTIPLIER = 1.5;
+
+// ===============================
+// 📁 Файлы и история
+// ===============================
+const SALES_HISTORY_FILE = "salesHistory.json";
+
+const PRICING_CACHE_FILE = process.env.PRICING_CACHE_FILE || "pricingData.json";
+const PRICING_TTL_MS = Number(process.env.PRICING_TTL_MS) || 60 * 60 * 1000;
+
+const MAX_LOADER_HISTORY_DAYS = 200;
+const MAX_FUNNEL_HISTORY_DAYS = 120;
+
+// ===============================
+// 📤 Экспорт
+// ===============================
 module.exports = {
-  // креды Ozon
+  // креды
   CLIENT_ID,
   API_KEY,
-  BASE_URL: "https://api-seller.ozon.ru",
 
-  // 🔢 Базовые настройки спроса
-  DEMAND_FACTOR: 1.5,
+  // URLs
+  BASE_URL,
+  PERF_BASE_URL,
 
-  // Период 1 (короткий, базовый)
-  DAYS: 7,
+  // реклама / performance
+  PERF_CLIENT_ID,
+  PERF_CLIENT_SECRET,
+  ADS_ENABLED,
+  ADS_COOLDOWN_MS,
+  AD_CACHE_TTL_MS,
 
-  // Период 2 (длинный, для сравнения в прогрузчике)
-  DAYS_LONG: 30,
+  // анти-спам
+  FUNNEL_MIN_REFRESH_MS,
 
-  MIN_STOCK_DEFAULT: 4,
-  PACK_SIZE_DEFAULT: 2,
-  MAX_DAYS_OF_STOCK: 30,
+  // спрос
+  DEMAND_FACTOR,
+  DAYS,
+  DAYS_LONG,
+  MIN_STOCK_DEFAULT,
+  PACK_SIZE_DEFAULT,
+  MAX_DAYS_OF_STOCK,
 
-  // 📈 Сглаживание продаж и защита от всплесков
-  SALES_SMOOTHING_ALPHA: 0.5,
-  SPIKE_MULTIPLIER: 3,
-  SPIKE_CAP_MULTIPLIER: 1.5,
+  SALES_SMOOTHING_ALPHA,
+  SPIKE_MULTIPLIER,
+  SPIKE_CAP_MULTIPLIER,
 
-  // История продаж (для сглаживания)
-  SALES_HISTORY_FILE: "salesHistory.json",
+  // файлы
+  SALES_HISTORY_FILE,
+  GOOGLE_SHEET_ID,
+  PRICING_CACHE_FILE,
+  PRICING_TTL_MS,
 
-  // 👉 Google Sheets (ценовой модуль — пока не используем, но задел оставляем)
-  GOOGLE_SHEET_ID: process.env.GOOGLE_SHEET_ID || "",
-  GOOGLE_PRICING_RANGE: process.env.GOOGLE_PRICING_RANGE || "Лист1!A2:G999",
-  PRICING_CACHE_FILE: process.env.PRICING_CACHE_FILE || "pricingData.json",
-  PRICING_TTL_MS:
-    Number(process.env.PRICING_TTL_MS) || 60 * 60 * 1000 /* 1 час */,
-
-  // 🧾 История прогрузчика и воронки
-  MAX_LOADER_HISTORY_DAYS: 200,
-  MAX_FUNNEL_HISTORY_DAYS: 120,
+  MAX_LOADER_HISTORY_DAYS,
+  MAX_FUNNEL_HISTORY_DAYS,
 };

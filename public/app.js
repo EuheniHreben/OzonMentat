@@ -1,5 +1,5 @@
-// app.js
-
+// public/app.js
+const GRAPH_ENABLED = false;
 let allRows = [];
 let filteredRows = [];
 let currentSort = { field: null, dir: 1 };
@@ -24,13 +24,80 @@ let disabledCollapsed = true;
 let shipmentCollapsed = false;
 let activeCollapsed = true;
 
+// модуль рекламы (по SKU)
+let adsRows = [];
+let adsFiltered = [];
+let adsSort = { field: null, dir: 1 };
+
 // ключи для запоминания сортировки
 const SORT_KEYS = {
   funnelField: "sort:funnel:field",
   funnelDir: "sort:funnel:dir",
   loaderField: "sort:loader:field",
   loaderDir: "sort:loader:dir",
+  adsField: "sort:ads:field",
+  adsDir: "sort:ads:dir",
 };
+
+// =====================================================
+// ✅ NEW: Пороги для “трёх цветов” дельт
+// =====================================================
+// change — относительное изменение (например 0.12 = +12%)
+const DELTA_MINOR_ABS = 0.05; // 5%
+const DELTA_MAJOR_ABS = 0.15; // 15%
+
+function classifyDeltaClass(change, { inverse = false } = {}) {
+  const num = typeof change === "number" ? change : 0;
+
+  // ✅ теперь 0% и “нет числа” — тоже ЖЁЛТЫЙ
+  if (!Number.isFinite(num) || num === 0) return "metric-mid";
+
+  const abs = Math.abs(num);
+  const positiveIsGood = !inverse;
+
+  // маленькие/средние изменения — жёлтый
+  if (abs < DELTA_MAJOR_ABS) return "metric-mid";
+
+  // большие — зелёный/красный
+  if (num > 0) return positiveIsGood ? "metric-up" : "metric-down";
+  return positiveIsGood ? "metric-down" : "metric-up";
+}
+
+// =====================================================
+// ✅ NEW: Маркер остатков как в боковой панели (по дням запаса)
+// =====================================================
+function classifyStockLevel(row) {
+  const stock = Number(row?.ozon_stock || 0);
+  const orders = Number(row?.orders || 0);
+  const days = Number(periodDays || 7);
+
+  // если совсем нет данных
+  if (!stock && !orders) {
+    return { level: "warn", text: "—" }; // нейтрально-жёлтый маркер
+  }
+
+  // если запас 0, но продажи есть → плохо
+  if (!stock && orders > 0) {
+    return { level: "bad", text: "0" };
+  }
+
+  // если запас есть, но продаж 0 → не ругаемся (просто “есть запас”)
+  if (stock > 0 && orders === 0) {
+    return { level: "good", text: String(stock) };
+  }
+
+  // нормальный кейс: считаем дни запаса
+  const dailyOrders = orders / Math.max(days, 1);
+  if (dailyOrders <= 0) {
+    return { level: "good", text: String(stock) };
+  }
+
+  const daysOfStock = stock / dailyOrders;
+
+  if (daysOfStock <= 3) return { level: "bad", text: String(stock) };
+  if (daysOfStock <= 7) return { level: "warn", text: String(stock) };
+  return { level: "good", text: String(stock) };
+}
 
 // ------------------------------
 // init
@@ -51,13 +118,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const tabFunnel = document.getElementById("tab-funnel");
   const tabLoader = document.getElementById("tab-loader");
+  const tabAds = document.getElementById("tab-ads");
 
-  if (tabFunnel) {
-    tabFunnel.addEventListener("click", () => showTab("funnel"));
-  }
-  if (tabLoader) {
-    tabLoader.addEventListener("click", () => showTab("loader"));
-  }
+  if (tabFunnel) tabFunnel.addEventListener("click", () => showTab("funnel"));
+  if (tabLoader) tabLoader.addEventListener("click", () => showTab("loader"));
+  if (tabAds) tabAds.addEventListener("click", () => showTab("ads"));
 
   document.querySelectorAll(".period-chip").forEach((chip) => {
     chip.addEventListener("click", () => {
@@ -67,9 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
       chip.classList.add("period-active");
 
       periodDays = Number(chip.dataset.days || 7);
-      if (getActiveTab() === "funnel") {
-        loadFunnel();
-      }
+      loadFunnel();
     });
   });
 
@@ -99,11 +162,34 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // сортировка рекламного модуля
+  document.querySelectorAll("#ads-table thead th.sortable").forEach((th) => {
+    th.addEventListener("click", () => {
+      sortAdsBy(th.dataset.field);
+    });
+  });
+
   // запуск прогрузчика
   const loaderBtn = document.getElementById("loader-run");
+  const loaderSound = document.getElementById("loader-sound");
+
   if (loaderBtn) {
     loaderBtn.addEventListener("click", () => {
+      if (loaderSound) {
+        loaderSound.currentTime = 0;
+        loaderSound.volume = 1;
+        loaderSound.play().catch((err) => {
+          console.warn("Audio play blocked:", err);
+        });
+      }
       withFakeProgress(loaderBtn, () => runLoader());
+    });
+  }
+
+  const openCutFolderBtn = document.getElementById("loader-open-cut-folder");
+  if (openCutFolderBtn) {
+    openCutFolderBtn.addEventListener("click", () => {
+      withFakeProgress(openCutFolderBtn, () => openCutFolder());
     });
   }
 
@@ -119,15 +205,11 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("click", (e) => {
     const panel = document.getElementById("details-panel");
     if (!panel || !panel.classList.contains("visible")) return;
-    if (!panel.contains(e.target)) {
-      hideDetails();
-    }
+    if (!panel.contains(e.target)) hideDetails();
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      hideDetails();
-    }
+    if (e.key === "Escape") hideDetails();
   });
 
   // поиск
@@ -137,6 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
       searchQuery = searchInput.value || "";
       applyFunnelFiltersAndRender();
       applyLoaderFiltersAndRender();
+      applyAdsFiltersAndRender();
     });
   }
 
@@ -165,6 +248,14 @@ function loadSortState() {
       const d2 = parseInt(lDir, 10);
       loaderSort.dir = d2 === -1 ? -1 : 1;
     }
+
+    const aField = localStorage.getItem(SORT_KEYS.adsField);
+    const aDir = localStorage.getItem(SORT_KEYS.adsDir);
+    if (aField) {
+      adsSort.field = aField;
+      const d3 = parseInt(aDir, 10);
+      adsSort.dir = d3 === -1 ? -1 : 1;
+    }
   } catch (e) {
     console.warn("Не удалось восстановить сортировку:", e.message);
   }
@@ -188,30 +279,41 @@ function saveLoaderSortState() {
   } catch {}
 }
 
+function saveAdsSortState() {
+  try {
+    if (adsSort.field) {
+      localStorage.setItem(SORT_KEYS.adsField, adsSort.field);
+      localStorage.setItem(SORT_KEYS.adsDir, String(adsSort.dir));
+    }
+  } catch {}
+}
+
 // ------------------------------
 // Tabs
 // ------------------------------
 function getActiveTab() {
-  const funnelTab = document.getElementById("tab-funnel");
-  return funnelTab && funnelTab.classList.contains("tab-active")
-    ? "funnel"
-    : "loader";
+  const adsTab = document.getElementById("tab-ads");
+  if (adsTab && adsTab.classList.contains("tab-active")) return "ads";
+
+  const loaderTab = document.getElementById("tab-loader");
+  if (loaderTab && loaderTab.classList.contains("tab-active")) return "loader";
+
+  return "funnel";
 }
 
 function setPageTitle(tab) {
   const el = document.getElementById("page-title");
   if (!el) return;
 
-  if (tab === "funnel") {
-    el.textContent = "📊 Воронка по SKU (Lite)";
-  } else {
-    el.textContent = "📦 Прогрузчик поставок";
-  }
+  if (tab === "funnel") el.textContent = "📊 Воронка по SKU";
+  else if (tab === "loader") el.textContent = "📦 Прогрузчик поставок";
+  else if (tab === "ads") el.textContent = "📣 Реклама по SKU";
 }
 
 function showTab(tab) {
   const vf = document.getElementById("view-funnel");
   const vl = document.getElementById("view-loader");
+  const va = document.getElementById("view-ads");
 
   document
     .querySelectorAll(".tab-chip")
@@ -220,13 +322,22 @@ function showTab(tab) {
   if (tab === "funnel") {
     if (vf) vf.classList.remove("hidden");
     if (vl) vl.classList.add("hidden");
+    if (va) va.classList.add("hidden");
     const tf = document.getElementById("tab-funnel");
     if (tf) tf.classList.add("tab-active");
-  } else {
+  } else if (tab === "loader") {
     if (vl) vl.classList.remove("hidden");
     if (vf) vf.classList.add("hidden");
+    if (va) va.classList.add("hidden");
     const tl = document.getElementById("tab-loader");
     if (tl) tl.classList.add("tab-active");
+    updateCutFolderButton();
+  } else if (tab === "ads") {
+    if (va) va.classList.remove("hidden");
+    if (vf) vf.classList.add("hidden");
+    if (vl) vl.classList.add("hidden");
+    const ta = document.getElementById("tab-ads");
+    if (ta) ta.classList.add("tab-active");
   }
 
   setPageTitle(tab);
@@ -252,7 +363,10 @@ async function loadFunnel() {
 
       allRows = [];
       filteredRows = [];
+      adsRows = [];
+      adsFiltered = [];
       renderTable([]);
+      renderAdsTable([]);
       hideDetails();
       return;
     }
@@ -264,11 +378,15 @@ async function loadFunnel() {
     }
 
     applyFunnelFiltersAndRender();
+    buildAdsFromFunnel();
   } catch (err) {
     console.error("Ошибка загрузки:", err);
     allRows = [];
     filteredRows = [];
+    adsRows = [];
+    adsFiltered = [];
     renderTable([]);
+    renderAdsTable([]);
     hideDetails();
   }
 }
@@ -279,19 +397,16 @@ async function loadFunnel() {
 function applyFunnelFiltersAndRender() {
   let rows = Array.isArray(allRows) ? allRows.slice() : [];
 
-  // фильтр по приоритету
   if (currentPriority && currentPriority !== "all") {
     rows = rows.filter((r) => r.priority === currentPriority);
   }
 
-  // поиск
   if (searchQuery && searchQuery.trim()) {
     rows = rows.filter((r) => matchesSearch(r, searchQuery));
   }
 
   filteredRows = rows;
 
-  // если уже есть сохранённая сортировка — применяем
   if (currentSort.field) {
     sortFunnelRowsInPlace();
   }
@@ -301,7 +416,6 @@ function applyFunnelFiltersAndRender() {
   hideDetails();
 }
 
-// сортировка массива filteredRows по currentSort без смены направления
 function sortFunnelRowsInPlace() {
   if (!currentSort.field) return;
 
@@ -318,15 +432,11 @@ function sortFunnelRowsInPlace() {
   });
 }
 
-// ------------------------------
-// сортировка (воронка)
-// ------------------------------
 function sortBy(field) {
   if (!field) return;
 
-  if (currentSort.field === field) {
-    currentSort.dir *= -1;
-  } else {
+  if (currentSort.field === field) currentSort.dir *= -1;
+  else {
     currentSort.field = field;
     currentSort.dir = 1;
   }
@@ -338,6 +448,35 @@ function sortBy(field) {
   updateSortIndicators();
 }
 
+function sortLoaderBy(field) {
+  if (!field) return;
+
+  if (loaderSort.field === field) loaderSort.dir *= -1;
+  else {
+    loaderSort.field = field;
+    loaderSort.dir = 1;
+  }
+
+  saveLoaderSortState();
+  applyLoaderFiltersAndRender();
+}
+
+function sortAdsBy(field) {
+  if (!field) return;
+
+  if (adsSort.field === field) adsSort.dir *= -1;
+  else {
+    adsSort.field = field;
+    adsSort.dir = 1;
+  }
+
+  saveAdsSortState();
+  applyAdsFiltersAndRender();
+}
+
+// ------------------------------
+// обновление стрелочек сортировки
+// ------------------------------
 function updateSortIndicators() {
   document.querySelectorAll("#funnel-table thead th.sortable").forEach((th) => {
     th.classList.remove("sort-asc", "sort-desc");
@@ -352,23 +491,13 @@ function updateSortIndicators() {
       th.classList.add(loaderSort.dir === 1 ? "sort-asc" : "sort-desc");
     }
   });
-}
 
-// ------------------------------
-// сортировка (прогрузчик)
-// ------------------------------
-function sortLoaderBy(field) {
-  if (!field) return;
-
-  if (loaderSort.field === field) {
-    loaderSort.dir *= -1;
-  } else {
-    loaderSort.field = field;
-    loaderSort.dir = 1;
-  }
-
-  saveLoaderSortState();
-  applyLoaderFiltersAndRender();
+  document.querySelectorAll("#ads-table thead th.sortable").forEach((th) => {
+    th.classList.remove("sort-asc", "sort-desc");
+    if (th.dataset.field === adsSort.field) {
+      th.classList.add(adsSort.dir === 1 ? "sort-asc" : "sort-desc");
+    }
+  });
 }
 
 // ------------------------------
@@ -376,7 +505,6 @@ function sortLoaderBy(field) {
 // ------------------------------
 function extractValue(row, field) {
   const val = row[field];
-
   if (typeof val === "number") return val;
   if (typeof val === "string") return val.toLowerCase();
   return 0;
@@ -403,7 +531,7 @@ function levelFromEmoji(emoji) {
 }
 
 // ------------------------------
-// Поиск: "200 3 20" / "3 20" и т.п.
+// Поиск
 // ------------------------------
 function extractOfferNumbers(row) {
   const base = `${row.offer_id || ""} ${row.name || ""}`;
@@ -435,16 +563,12 @@ function matchesSearch(row, queryRaw) {
     else textTokens.push(t);
   }
 
-  // текстовые токены — обычное "contains" по строке
   for (const t of textTokens) {
     if (!bigStr.includes(t)) return false;
   }
 
-  if (numericTokens.length === 0) {
-    return true;
-  }
+  if (numericTokens.length === 0) return true;
 
-  // числовые токены сравниваем с реальными числами в артикуле / названии
   const offerNums = extractOfferNumbers(row);
 
   for (const t of numericTokens) {
@@ -510,7 +634,7 @@ function createOfferCellTD(offerId) {
 }
 
 // ------------------------------
-// рендер воронки
+// ✅ РЕНДЕР ВОРОНКИ (обновлено)
 // ------------------------------
 function renderTable(rows) {
   const tbody = document.querySelector("#funnel-table tbody");
@@ -536,22 +660,25 @@ function renderTable(rows) {
     const drrLevel = levelFromEmoji(row.drrColor);
     const refundLevel = levelFromEmoji(row.refundColor);
 
+    // ✅ NEW: уровень остатков
+    const stockInfo = classifyStockLevel(row); // { level: good|warn|bad, text }
+
     const cells = [
-      index + 1,
-      row.offer_id || "-",
-      formatNumber(row.impressions || 0),
-      formatNumber(row.clicks || 0),
-      formatPercent(ctrPercent),
-      formatNumber(row.orders || 0),
-      formatPercent(convPercent),
-      formatNumber(row.revenue || 0),
-      formatNumber(row.ad_spend || 0),
-      formatPercent(drrPercent),
-      formatNumber(row.avg_check || 0),
-      formatNumber(row.ozon_stock || 0),
-      formatNumber(row.returns || 0),
-      formatPercent(refundPercent),
-      row.priority || "-",
+      index + 1, // 0
+      row.offer_id || "-", // 1
+      formatNumber(row.impressions || 0), // 2
+      formatNumber(row.clicks || 0), // 3
+      formatPercent(ctrPercent), // 4
+      formatNumber(row.orders || 0), // 5
+      formatPercent(convPercent), // 6
+      formatNumber(row.revenue || 0), // 7
+      formatNumber(row.ad_spend || 0), // 8
+      formatPercent(drrPercent), // 9
+      formatNumber(row.avg_check || 0), // 10
+      formatNumber(row.ozon_stock || 0), // 11
+      formatNumber(row.returns || 0), // 12
+      formatPercent(refundPercent), // 13
+      row.priority || "-", // 14
     ];
 
     cells.forEach((value, idx) => {
@@ -565,25 +692,40 @@ function renderTable(rows) {
       const span = document.createElement("span");
       span.textContent = value;
 
-      // заказы: дельта
+      // ✅ NEW: Заказы — 3 цвета по дельте
       if (idx === 5 && row.orders_prev !== undefined) {
-        const ch = row.orders_change || 0;
-        if (ch > 0.001) span.classList.add("metric-up");
-        else if (ch < -0.001) span.classList.add("metric-down");
+        const cls = classifyDeltaClass(row.orders_change, { inverse: false });
+        span.classList.remove(
+          "metric-up",
+          "metric-down",
+          "metric-mid",
+          "metric-zero"
+        );
+        span.classList.add(cls);
       }
 
-      // выручка: дельта
+      // ✅ NEW: Выручка — 3 цвета по дельте
       if (idx === 7 && row.revenue_prev !== undefined) {
-        const ch = row.revenue_change || 0;
-        if (ch > 0.001) span.classList.add("metric-up");
-        else if (ch < -0.001) span.classList.add("metric-down");
+        const cls = classifyDeltaClass(row.revenue_change, { inverse: false });
+        span.classList.remove(
+          "metric-up",
+          "metric-down",
+          "metric-mid",
+          "metric-zero"
+        );
+        span.classList.add(cls);
       }
 
-      // возвраты %: дельта
+      // Возвраты %: рост — плохо (оставил как было, но тоже можно 3 цвета)
       if (idx === 13 && row.refund_prev !== undefined) {
-        const ch = row.refund_change || 0;
-        if (ch > 0.001) span.classList.add("metric-down");
-        else if (ch < -0.001) span.classList.add("metric-up");
+        const cls = classifyDeltaClass(row.refund_change, { inverse: true });
+        span.classList.remove(
+          "metric-up",
+          "metric-down",
+          "metric-mid",
+          "metric-zero"
+        );
+        span.classList.add(cls);
       }
 
       // DRR цвет
@@ -600,6 +742,32 @@ function renderTable(rows) {
         else span.classList.add("level-bad");
       }
 
+      // ✅ NEW: Остатки — цветовые маркеры (как боковая панель)
+      if (idx === 11) {
+        span.classList.remove("level-good", "level-warn", "level-bad");
+
+        if (stockInfo.level === "good") span.classList.add("level-good");
+        else if (stockInfo.level === "warn") span.classList.add("level-warn");
+        else span.classList.add("level-bad");
+
+        // маленькая подсказка в title (дни запаса)
+        // чтобы не лезть в панель вообще
+        // вычислим daysOfStock, если возможно
+        const stock = Number(row?.ozon_stock || 0);
+        const orders = Number(row?.orders || 0);
+        const days = Number(periodDays || 7);
+
+        if (stock > 0 && orders > 0) {
+          const daily = orders / Math.max(days, 1);
+          const dos = daily > 0 ? stock / daily : null;
+          if (dos != null && Number.isFinite(dos)) {
+            span.title = `Дней запаса ≈ ${dos.toFixed(
+              1
+            )} (порог: ≤3 плохо, ≤7 внимание)`;
+          }
+        }
+      }
+
       td.appendChild(span);
       tr.appendChild(td);
     });
@@ -609,10 +777,17 @@ function renderTable(rows) {
 }
 
 // ------------------------------
-// маленький график по SKU — жизнь товара
+// (остальной файл без изменений)
 // ------------------------------
 
+// ... ДАЛЬШЕ У ТЕБЯ ИДЁТ drawSkuChart / showDetails / loader / ads и т.д.
+// НИЧЕГО там менять не нужно для этой задачи.
+
+// ------------------------------
+// маленький график по SKU — жизнь товара
+// ------------------------------
 function drawSkuChart(points) {
+  if (!GRAPH_ENABLED) return;
   const canvas = document.getElementById("sku-chart");
   if (!canvas || typeof Chart === "undefined") return;
 
@@ -625,24 +800,14 @@ function drawSkuChart(points) {
 
   const safePoints = Array.isArray(points) ? points : [];
 
-  const labels = safePoints.map((p) => {
-    // показываем только день и месяц: 12-03
-    return (p.date || "").slice(5);
-  });
-
+  const labels = safePoints.map((p) => (p.date || "").slice(5)); // MM-DD
   const data = safePoints.map((p) => Number(p.orders || 0));
 
   skuChart = new Chart(ctx, {
-    type: "bar", // можно "line", если захочешь линию
+    type: "bar",
     data: {
       labels,
-      datasets: [
-        {
-          label: "Заказано, шт",
-          data,
-          borderWidth: 1,
-        },
-      ],
+      datasets: [{ label: "Заказано, шт", data, borderWidth: 1 }],
     },
     options: {
       responsive: true,
@@ -663,17 +828,15 @@ function drawSkuChart(points) {
 }
 
 async function loadDailySalesChart(row) {
-  const skuKey = row.sku || row.offer_id;
+  const skuKey = String(row?.sku || row?.offer_id || "").trim();
   if (!skuKey) {
     drawSkuChart([]);
     return;
   }
 
-  // очищаем текущий график на время загрузки
   drawSkuChart([]);
 
   try {
-    // возьмём, например, 14 дней истории
     const days = 14;
     const res = await fetch(
       `/api/funnel/daily-sales?sku=${encodeURIComponent(skuKey)}&days=${days}`
@@ -714,11 +877,8 @@ function setDelta(id, change, inverse = false) {
   el.classList.remove("metric-up", "metric-down");
   const positiveIsGood = !inverse;
 
-  if (p > 0) {
-    el.classList.add(positiveIsGood ? "metric-up" : "metric-down");
-  } else {
-    el.classList.add(positiveIsGood ? "metric-down" : "metric-up");
-  }
+  if (p > 0) el.classList.add(positiveIsGood ? "metric-up" : "metric-down");
+  else el.classList.add(positiveIsGood ? "metric-down" : "metric-up");
 }
 
 // ------------------------------
@@ -750,7 +910,6 @@ function evaluateFunnelLayers(row) {
   const impressions = row.impressions || 0;
   const clicks = row.clicks || 0;
   const orders = row.orders || 0;
-  const revenue = row.revenue || 0;
   const ad_spend = row.ad_spend || 0;
   const refundRate = row.refund_rate || 0;
   const drr = row.drr || 0;
@@ -767,140 +926,98 @@ function evaluateFunnelLayers(row) {
   // ---------- Слой 1: Показы ----------
   let traffic = { statusClass: "ok", text: "ОК" };
 
-  if (impressions === 0 && clicks === 0 && orders === 0 && revenue === 0) {
-    traffic = {
-      statusClass: "bad",
-      text: "Нет трафика",
-    };
+  if (impressions === 0 && clicks === 0 && orders === 0) {
+    traffic = { statusClass: "bad", text: "Нет трафика" };
   } else {
     const ctr = row.ctr || 0;
-    if (ctr < CTR_LOW) {
-      traffic = {
-        statusClass: "warn",
-        text: "Низкий CTR",
-      };
-    }
+    if (ctr < CTR_LOW) traffic = { statusClass: "warn", text: "Низкий CTR" };
   }
 
   // ---------- Слой 2: Карточка ----------
   let card = { statusClass: "ok", text: "ОК" };
 
-  if (clicks === 0) {
-    card = {
-      statusClass: "warn",
-      text: "Нет данных по кликам",
-    };
-  } else if (clicks > 0 && orders === 0) {
-    card = {
-      statusClass: "bad",
-      text: "Клики есть, заказов нет",
-    };
-  } else {
+  if (clicks === 0)
+    card = { statusClass: "warn", text: "Нет данных по кликам" };
+  else if (clicks > 0 && orders === 0)
+    card = { statusClass: "bad", text: "Клики есть, заказов нет" };
+  else {
     const conv = row.conv || 0;
-    if (conv < CONV_LOW) {
-      card = {
-        statusClass: "warn",
-        text: "Низкая конверсия",
-      };
-    }
+    if (conv < CONV_LOW)
+      card = { statusClass: "warn", text: "Низкая конверсия" };
   }
 
   // ---------- Слой 3: Послепродажа ----------
   let post = { statusClass: "ok", text: "ОК" };
 
-  if (orders < MIN_ORDERS_FOR_REFUND) {
-    post = {
-      statusClass: "warn",
-      text: "Мало данных по возвратам",
-    };
-  } else if (refundRate >= REFUND_BAD) {
-    post = {
-      statusClass: "bad",
-      text: "Критично много возвратов",
-    };
-  } else if (refundRate >= REFUND_WARN) {
-    post = {
-      statusClass: "warn",
-      text: "Повышенные возвраты",
-    };
-  }
+  if (orders < MIN_ORDERS_FOR_REFUND)
+    post = { statusClass: "warn", text: "Мало данных по возвратам" };
+  else if (refundRate >= REFUND_BAD)
+    post = { statusClass: "bad", text: "Критично много возвратов" };
+  else if (refundRate >= REFUND_WARN)
+    post = { statusClass: "warn", text: "Повышенные возвраты" };
 
   // ---------- Слой 4: Реклама ----------
   let ads = { statusClass: "ok", text: "ОК" };
 
-  if (!ad_spend || ad_spend === 0) {
-    ads = {
-      statusClass: "ok",
-      text: "Реклама не активна",
-    };
-  } else if (drr >= DRR_BAD) {
-    ads = {
-      statusClass: "bad",
-      text: "DRR слишком высокий",
-    };
-  } else if (drr >= DRR_WARN) {
-    ads = {
-      statusClass: "warn",
-      text: "DRR повышенный",
-    };
-  }
+  if (!ad_spend || ad_spend === 0)
+    ads = { statusClass: "ok", text: "Реклама не активна" };
+  else if (drr >= DRR_BAD)
+    ads = { statusClass: "bad", text: "DRR слишком высокий" };
+  else if (drr >= DRR_WARN)
+    ads = { statusClass: "warn", text: "DRR повышенный" };
 
   // ---------- Слой 5: Остатки / наличие ----------
   let stockLayer = { statusClass: "ok", text: "ОК", daysOfStock: null };
 
-  if (!stock && !orders) {
+  if (!stock && !orders)
     stockLayer = {
       statusClass: "warn",
       text: "Нет данных по запасам",
       daysOfStock: null,
     };
-  } else if (!stock && orders > 0) {
+  else if (!stock && orders > 0)
     stockLayer = {
       statusClass: "bad",
       text: "Товар закончился",
       daysOfStock: 0,
     };
-  } else if (stock > 0 && orders === 0) {
-    // спроса нет, но запас есть — пока считаем нормой
+  else if (stock > 0 && orders === 0)
     stockLayer = {
       statusClass: "ok",
       text: "Запас есть, мало данных по спросу",
       daysOfStock: null,
     };
-  } else {
+  else {
     const days = periodDays || 7;
     const dailyOrders = orders / days;
-    if (dailyOrders <= 0) {
+    if (dailyOrders <= 0)
       stockLayer = {
         statusClass: "ok",
         text: "Запас есть, спрос нестабилен",
         daysOfStock: null,
       };
-    } else {
+    else {
       const daysOfStock = stock / dailyOrders;
-
       stockLayer.daysOfStock = daysOfStock;
 
-      if (daysOfStock <= 3) {
-        stockLayer.statusClass = "bad";
-        stockLayer.text = "Закончится ≤ 3 дней";
-      } else if (daysOfStock <= 7) {
-        stockLayer.statusClass = "warn";
-        stockLayer.text = "Мало запаса (≤ 7 дн.)";
-      } else {
-        stockLayer.statusClass = "ok";
-        stockLayer.text = "Запас здоров";
-      }
+      if (daysOfStock <= 3)
+        stockLayer = {
+          ...stockLayer,
+          statusClass: "bad",
+          text: "Закончится ≤ 3 дней",
+        };
+      else if (daysOfStock <= 7)
+        stockLayer = {
+          ...stockLayer,
+          statusClass: "warn",
+          text: "Мало запаса (≤ 7 дн.)",
+        };
+      else
+        stockLayer = { ...stockLayer, statusClass: "ok", text: "Запас здоров" };
     }
   }
 
-  return {
-    traffic,
-    card,
-    post,
-    ads,
-    stock: stockLayer,
-  };
+  return { traffic, card, post, ads, stock: stockLayer };
 }
 
 // ------------------------------
@@ -924,11 +1041,9 @@ function showDetails(row) {
     if (el) el.textContent = val;
   };
 
-  // Заголовок + период
   set("details-title", row.offer_id || "-");
   set("d-period", periodDays + " дней");
 
-  // Базовые метрики (текущий период)
   set("d-imp", formatNumber(row.impressions || 0));
   set("d-clicks", formatNumber(row.clicks || 0));
   set("d-ctr", formatPercent((row.ctr || 0) * 100));
@@ -941,24 +1056,18 @@ function showDetails(row) {
   set("d-refund", formatPercent((row.refund_rate || 0) * 100));
   set("d-adspend", formatNumber(row.ad_spend || 0));
 
-  // Диагностика + совет (из бэка)
   set("d-diagnosis", row.mainProblem || row.diagnosis || "-");
   set("d-rec", row.recommendation || "-");
 
-  // Динамика vs предыдущий период
   setDelta("d-orders-delta", row.orders_change);
   setDelta("d-revenue-delta", row.revenue_change);
   setDelta("d-refund-delta", row.refund_change, true);
 
-  // Динамика vs долгосрочного среднего
-  if (row.conv_vs_avg_long !== undefined) {
+  if (row.conv_vs_avg_long !== undefined)
     setDelta("d-conv-delta", row.conv_vs_avg_long);
-  }
-  if (row.drr_vs_avg_long !== undefined) {
+  if (row.drr_vs_avg_long !== undefined)
     setDelta("d-drr-delta", row.drr_vs_avg_long, true);
-  }
 
-  // Мин. партия — берём из localStorage, иначе дефолт MIN_STOCK_DEFAULT
   const minInput = document.getElementById("d-min-batch");
   if (minInput) {
     const key = getMinBatchStorageKey(row);
@@ -971,23 +1080,17 @@ function showDetails(row) {
     let saved = localStorage.getItem(key);
     let valNum = saved != null && saved !== "" ? Number(saved) : baseDefault;
 
-    if (!Number.isFinite(valNum) || valNum < 0) {
-      valNum = baseDefault;
-    }
+    if (!Number.isFinite(valNum) || valNum < 0) valNum = baseDefault;
 
     minInput.value = valNum;
 
     minInput.onchange = () => {
       const v = Number(minInput.value);
-      if (Number.isFinite(v) && v >= 0) {
-        localStorage.setItem(key, String(v));
-      } else {
-        minInput.value = baseDefault;
-      }
+      if (Number.isFinite(v) && v >= 0) localStorage.setItem(key, String(v));
+      else minInput.value = baseDefault;
     };
   }
 
-  // Логика по слоям воронки (включая новый слой stock)
   const layers = evaluateFunnelLayers(row);
   setLayerStatus("traffic", layers.traffic);
   setLayerStatus("card", layers.card);
@@ -995,23 +1098,20 @@ function showDetails(row) {
   setLayerStatus("ads", layers.ads);
   setLayerStatus("stock", layers.stock);
 
-  // Заполнение "Дней запаса"
   if (layers.stock && typeof layers.stock.daysOfStock === "number") {
     set("d-stock-days", layers.stock.daysOfStock.toFixed(1) + " дн.");
   } else {
     set("d-stock-days", "—");
   }
 
-  // График "жизнь SKU" — берём дневные продажи с бэка
-  loadDailySalesChart(row);
+  if (GRAPH_ENABLED) loadDailySalesChart(row);
 
   panel.classList.add("visible");
 }
 
 function hideDetails() {
   const panel = document.getElementById("details-panel");
-  if (!panel) return;
-  panel.classList.remove("visible");
+  if (panel) panel.classList.remove("visible");
 }
 
 // ------------------------------
@@ -1027,18 +1127,14 @@ function withFakeProgress(btn, asyncFn) {
     btn.prepend(fill);
   }
 
-  if (btn.classList.contains("btn-loading")) {
-    return;
-  }
+  if (btn.classList.contains("btn-loading")) return;
 
   btn.classList.add("btn-loading");
   btn.disabled = true;
 
   return Promise.resolve()
     .then(asyncFn)
-    .catch((e) => {
-      console.error("Ошибка при выполнении действия кнопки:", e);
-    })
+    .catch((e) => console.error("Ошибка при выполнении действия кнопки:", e))
     .finally(() => {
       btn.classList.remove("btn-loading");
       btn.disabled = false;
@@ -1050,20 +1146,16 @@ function withFakeProgress(btn, asyncFn) {
 // ------------------------------
 async function runLoader() {
   const status = document.getElementById("loader-status");
-
-  if (status) {
-    status.textContent = "Запрашиваю данные у ассистента...";
-  }
+  if (status) status.textContent = "Запрашиваю данные у ассистента...";
 
   try {
     const json = await DataService.runLoader();
 
     if (!json.ok) {
       console.error("API /api/loader/run error:", json.error);
-      if (status) {
+      if (status)
         status.textContent =
           "Ошибка прогрузки: " + (json.error || "см. консоль");
-      }
       return;
     }
 
@@ -1091,31 +1183,50 @@ async function runLoader() {
     }
   } catch (e) {
     console.error("Ошибка прогрузки:", e);
-    if (status) {
-      status.textContent = "Ошибка соединения с сервером";
-    }
+    if (status) status.textContent = "Ошибка соединения с сервером";
   }
 }
 
-// фильтр + поиск + подмешивание заказов/выручки из воронки + сортировка
+// открыть папку с файлами резки (frontend)
+async function openCutFolder() {
+  try {
+    const res = await fetch("/api/loader/open-cut-folder", { method: "POST" });
+    if (!res.ok)
+      console.error("API /api/loader/open-cut-folder error:", res.status);
+  } catch (e) {
+    console.error("Ошибка при открытии папки:", e);
+  }
+}
+
+// ------------------------------
+// фильтр + поиск + подмешивание заказов/выручки из воронки + сортировка (прогрузчик)
+// ------------------------------
 function applyLoaderFiltersAndRender() {
   let rows = Array.isArray(loaderItems) ? loaderItems.slice() : [];
 
-  // поиск
   if (searchQuery && searchQuery.trim()) {
     rows = rows.filter((r) => matchesSearch(r, searchQuery));
   }
 
-  // 👉 подмешиваем заказы и выручку из воронки, если она загружена
+  // ✅ FIX: убираем O(N²) allRows.find(...) на каждый row
+  // Собираем быстрые индексы один раз
+  const funnelByOffer = new Map();
+  const funnelBySku = new Map();
+
   if (Array.isArray(allRows) && allRows.length) {
+    for (const r of allRows) {
+      if (r && r.offer_id) funnelByOffer.set(String(r.offer_id), r);
+      if (r && r.sku != null) funnelBySku.set(String(r.sku), r);
+    }
+
     rows = rows.map((row) => {
-      const match = allRows.find(
-        (r) =>
-          (row.offer_id && r.offer_id === row.offer_id) ||
-          (row.sku &&
-            (String(r.sku) === String(row.sku) ||
-              String(r.offer_id) === String(row.sku)))
-      );
+      const offerKey = row.offer_id ? String(row.offer_id) : "";
+      const skuKey = row.sku != null ? String(row.sku) : "";
+
+      const match =
+        (offerKey && funnelByOffer.get(offerKey)) ||
+        (skuKey && funnelBySku.get(skuKey)) ||
+        null;
 
       if (match) {
         return {
@@ -1128,7 +1239,6 @@ function applyLoaderFiltersAndRender() {
     });
   }
 
-  // сортировка
   if (loaderSort.field) {
     const field = loaderSort.field;
     const dir = loaderSort.dir || 1;
@@ -1153,7 +1263,6 @@ function renderLoaderTable(items) {
   if (!tbody) return;
 
   tbody.innerHTML = "";
-
   if (!Array.isArray(items) || !items.length) return;
 
   const inShipment = [];
@@ -1161,13 +1270,9 @@ function renderLoaderTable(items) {
   const disabled = [];
 
   items.forEach((row) => {
-    if (row.disabled) {
-      disabled.push(row);
-    } else if (row.included) {
-      inShipment.push(row);
-    } else {
-      activeNoShipment.push(row);
-    }
+    if (row.disabled) disabled.push(row);
+    else if (row.included) inShipment.push(row);
+    else activeNoShipment.push(row);
   });
 
   let index = 1;
@@ -1217,10 +1322,7 @@ function renderLoaderTable(items) {
 
   const addRow = (row) => {
     const tr = document.createElement("tr");
-
-    if (row.disabled) {
-      tr.classList.add("row-disabled");
-    }
+    if (row.disabled) tr.classList.add("row-disabled");
 
     const smoothText =
       (row.week_sales_effective || 0) + (row.spike ? " (!)" : "");
@@ -1228,9 +1330,22 @@ function renderLoaderTable(items) {
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = !row.disabled;
+
+    // ✅ FIX: optimistic UI + rollback если сервер не подтвердил
     checkbox.addEventListener("click", (e) => {
       e.stopPropagation();
-      toggleSkuDisabled(row.sku, checkbox.checked);
+
+      const prev = checkbox.checked; // состояние уже переключено браузером
+      checkbox.disabled = true;
+
+      toggleSkuDisabled(row.sku, checkbox.checked, checkbox)
+        .catch(() => {
+          // rollback
+          checkbox.checked = !prev;
+        })
+        .finally(() => {
+          checkbox.disabled = false;
+        });
     });
 
     const cells = [
@@ -1284,14 +1399,10 @@ function renderLoaderTable(items) {
       collapsible: true,
       collapsed: shipmentCollapsed,
       count: inShipment.length,
-      onToggle: () => {
-        shipmentCollapsed = !shipmentCollapsed;
-      },
+      onToggle: () => (shipmentCollapsed = !shipmentCollapsed),
     });
 
-    if (!shipmentCollapsed) {
-      inShipment.forEach(addRow);
-    }
+    if (!shipmentCollapsed) inShipment.forEach(addRow);
   }
 
   if (activeNoShipment.length) {
@@ -1301,14 +1412,10 @@ function renderLoaderTable(items) {
       collapsible: true,
       collapsed: activeCollapsed,
       count: activeNoShipment.length,
-      onToggle: () => {
-        activeCollapsed = !activeCollapsed;
-      },
+      onToggle: () => (activeCollapsed = !activeCollapsed),
     });
 
-    if (!activeCollapsed) {
-      activeNoShipment.forEach(addRow);
-    }
+    if (!activeCollapsed) activeNoShipment.forEach(addRow);
   }
 
   if (disabled.length) {
@@ -1318,43 +1425,37 @@ function renderLoaderTable(items) {
       collapsible: true,
       collapsed: disabledCollapsed,
       count: disabled.length,
-      onToggle: () => {
-        disabledCollapsed = !disabledCollapsed;
-      },
+      onToggle: () => (disabledCollapsed = !disabledCollapsed),
     });
 
-    if (!disabledCollapsed) {
-      disabled.forEach(addRow);
-    }
+    if (!disabledCollapsed) disabled.forEach(addRow);
   }
 }
 
-async function toggleSkuDisabled(sku, included) {
+// ✅ FIX: возвращаем Promise с ошибкой если сервер не ok
+async function toggleSkuDisabled(sku, included, checkboxEl) {
   const skuKey = String(sku || "").trim();
   if (!skuKey) return;
 
-  try {
-    await fetch("/api/loader/disabled", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        sku: skuKey,
-        disabled: !included,
-      }),
-    });
+  const res = await fetch("/api/loader/disabled", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ sku: skuKey, disabled: !included }),
+  });
 
-    if (Array.isArray(loaderItems)) {
-      loaderItems = loaderItems.map((row) => {
-        if (String(row.sku) === skuKey) {
-          return { ...row, disabled: !included };
-        }
-        return row;
-      });
-      applyLoaderFiltersAndRender();
-    }
-  } catch (e) {
-    console.error("Ошибка переключения disabled для SKU", skuKey, e);
-    alert("Не удалось изменить статус SKU (см. консоль)");
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    console.error("toggle disabled failed:", res.status, text);
+    throw new Error("server-not-ok");
+  }
+
+  // обновляем локально
+  if (Array.isArray(loaderItems)) {
+    loaderItems = loaderItems.map((row) => {
+      if (String(row.sku) === skuKey) return { ...row, disabled: !included };
+      return row;
+    });
+    applyLoaderFiltersAndRender();
   }
 }
 
@@ -1368,18 +1469,14 @@ function initConfigModal() {
   const closeBtn = document.getElementById("config-close");
   const saveBtn = document.getElementById("config-save");
 
-  if (!cfgBtn || !modal || !backdrop || !saveBtn) {
-    return;
-  }
+  if (!cfgBtn || !modal || !backdrop || !saveBtn) return;
 
   const openModal = () => {
     modal.classList.remove("hidden");
     loadRuntimeConfig();
   };
 
-  const closeModal = () => {
-    modal.classList.add("hidden");
-  };
+  const closeModal = () => modal.classList.add("hidden");
 
   cfgBtn.addEventListener("click", (e) => {
     e.stopPropagation();
@@ -1554,20 +1651,147 @@ function initFunnelTooltips() {
     conv: "Конверсия: заказы / клики, в процентах.",
     revenue: "Суммарная выручка по заказам за период.",
     ad_spend:
-      "Сколько рублей потрачено на рекламу (пока заглушка, позже подключим Performance API).",
+      "Сколько рублей потрачено на рекламу (подтягивается из Performance API).",
     drr: "DRR = затраты на рекламу / выручку. Чем ниже, тем лучше.",
     avg_check: "Средний чек: выручка / число заказов.",
     ozon_stock: "Остатки на складах Ozon, доступные к продаже (без резервов).",
-    returns:
-      "Количество возвратов за период (если метрика доступна в аналитике).",
+    returns: "Количество возвратов за период.",
     refund_rate:
       "Доля возвратов от числа заказов: возвраты / заказы, в процентах.",
   };
 
   document.querySelectorAll("#funnel-table thead th.sortable").forEach((th) => {
     const field = th.dataset.field;
-    if (field && map[field]) {
-      th.title = map[field];
+    if (field && map[field]) th.title = map[field];
+  });
+}
+
+// ------------------------------
+// Кнопка "Открыть папку..." — подсветка по содержимому CUT_DIR
+// ------------------------------
+async function updateCutFolderButton() {
+  const btn = document.getElementById("loader-open-cut-folder");
+  if (!btn) return;
+
+  try {
+    const res = await fetch("/api/loader/cut-status");
+    const json = await res.json();
+
+    if (!json.ok) {
+      console.error("cut-status response not ok:", json);
+      return;
     }
+
+    if (json.hasFile) {
+      btn.classList.add("btn-green");
+      btn.classList.remove("btn-gray");
+      btn.title = "В папке есть файлы резки";
+    } else {
+      btn.classList.add("btn-gray");
+      btn.classList.remove("btn-green");
+      btn.title = "Папка резки пустая";
+    }
+  } catch (e) {
+    console.error("Ошибка проверки cut-папки:", e);
+  }
+}
+
+// ------------------------------
+// Модуль "Реклама" по SKU
+// ------------------------------
+function buildAdsFromFunnel() {
+  // берём только те SKU, где есть расход или DRR > 0
+  adsRows = Array.isArray(allRows)
+    ? allRows.filter((r) => (r.ad_spend || 0) > 0 || (r.drr || 0) > 0)
+    : [];
+
+  applyAdsFiltersAndRender();
+}
+
+function applyAdsFiltersAndRender() {
+  let rows = Array.isArray(adsRows) ? adsRows.slice() : [];
+
+  if (searchQuery && searchQuery.trim()) {
+    rows = rows.filter((r) => matchesSearch(r, searchQuery));
+  }
+
+  if (adsSort.field) {
+    const field = adsSort.field;
+    const dir = adsSort.dir || 1;
+
+    rows.sort((a, b) => {
+      const v1 = extractValue(a, field);
+      const v2 = extractValue(b, field);
+      if (v1 < v2) return -1 * dir;
+      if (v1 > v2) return 1 * dir;
+      return 0;
+    });
+  } else {
+    // по умолчанию сортируем по расходу на рекламу
+    rows.sort((a, b) => (b.ad_spend || 0) - (a.ad_spend || 0));
+  }
+
+  adsFiltered = rows;
+  renderAdsTable(adsFiltered);
+  updateSortIndicators();
+}
+
+function renderAdsTable(rows) {
+  const tbody = document.querySelector("#ads-table tbody");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+
+  rows.forEach((row, index) => {
+    const tr = document.createElement("tr");
+    tr.dataset.sku = row.sku;
+    tr.dataset.offerId = row.offer_id || "";
+
+    tr.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      showDetails(row);
+    });
+
+    const drrLevel = levelFromEmoji(row.drrColor);
+
+    const cells = [
+      index + 1,
+      row.offer_id || "-",
+      row.name || "-",
+      formatNumber(row.impressions || 0),
+      formatNumber(row.clicks || 0),
+      formatNumber(row.orders || 0),
+      formatNumber(row.revenue || 0),
+      formatNumber(row.ad_spend || 0),
+      formatPercent((row.drr || 0) * 100),
+      formatPercent((row.ctr || 0) * 100),
+      formatPercent((row.conv || 0) * 100),
+      formatNumber(row.ozon_stock || 0),
+      row.priority || "-",
+    ];
+
+    cells.forEach((value, idx) => {
+      if (idx === 1) {
+        const tdOffer = createOfferCellTD(row.offer_id || "-");
+        tr.appendChild(tdOffer);
+        return;
+      }
+
+      const td = document.createElement("td");
+      const span = document.createElement("span");
+      span.textContent = value;
+
+      // DRR в idx === 8
+      if (idx === 8) {
+        if (drrLevel === "good") span.classList.add("level-good");
+        else if (drrLevel === "warn") span.classList.add("level-warn");
+        else span.classList.add("level-bad");
+      }
+
+      td.appendChild(span);
+      tr.appendChild(td);
+    });
+
+    tbody.appendChild(tr);
   });
 }

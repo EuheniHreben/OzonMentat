@@ -84,11 +84,13 @@ function loadProductsOnce() {
   // первая строка — заголовок
   let headerLine = lines[0].replace(/^\uFEFF/, "");
   const delimiter = detectDelimiter(headerLine);
+
+  // ✅ FIX: нормализуем заголовки (SKU/Sku/ sku / BOM / пробелы)
   const headers = parseCsvLine(headerLine, delimiter).map((h) =>
-    String(h).trim()
+    String(h).trim().toLowerCase()
   );
 
-  const idx = (name) => headers.indexOf(name);
+  const idx = (name) => headers.indexOf(String(name).trim().toLowerCase());
 
   const skuIdx = idx("sku");
   const offerIdx = idx("offer_id");

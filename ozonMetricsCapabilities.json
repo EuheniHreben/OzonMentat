@@ -1,0 +1,101 @@
+{
+  "add_to_cart": {
+    "source": "/v1/analytics/data",
+    "days": 30,
+    "ok": false,
+    "hasData": false,
+    "error": {
+      "type": "invalid_metric",
+      "message": "OZON 400: {\"code\":3,\"message\":\"Request validation error: invalid AnalyticsGetDataRequest.Metrics: value must contain between 1 and 14 items, inclusive\"}"
+    },
+    "sample": []
+  },
+  "add_to_cart_count": {
+    "source": "/v1/analytics/data",
+    "days": 30,
+    "ok": false,
+    "hasData": false,
+    "error": {
+      "type": "invalid_metric",
+      "message": "OZON 400: {\"code\":3,\"message\":\"Request validation error: invalid AnalyticsGetDataRequest.Metrics: value must contain between 1 and 14 items, inclusive\"}"
+    },
+    "sample": []
+  },
+  "add_to_basket": {
+    "source": "/v1/analytics/data",
+    "days": 30,
+    "ok": false,
+    "hasData": false,
+    "error": {
+      "type": "invalid_metric",
+      "message": "OZON 400: {\"code\":3,\"message\":\"Request validation error: invalid AnalyticsGetDataRequest.Metrics: value must contain between 1 and 14 items, inclusive\"}"
+    },
+    "sample": []
+  },
+  "to_cart": {
+    "source": "/v1/analytics/data",
+    "days": 30,
+    "ok": false,
+    "hasData": false,
+    "error": {
+      "type": "invalid_metric",
+      "message": "OZON 400: {\"code\":3,\"message\":\"Request validation error: invalid AnalyticsGetDataRequest.Metrics: value must contain between 1 and 14 items, inclusive\"}"
+    },
+    "sample": []
+  },
+  "basket": {
+    "source": "/v1/analytics/data",
+    "days": 30,
+    "ok": false,
+    "hasData": false,
+    "error": {
+      "type": "invalid_metric",
+      "message": "OZON 400: {\"code\":3,\"message\":\"Request validation error: invalid AnalyticsGetDataRequest.Metrics: value must contain between 1 and 14 items, inclusive\"}"
+    },
+    "sample": []
+  },
+  "cart_adds": {
+    "source": "/v1/analytics/data",
+    "days": 30,
+    "ok": false,
+    "hasData": false,
+    "error": {
+      "type": "invalid_metric",
+      "message": "OZON 400: {\"code\":3,\"message\":\"Request validation error: invalid AnalyticsGetDataRequest.Metrics: value must contain between 1 and 14 items, inclusive\"}"
+    },
+    "sample": []
+  },
+  "conversion_to_cart": {
+    "source": "/v1/analytics/data",
+    "days": 30,
+    "ok": false,
+    "hasData": false,
+    "error": {
+      "type": "invalid_metric",
+      "message": "OZON 400: {\"code\":3,\"message\":\"Request validation error: invalid AnalyticsGetDataRequest.Metrics: value must contain between 1 and 14 items, inclusive\"}"
+    },
+    "sample": []
+  },
+  "conversion_to_purchase": {
+    "source": "/v1/analytics/data",
+    "days": 30,
+    "ok": false,
+    "hasData": false,
+    "error": {
+      "type": "invalid_metric",
+      "message": "OZON 400: {\"code\":3,\"message\":\"Request validation error: invalid AnalyticsGetDataRequest.Metrics: value must contain between 1 and 14 items, inclusive\"}"
+    },
+    "sample": []
+  },
+  "product_page_view": {
+    "source": "/v1/analytics/data",
+    "days": 30,
+    "ok": false,
+    "hasData": false,
+    "error": {
+      "type": "invalid_metric",
+      "message": "OZON 400: {\"code\":3,\"message\":\"Request validation error: invalid AnalyticsGetDataRequest.Metrics: value must contain between 1 and 14 items, inclusive\"}"
+    },
+    "sample": []
+  }
+}

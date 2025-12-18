@@ -1,23 +1,26 @@
-// ozonApi.js
-//
-// Обёртки над Ozon API:
-//  - ozonPost
-//  - getStocksMap
-//  - getSalesMap / getWeekSalesMap
-//  - getAnalyticsBySku
-//  - getOrdersRevenue
-//  - getReturns
-//  - getImpressionsClicks
-//  - getAdSpend (заглушка)
+require("dotenv").config();
 
-const { CLIENT_ID, API_KEY, BASE_URL, DAYS } = require("./config");
+const fs = require("fs");
+const path = require("path");
 
-// В Node 18+ fetch есть глобально.
-// Если Node 16 — нужно установить node-fetch и раскомментировать строку ниже:
-// const fetch = global.fetch || require("node-fetch");
+const {
+  CLIENT_ID,
+  API_KEY,
+  BASE_URL,
+  DAYS,
+  PERF_BASE_URL,
+  PERF_CLIENT_ID,
+  PERF_CLIENT_SECRET,
+  AD_CACHE_TTL_MS,
+} = require("./config");
 
-async function ozonPost(path, body) {
-  const res = await fetch(BASE_URL + path, {
+// =====================================================
+// Seller API — базовый POST
+// =====================================================
+async function ozonPost(pathUrl, body) {
+  const url = `${BASE_URL}${pathUrl}`;
+
+  const res = await fetch(url, {
     method: "POST",
     headers: {
       "Client-Id": CLIENT_ID,
@@ -30,59 +33,171 @@ async function ozonPost(path, body) {
   const text = await res.text();
 
   if (!res.ok) {
-    throw new Error(`OZON ${res.status}: ${text}`);
+    throw new Error(`OZON ${res.status} ${pathUrl}: ${text.slice(0, 500)}`);
   }
 
   try {
     return text ? JSON.parse(text) : {};
-  } catch (e) {
-    throw new Error(
-      `Ошибка парсинга JSON от OZON: ${e.message}\nОтвет: ${text}`
-    );
+  } catch {
+    return {};
   }
 }
 
-// -------------------- Остатки + товары в пути --------------------
+// =====================================================
+// Даты
+// =====================================================
+function formatDate(d) {
+  return d.toISOString().slice(0, 10);
+}
 
-async function getStocksMap() {
-  const map = {};
+function addDays(date, delta) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + delta);
+  return d;
+}
+
+// =====================================================
+// Analytics by SKU
+// =====================================================
+async function analyticsBySku({ dateFrom, dateTo, metrics }) {
   const LIMIT = 1000;
   let offset = 0;
+  const map = {};
 
   while (true) {
     const body = {
+      date_from: dateFrom,
+      date_to: dateTo,
+      metrics,
+      dimension: ["sku"],
+      limit: LIMIT,
+      offset,
+    };
+
+    const json = await ozonPost("/v1/analytics/data", body);
+    const data = json?.result?.data || [];
+
+    if (!data.length) break;
+
+    for (const row of data) {
+      const sku = String(row.dimensions?.[0]?.id || "").trim();
+      if (!sku) continue;
+
+      if (!map[sku]) map[sku] = {};
+      metrics.forEach((m, i) => {
+        map[sku][m] = (map[sku][m] || 0) + Number(row.metrics?.[i] || 0);
+      });
+    }
+
+    if (data.length < LIMIT) break;
+    offset += LIMIT;
+  }
+
+  return map;
+}
+
+// =====================================================
+// Продажи / возвраты / показы
+// =====================================================
+async function getSalesMap(days = DAYS) {
+  const to = formatDate(new Date());
+  const from = formatDate(addDays(new Date(), -(days - 1)));
+
+  const raw = await analyticsBySku({
+    dateFrom: from,
+    dateTo: to,
+    metrics: ["ordered_units"],
+  });
+
+  const out = {};
+  for (const [sku, v] of Object.entries(raw)) {
+    out[sku] = Number(v.ordered_units || 0);
+  }
+  return out;
+}
+
+async function getWeekSalesMap(days = DAYS) {
+  const to = formatDate(new Date());
+  const from = formatDate(addDays(new Date(), -(days - 1)));
+
+  const raw = await analyticsBySku({
+    dateFrom: from,
+    dateTo: to,
+    metrics: ["ordered_units", "revenue"],
+  });
+
+  const out = {};
+  for (const [sku, v] of Object.entries(raw)) {
+    out[sku] = {
+      orders: Number(v.ordered_units || 0),
+      revenue: Number(v.revenue || 0),
+    };
+  }
+  return out;
+}
+
+async function getReturns(days = DAYS) {
+  const to = formatDate(new Date());
+  const from = formatDate(addDays(new Date(), -(days - 1)));
+
+  const raw = await analyticsBySku({
+    dateFrom: from,
+    dateTo: to,
+    metrics: ["returns"],
+  });
+
+  const out = {};
+  for (const [sku, v] of Object.entries(raw)) {
+    out[sku] = Number(v.returns || 0);
+  }
+  return out;
+}
+
+async function getImpressionsClicks(days = DAYS) {
+  const to = formatDate(new Date());
+  const from = formatDate(addDays(new Date(), -(days - 1)));
+
+  const raw = await analyticsBySku({
+    dateFrom: from,
+    dateTo: to,
+    metrics: ["hits_view_search", "hits_view_pdp"],
+  });
+
+  const out = {};
+  for (const [sku, v] of Object.entries(raw)) {
+    out[sku] = {
+      impressions: Number(v.hits_view_search || 0),
+      clicks: Number(v.hits_view_pdp || 0),
+    };
+  }
+  return out;
+}
+
+// =====================================================
+// Остатки
+// =====================================================
+async function getStocksMap() {
+  const LIMIT = 1000;
+  let offset = 0;
+  const map = {};
+
+  while (true) {
+    const json = await ozonPost("/v2/analytics/stock_on_warehouses", {
       limit: LIMIT,
       offset,
       warehouse_type: "ALL",
-    };
+    });
 
-    const json = await ozonPost("/v2/analytics/stock_on_warehouses", body);
-
-    const rows =
-      (json.result && Array.isArray(json.result.rows) && json.result.rows) ||
-      [];
-
+    const rows = json?.result?.rows || [];
     if (!rows.length) break;
 
-    for (const row of rows) {
-      const skuKey = String(row.sku || "").trim();
-      if (!skuKey) continue;
+    for (const r of rows) {
+      const sku = String(r.sku || "").trim();
+      if (!sku) continue;
 
-      const free = Number(row.free_to_sell_amount || 0);
-      const promised = Number(row.promised_amount || 0);
-      const reserved = Number(row.reserved_amount || 0);
-
-      if (!map[skuKey]) {
-        map[skuKey] = {
-          ozon_stock: 0,
-          in_transit: 0,
-          reserved: 0,
-        };
-      }
-
-      map[skuKey].ozon_stock += free;
-      map[skuKey].in_transit += promised;
-      map[skuKey].reserved += reserved;
+      if (!map[sku]) map[sku] = { ozon_stock: 0, in_transit: 0 };
+      map[sku].ozon_stock += Number(r.free_to_sell_amount || 0);
+      map[sku].in_transit += Number(r.promised_amount || 0);
     }
 
     if (rows.length < LIMIT) break;
@@ -92,217 +207,192 @@ async function getStocksMap() {
   return map;
 }
 
-// -------------------- Продажи за период (ordered_units) --------------------
+// =====================================================
+// Performance API — LOCK + TOKEN
+// =====================================================
+let perfToken = null;
+let perfTokenExpiresAt = 0;
+let perfLock = Promise.resolve();
 
-function formatDate(d) {
-  return d.toISOString().slice(0, 10); // YYYY-MM-DD
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
 }
 
-async function getSalesMap(days) {
+function withPerfLock(fn) {
+  const next = perfLock.then(fn, fn);
+  perfLock = next.catch(() => {});
+  return next;
+}
+
+async function getPerfToken() {
+  const now = Date.now();
+  if (perfToken && now < perfTokenExpiresAt - 60_000) return perfToken;
+  if (!PERF_CLIENT_ID || !PERF_CLIENT_SECRET) return null;
+
+  const res = await fetch(`${PERF_BASE_URL}/api/client/token`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      client_id: PERF_CLIENT_ID,
+      client_secret: PERF_CLIENT_SECRET,
+      grant_type: "client_credentials",
+    }),
+  });
+
+  const json = await res.json();
+  if (!json.access_token) return null;
+
+  perfToken = json.access_token;
+  perfTokenExpiresAt = now + Number(json.expires_in || 3600) * 1000;
+  return perfToken;
+}
+
+async function perfPost(pathUrl, body) {
+  return withPerfLock(async () => {
+    const token = await getPerfToken();
+    if (!token) return null;
+
+    let attempt = 0;
+    while (true) {
+      attempt++;
+      const res = await fetch(`${PERF_BASE_URL}${pathUrl}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body || {}),
+      });
+
+      if (res.status === 429) {
+        if (attempt >= 5) return null;
+        await sleep(5000 * attempt);
+        continue;
+      }
+
+      if (!res.ok) return null;
+      return res.json();
+    }
+  });
+}
+
+// =====================================================
+// Реклама — КЭШ + ДИСК
+// =====================================================
+const adSpendCache = new Map();
+const AD_CACHE_FILE = path.join(__dirname, "adSpendCache.json");
+
+let diskCacheLoaded = false;
+
+function loadAdCacheFromDisk() {
+  try {
+    if (!fs.existsSync(AD_CACHE_FILE)) return;
+    const raw = fs.readFileSync(AD_CACHE_FILE, "utf8");
+    const json = JSON.parse(raw);
+    for (const [k, v] of Object.entries(json)) {
+      adSpendCache.set(k, v);
+    }
+  } catch {}
+}
+
+function saveAdCacheToDisk() {
+  try {
+    fs.writeFileSync(
+      AD_CACHE_FILE,
+      JSON.stringify(Object.fromEntries(adSpendCache.entries()), null, 2),
+      "utf8"
+    );
+  } catch {}
+}
+
+// =====================================================
+// getAdSpend (ПО SKU)
+// =====================================================
+async function getAdSpend(days = DAYS) {
   const today = new Date();
   const dateTo = formatDate(today);
+  const dateFrom = formatDate(addDays(today, -(days - 1)));
+  const key = `ads:${days}:${dateFrom}:${dateTo}`;
 
-  const from = new Date(today);
-  from.setDate(from.getDate() - (days - 1));
-  const dateFrom = formatDate(from);
-
-  const body = {
-    date_from: dateFrom,
-    date_to: dateTo,
-    metrics: ["ordered_units"], // <-- ВАЖНО: всегда есть metrics
-    dimension: ["sku"],
-    limit: 1000,
-    offset: 0,
-  };
-
-  const json = await ozonPost("/v1/analytics/data", body);
-
-  const map = {};
-  const data =
-    (json.result && Array.isArray(json.result.data) && json.result.data) ||
-    json.data ||
-    [];
-
-  for (const row of data) {
-    const dims = row.dimensions || row.dimension || [];
-    const metrics = row.metrics || [];
-
-    if (!dims.length || !metrics.length) continue;
-
-    const skuKey = String(dims[0].id || dims[0].value || "").trim();
-    const orderedUnits = Number(metrics[0] || 0);
-
-    if (!skuKey) continue;
-    map[skuKey] = (map[skuKey] || 0) + orderedUnits;
+  if (!diskCacheLoaded) {
+    diskCacheLoaded = true;
+    loadAdCacheFromDisk();
   }
 
-  return map;
-}
+  const cached = adSpendCache.get(key);
+  if (cached && Date.now() - cached.ts < AD_CACHE_TTL_MS) {
+    return cached.map;
+  }
 
-// для обратной совместимости с местами, где ждут "недельные" продажи
-async function getWeekSalesMap() {
-  return getSalesMap(DAYS);
-}
+  if (!PERF_CLIENT_ID || !PERF_CLIENT_SECRET) return {};
 
-// -------------------- Общий хелпер для аналитики по SKU --------------------
+  try {
+    const campaignsResp = await perfPost("/api/client/campaign", {
+      advObjectType: "SKU",
+    });
 
-async function getAnalyticsBySku(metricsList) {
-  const resultMap = {};
+    const list = campaignsResp?.list || [];
+    const ids = list.map((c) => c.id).filter(Boolean);
 
-  const today = new Date();
-  const dateTo = formatDate(today);
-
-  const from = new Date(today);
-  from.setDate(from.getDate() - (DAYS - 1));
-  const dateFrom = formatDate(from);
-
-  const LIMIT = 1000;
-  let offset = 0;
-
-  const body = {
-    date_from: dateFrom,
-    date_to: dateTo,
-    metrics: metricsList, // например ["ordered_units", "revenue"]
-    dimension: ["sku"],
-    limit: LIMIT,
-    offset: 0,
-  };
-
-  while (true) {
-    body.offset = offset;
-
-    const json = await ozonPost("/v1/analytics/data", body);
-
-    const data =
-      (json.result && Array.isArray(json.result.data) && json.result.data) ||
-      json.data ||
-      [];
-
-    if (!data.length) break;
-
-    for (const row of data) {
-      const dims = row.dimensions || row.dimension || [];
-      const metrics = row.metrics || [];
-
-      if (!dims.length || !metrics.length) continue;
-
-      const skuKey = String(dims[0].id || dims[0].value || "").trim();
-      if (!skuKey) continue;
-
-      if (!resultMap[skuKey]) {
-        resultMap[skuKey] = {};
-      }
-
-      for (let i = 0; i < metrics.length && i < metricsList.length; i++) {
-        const metricName = metricsList[i];
-        const value = Number(metrics[i] || 0);
-        resultMap[skuKey][metricName] =
-          (resultMap[skuKey][metricName] || 0) + value;
-      }
+    if (!ids.length) {
+      adSpendCache.set(key, { ts: Date.now(), map: {} });
+      saveAdCacheToDisk();
+      return {};
     }
 
-    if (data.length < LIMIT) break;
-    offset += LIMIT;
-  }
+    const chunks = [];
+    for (let i = 0; i < ids.length; i += 10) {
+      chunks.push(ids.slice(i, i + 10));
+    }
 
-  return resultMap;
-}
+    const map = {};
 
-// -------------------- Заказы + выручка --------------------
+    for (const campaigns of chunks) {
+      const stats = await perfPost("/api/client/statistics/json", {
+        campaigns,
+        dateFrom,
+        dateTo,
+        groupBy: "SKU",
+      });
 
-async function getOrdersRevenue() {
-  const metricsList = ["ordered_units", "revenue"];
+      const rows = stats?.rows || [];
+      for (const r of rows) {
+        const sku = String(r.sku || "").trim();
+        if (!sku) continue;
 
-  const raw = await getAnalyticsBySku(metricsList);
-  const map = {};
+        if (!map[sku]) map[sku] = { ad_spend: 0, clicks: 0, impressions: 0 };
 
-  for (const [sku, obj] of Object.entries(raw)) {
-    const orders = Number(obj["ordered_units"] || 0);
-    const revenue = Number(obj["revenue"] || 0);
+        map[sku].ad_spend += Number(r.spend || 0);
+        map[sku].clicks += Number(r.clicks || 0);
+        map[sku].impressions += Number(r.impressions || 0);
+      }
 
-    map[sku] = { orders, revenue };
-  }
+      await sleep(1500);
+    }
 
-  return map;
-}
-
-// -------------------- Возвраты --------------------
-// Если метрика returns не включена — просто будут нули.
-
-async function getReturns() {
-  const metricsList = ["returns"];
-
-  let raw = {};
-  try {
-    raw = await getAnalyticsBySku(metricsList);
+    adSpendCache.set(key, { ts: Date.now(), map });
+    saveAdCacheToDisk();
+    return map;
   } catch (e) {
-    console.warn("⚠️ Не удалось получить returns, считаю возвраты = 0");
+    adSpendCache.set(key, { ts: Date.now(), map: {} });
+    saveAdCacheToDisk();
     return {};
   }
-
-  const map = {};
-
-  for (const [sku, obj] of Object.entries(raw)) {
-    const returns = Number(obj["returns"] || 0);
-    map[sku] = { returns };
-  }
-
-  return map;
 }
 
-// -------------------- Показы/клики --------------------
-
-async function getImpressionsClicks() {
-  const metricsList = ["hits_view", "hits_view_search", "hits_view_pdp"];
-
-  let raw = {};
-  try {
-    raw = await getAnalyticsBySku(metricsList);
-  } catch (e) {
-    console.warn(
-      "⚠️ Не удалось получить hits_view*/hits_view_pdp, считаю показы/клики = 0. Ошибка:",
-      e.message || String(e)
-    );
-    return {};
-  }
-
-  const map = {};
-
-  for (const [sku, obj] of Object.entries(raw)) {
-    const impressionsSearch = Number(obj["hits_view_search"] || 0);
-    const impressionsAll = Number(obj["hits_view"] || 0);
-    const pdpViews = Number(obj["hits_view_pdp"] || 0);
-
-    const impressions = impressionsSearch || impressionsAll;
-
-    map[sku] = {
-      impressions,
-      clicks: pdpViews,
-      impressions_all: impressionsAll,
-      impressions_search: impressionsSearch,
-      pdp_views: pdpViews,
-    };
-  }
-
-  return map;
-}
-
-// -------------------- Реклама (заглушка) --------------------
-
-async function getAdSpend() {
-  console.warn(
-    "⚠️ getAdSpend: реклама пока не подключена (нужен Performance API). Возвращаю нули."
-  );
-  return {};
-}
-
+// =====================================================
+// EXPORT
+// =====================================================
 module.exports = {
   ozonPost,
+  analyticsBySku,
+
+  getImpressionsClicks,
   getStocksMap,
+
   getSalesMap,
   getWeekSalesMap,
-  getOrdersRevenue,
   getReturns,
-  getImpressionsClicks,
+
   getAdSpend,
 };

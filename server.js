@@ -1,17 +1,12 @@
-// server.js
-
 require("dotenv").config();
 
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
 
-// воронка
-const { buildFunnel } = require("./funnel");
-// прогрузчик
-const { runLoader } = require("./loader");
+const { buildFunnel, getDailySalesPoints } = require("./funnel");
+const { runLoader, openCutFolder } = require("./loader");
 
-// базовый конфиг (дефолты)
 const {
   DEMAND_FACTOR,
   DAYS,
@@ -24,25 +19,29 @@ const {
   MAX_DAYS_OF_STOCK,
   MAX_LOADER_HISTORY_DAYS,
   MAX_FUNNEL_HISTORY_DAYS,
+
+  ADS_ENABLED,
+  FUNNEL_MIN_REFRESH_MS,
+  ADS_COOLDOWN_MS,
 } = require("./config");
 
 const app = express();
 const PORT = 3000;
 
-// статика
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 
-// отдельная статика для Excel
 const exportsDir = path.join(__dirname, "exports");
 if (!fs.existsSync(exportsDir)) {
   fs.mkdirSync(exportsDir, { recursive: true });
 }
 app.use("/exports", express.static(exportsDir));
 
-// ------------------------------
-//  runtime-конфиг для прогрузчика/истории
-// ------------------------------
+const CUT_DIR = path.join(__dirname, "public", "cut");
+
+// =====================================================
+// Runtime-config
+// =====================================================
 const CONFIG_FILE = path.join(__dirname, "loaderConfig.json");
 
 const defaultLoaderConfig = {
@@ -79,15 +78,24 @@ function saveRuntimeConfig(patch) {
   return updated;
 }
 
-// 🔁 простой кэш результата /api/funnel
-let lastFunnel = null;
-let lastFunnelTs = 0;
-let lastFunnelDays = null;
-const CACHE_TTL_MS = 60 * 1000; // 60 секунд
+// =====================================================
+// Funnel smart guard (keyed)
+// =====================================================
+const CACHE_TTL_MS = 60 * 1000;
 
-// ------------------------------
-//   Файл с disabled SKU для прогрузчика
-// ------------------------------
+const funnelCache = new Map(); // key -> { rows, ts }
+const funnelInFlight = new Map(); // key -> Promise
+const funnelNextAllowedAt = new Map(); // key -> ts
+
+let adsCooldownUntil = 0;
+
+function funnelKey({ days, adsEnabled }) {
+  return `${days}|ads:${adsEnabled ? 1 : 0}`;
+}
+
+// =====================================================
+// Disabled SKU
+// =====================================================
 const DISABLED_FILE = path.join(__dirname, "loaderDisabled.json");
 
 function loadDisabledMap() {
@@ -110,9 +118,9 @@ function saveDisabledMap(map) {
   }
 }
 
-// ------------------------------
-//   Воронка
-// ------------------------------
+// =====================================================
+// API: FUNNEL
+// =====================================================
 app.get("/api/funnel", async (req, res) => {
   const days = Number(req.query.days) || 7;
   const now = Date.now();
@@ -120,63 +128,135 @@ app.get("/api/funnel", async (req, res) => {
   const runtimeConfig = loadRuntimeConfig();
   const maxHistoryDays = runtimeConfig.MAX_FUNNEL_HISTORY_DAYS;
 
-  if (
-    lastFunnel &&
-    lastFunnelDays === days &&
-    now - lastFunnelTs < CACHE_TTL_MS
-  ) {
+  const adsEnabled = !!ADS_ENABLED && now >= adsCooldownUntil;
+  const key = funnelKey({ days, adsEnabled });
+
+  const cached = funnelCache.get(key);
+  const nextAllowedAt = funnelNextAllowedAt.get(key) || 0;
+
+  if (cached && now - cached.ts < CACHE_TTL_MS) {
     return res.json({
       ok: true,
-      rows: lastFunnel,
+      rows: cached.rows,
       cached: true,
+      note: "cache-ttl",
+      adsEnabled,
     });
   }
 
-  try {
-    const rows = await buildFunnel({ days, maxHistoryDays });
-
-    lastFunnel = rows;
-    lastFunnelTs = Date.now();
-    lastFunnelDays = days;
-
+  if (now < nextAllowedAt && cached) {
+    const waitMs = nextAllowedAt - now;
     return res.json({
       ok: true,
-      rows,
-      cached: false,
+      rows: cached.rows,
+      cached: true,
+      stale: true,
+      adsEnabled,
+      warning: `Частое обновление — показан кэш. Следующая сборка через ~${Math.ceil(
+        waitMs / 1000
+      )}с`,
     });
-  } catch (e) {
-    const msg = String(e && e.message ? e.message : e);
+  }
 
-    console.error("❌ /api/funnel error:", msg);
-
-    if (msg.includes("OZON 429")) {
-      if (lastFunnel) {
-        return res.json({
-          ok: true,
-          rows: lastFunnel,
-          cached: true,
-          stale: true,
-          warning: "OZON 429: показаны кэшированные данные",
-        });
-      }
-
-      return res.status(429).json({
-        ok: false,
-        rateLimit: true,
-        error: msg,
+  if (funnelInFlight.has(key)) {
+    if (cached) {
+      return res.json({
+        ok: true,
+        rows: cached.rows,
+        cached: true,
+        stale: true,
+        adsEnabled,
+        warning: "Сборка уже идёт — показан последний кэш",
       });
     }
 
-    return res.status(500).json({
+    return res.status(202).json({
       ok: false,
-      error: msg,
+      pending: true,
+      message: "Сборка уже идёт, попробуй обновить через пару секунд",
+      adsEnabled,
     });
+  }
+
+  funnelNextAllowedAt.set(key, now + FUNNEL_MIN_REFRESH_MS);
+
+  const p = (async () => {
+    try {
+      const rows = await buildFunnel({
+        days,
+        maxHistoryDays,
+        adsEnabled,
+      });
+
+      funnelCache.set(key, { rows, ts: Date.now() });
+
+      return {
+        ok: true,
+        rows,
+        cached: false,
+        adsEnabled,
+      };
+    } catch (e) {
+      const msg = String(e?.message || e);
+
+      if (msg.includes("Performance") && msg.includes("429")) {
+        adsCooldownUntil = Date.now() + ADS_COOLDOWN_MS;
+      }
+
+      if (msg.includes("OZON 429")) {
+        const c = funnelCache.get(key);
+        if (c) {
+          return {
+            ok: true,
+            rows: c.rows,
+            cached: true,
+            stale: true,
+            adsEnabled,
+            warning: "OZON 429: показан кэш",
+          };
+        }
+        return { ok: false, rateLimit: true, error: msg, adsEnabled };
+      }
+
+      return { ok: false, error: msg, adsEnabled };
+    } finally {
+      funnelInFlight.delete(key);
+    }
+  })();
+
+  funnelInFlight.set(key, p);
+
+  const result = await p;
+
+  if (!result.ok) {
+    if (result.rateLimit) return res.status(429).json(result);
+    return res.status(500).json(result);
+  }
+
+  return res.json(result);
+});
+
+// ✅ NEW: API: FUNNEL DAILY SALES (для графика в боковой панели)
+app.get("/api/funnel/daily-sales", async (req, res) => {
+  try {
+    const sku = String(req.query.sku || "").trim();
+    const days = Number(req.query.days) || 14;
+
+    if (!sku) {
+      return res.status(400).json({ ok: false, error: "sku не задан" });
+    }
+
+    const points = await getDailySalesPoints(sku, days);
+    return res.json({ ok: true, points });
+  } catch (e) {
+    console.error("❌ /api/funnel/daily-sales error:", e);
+    return res.status(500).json({ ok: false, error: e.message || String(e) });
   }
 });
 
-// ------------------------------
-//   Прогрузчик
-// ------------------------------
+// =====================================================
+// API: LOADER
+// =====================================================
 app.post("/api/loader/run", async (req, res) => {
   try {
     const runtimeConfig = loadRuntimeConfig();
@@ -203,9 +283,31 @@ app.post("/api/loader/run", async (req, res) => {
   }
 });
 
-// ------------------------------
-//   Конфиг прогрузчика (GET/POST)
-// ------------------------------
+app.post("/api/loader/open-cut-folder", (req, res) => {
+  try {
+    openCutFolder();
+    return res.json({ ok: true });
+  } catch (e) {
+    console.error("❌ open-cut-folder:", e);
+    return res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+app.get("/api/loader/cut-status", (req, res) => {
+  try {
+    if (!fs.existsSync(CUT_DIR)) {
+      return res.json({ ok: true, hasFile: false, files: [] });
+    }
+    const files = fs.readdirSync(CUT_DIR).filter((f) => !f.startsWith("."));
+    res.json({ ok: true, hasFile: files.length > 0, files });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+// =====================================================
+// API: CONFIG
+// =====================================================
 app.get("/api/loader/config", (req, res) => {
   const cfg = loadRuntimeConfig();
   res.json({ ok: true, config: cfg });
@@ -228,27 +330,23 @@ app.post("/api/loader/config", (req, res) => {
     ];
 
     const patch = {};
-
     for (const key of allowedKeys) {
       if (key in req.body) {
         const val = Number(req.body[key]);
-        if (Number.isFinite(val)) {
-          patch[key] = val;
-        }
+        if (Number.isFinite(val)) patch[key] = val;
       }
     }
 
     const updated = saveRuntimeConfig(patch);
     res.json({ ok: true, config: updated });
   } catch (e) {
-    console.error("❌ /api/loader/config error:", e);
-    res.status(500).json({ ok: false, error: e.message || String(e) });
+    res.status(500).json({ ok: false, error: e.message });
   }
 });
 
-// ------------------------------
-//   Вкл/выкл SKU для прогрузчика
-// ------------------------------
+// =====================================================
+// API: DISABLED SKU
+// =====================================================
 app.get("/api/loader/disabled", (req, res) => {
   const map = loadDisabledMap();
   res.json({ ok: true, disabled: map });
@@ -258,27 +356,21 @@ app.post("/api/loader/disabled", (req, res) => {
   try {
     const { sku, disabled } = req.body || {};
     const skuKey = String(sku || "").trim();
-
-    if (!skuKey) {
+    if (!skuKey)
       return res.status(400).json({ ok: false, error: "sku не задан" });
-    }
 
     const map = loadDisabledMap();
-
-    if (disabled) {
-      map[skuKey] = true;
-    } else {
-      delete map[skuKey];
-    }
+    if (disabled) map[skuKey] = true;
+    else delete map[skuKey];
 
     saveDisabledMap(map);
     res.json({ ok: true, disabled: map });
   } catch (e) {
-    console.error("❌ /api/loader/disabled error:", e);
-    res.status(500).json({ ok: false, error: e.message || String(e) });
+    res.status(500).json({ ok: false, error: e.message });
   }
 });
 
+// =====================================================
 app.listen(PORT, () => {
   console.log(`🚀 Dashboard доступен на http://localhost:${PORT}`);
 });

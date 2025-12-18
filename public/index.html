@@ -10,7 +10,7 @@
 
   <body>
     <header class="header">
-      <h1 id="page-title">📊 Воронка по SKU (Lite)</h1>
+      <h1 id="page-title">📊 Воронка по SKU</h1>
     </header>
 
     <!-- Верхний бар: вкладки + поиск -->
@@ -21,6 +21,9 @@
         </button>
         <button id="tab-loader" class="chip tab-chip" type="button">
           Прогрузчик
+        </button>
+        <button id="tab-ads" class="chip tab-chip" type="button">
+          Реклама
         </button>
       </div>
 
@@ -124,6 +127,11 @@
       <main class="table-wrapper">
         <div class="loader-header">
           <div class="loader-left">
+            <audio
+              id="loader-sound"
+              src="/files/Situation.mp3"
+              preload="auto"
+            ></audio>
             <button
               id="loader-run"
               class="reload-btn loader-btn btn-with-progress"
@@ -132,6 +140,9 @@
               <span>Запустить прогрузку</span>
             </button>
 
+            <button id="loader-open-cut-folder" class="chip">
+              📂 Открыть папку...
+            </button>
             <span id="loader-status" class="loader-status"></span>
           </div>
 
@@ -171,6 +182,41 @@
             </tr>
           </thead>
 
+          <tbody></tbody>
+        </table>
+      </main>
+    </div>
+
+    <!-- Вьюха рекламы -->
+    <div id="view-ads" class="hidden">
+      <main class="table-wrapper">
+        <div class="loader-header">
+          <div class="loader-left">
+            <span class="loader-status">
+              Показаны только SKU, где есть расход на рекламу за выбранный
+              период.
+            </span>
+          </div>
+        </div>
+
+        <table id="ads-table" class="funnel-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th class="sortable" data-field="offer_id">Артикул</th>
+              <th class="sortable" data-field="name">Название</th>
+              <th class="sortable" data-field="impressions">Показы (все)</th>
+              <th class="sortable" data-field="clicks">Клики (все)</th>
+              <th class="sortable" data-field="orders">Заказы</th>
+              <th class="sortable" data-field="revenue">Выручка</th>
+              <th class="sortable" data-field="ad_spend">Расход на рекламу</th>
+              <th class="sortable" data-field="drr">DRR %</th>
+              <th class="sortable" data-field="ctr">CTR %</th>
+              <th class="sortable" data-field="conv">Конв. %</th>
+              <th class="sortable" data-field="ozon_stock">Остатки</th>
+              <th class="sortable" data-field="priority">Приоритет</th>
+            </tr>
+          </thead>
           <tbody></tbody>
         </table>
       </main>
@@ -447,6 +493,7 @@
         </div>
       </div>
     </div>
+
     <script src="/dataService.js"></script>
     <script src="/store.js"></script>
     <script src="/app.js"></script>
