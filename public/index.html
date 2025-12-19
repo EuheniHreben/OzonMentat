@@ -11,6 +11,29 @@
   <body>
     <header class="header">
       <h1 id="page-title">📊 Воронка по SKU</h1>
+
+      <div class="store-switch">
+        <button
+          id="store-switch-btn"
+          class="reload-btn btn-green"
+          type="button"
+        >
+          Palantir Ru
+        </button>
+
+        <!-- dropdown -->
+        <div id="store-menu" class="store-menu hidden">
+          <button class="store-item" type="button" data-store="palantir-ru">
+            Palantir Ru
+          </button>
+          <button class="store-item" type="button" data-store="palantir-eu">
+            Pirit
+          </button>
+          <button class="store-item" type="button" data-store="dacha-ozon">
+            КРЕО
+          </button>
+        </div>
+      </div>
     </header>
 
     <!-- Верхний бар: вкладки + поиск -->
@@ -24,6 +47,12 @@
         </button>
         <button id="tab-ads" class="chip tab-chip" type="button">
           Реклама
+        </button>
+        <button id="tab-price" class="chip tab-chip btn-gray" type="button">
+          Ценообразователь
+        </button>
+        <button id="tab-scanner" class="chip tab-chip btn-gray" type="button">
+          Сканер ниш
         </button>
       </div>
 
@@ -192,29 +221,77 @@
       <main class="table-wrapper">
         <div class="loader-header">
           <div class="loader-left">
-            <span class="loader-status">
-              Показаны только SKU, где есть расход на рекламу за выбранный
-              период.
-            </span>
+            <!-- Период -->
+            <div class="chip-group">
+              <span class="chip-label">Период:</span>
+              <button
+                class="chip period-chip period-active"
+                data-days="7"
+                type="button"
+              >
+                7 дней
+              </button>
+              <button class="chip period-chip" data-days="30" type="button">
+                30 дней
+              </button>
+            </div>
+
+            <!-- Статус рекламы -->
+            <div class="chip-group">
+              <span class="chip-label">Статус:</span>
+              <button
+                class="chip ads-status-chip priority-active"
+                data-status="all"
+                type="button"
+              >
+                Все
+              </button>
+              <button
+                class="chip ads-status-chip"
+                data-status="good"
+                type="button"
+              >
+                🟩 Масштаб
+              </button>
+              <button
+                class="chip ads-status-chip"
+                data-status="warn"
+                type="button"
+              >
+                🟨 Внимание
+              </button>
+              <button
+                class="chip ads-status-chip"
+                data-status="bad"
+                type="button"
+              >
+                🟥 Стоп
+              </button>
+              <button
+                class="chip ads-status-chip"
+                data-status="immature"
+                type="button"
+              >
+                ⏳ Мало данных
+              </button>
+            </div>
           </div>
         </div>
 
         <table id="ads-table" class="funnel-table">
           <thead>
             <tr>
-              <th>#</th>
+              <th class="sortable" data-field="_index">#</th>
               <th class="sortable" data-field="offer_id">Артикул</th>
-              <th class="sortable" data-field="name">Название</th>
-              <th class="sortable" data-field="impressions">Показы (все)</th>
-              <th class="sortable" data-field="clicks">Клики (все)</th>
+              <th class="sortable" data-field="impressions">Показы</th>
               <th class="sortable" data-field="orders">Заказы</th>
-              <th class="sortable" data-field="revenue">Выручка</th>
-              <th class="sortable" data-field="ad_spend">Расход на рекламу</th>
-              <th class="sortable" data-field="drr">DRR %</th>
-              <th class="sortable" data-field="ctr">CTR %</th>
-              <th class="sortable" data-field="conv">Конв. %</th>
-              <th class="sortable" data-field="ozon_stock">Остатки</th>
-              <th class="sortable" data-field="priority">Приоритет</th>
+              <th class="sortable" data-field="revenue">Продажи</th>
+              <th class="sortable" data-field="ad_spend">Расход</th>
+              <th class="sortable" data-field="drr">DRR</th>
+              <th class="sortable" data-field="ctr">CTR</th>
+              <th class="sortable" data-field="conv">Конверсия</th>
+              <th class="sortable" data-field="ozon_stock">Остаток</th>
+              <th>Статус</th>
             </tr>
           </thead>
           <tbody></tbody>

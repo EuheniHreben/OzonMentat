@@ -18,7 +18,23 @@ const {
 
 const FUNNEL_HISTORY_FILE = path.join(__dirname, "funnelHistory.json");
 
-// пороги
+// ------------------------------
+// Пороги “минимальной достоверности” (как ADS_MIN_DATA, но для воронки)
+// ------------------------------
+const FUNNEL_MIN_DATA = {
+  // трафик: чтобы делать выводы по CTR
+  IMPRESSIONS: 200,
+  CLICKS_FOR_CTR: 10,
+
+  // карточка: чтобы делать выводы по конверсии
+  CLICKS_FOR_CONV: 25,
+  ORDERS_FOR_CONV: 2,
+
+  // послепродажа: чтобы делать выводы по возвратам
+  ORDERS_FOR_REFUND: 5,
+};
+
+// пороги “качества” (как было)
 const THRESHOLDS = {
   minImpressions: 100,
   minClicks: 30,
@@ -60,6 +76,35 @@ function clamp(n, min, max) {
   if (x < min) return min;
   if (x > max) return max;
   return x;
+}
+
+// ------------------------------
+// Maturity helpers (коридор адекватности)
+// ------------------------------
+function getFunnelMaturity({ impressions = 0, clicks = 0, orders = 0 } = {}) {
+  const imp = Number(impressions || 0);
+  const clk = Number(clicks || 0);
+  const ord = Number(orders || 0);
+
+  const trafficOk =
+    imp >= FUNNEL_MIN_DATA.IMPRESSIONS || clk >= FUNNEL_MIN_DATA.CLICKS_FOR_CTR;
+
+  const cardOk =
+    clk >= FUNNEL_MIN_DATA.CLICKS_FOR_CONV ||
+    ord >= FUNNEL_MIN_DATA.ORDERS_FOR_CONV;
+
+  const postOk = ord >= FUNNEL_MIN_DATA.ORDERS_FOR_REFUND;
+
+  // “общая зрелость” — чтобы быстро решать: можно ли ставить ярлык “норма”
+  const overallOk = trafficOk || cardOk || postOk;
+
+  return {
+    overallOk,
+    trafficOk,
+    cardOk,
+    postOk,
+    thresholds: FUNNEL_MIN_DATA,
+  };
 }
 
 // Универсальный парсер ответа /v1/analytics/data
@@ -135,10 +180,6 @@ async function getDailySalesPoints(sku, days = 14) {
   const dateTo = formatDate(today);
   const dateFrom = formatDate(addDays(today, -(days - 1)));
 
-  // Попробуем dimension: ["day"] и фильтр по sku.
-  // У Ozon формат фильтров может отличаться, поэтому делаем “best-effort”:
-  // 1) filters: [{ field: "sku", values: [skuKey] }]
-  // 2) filter: { sku: [skuKey] }
   const candidates = [
     {
       date_from: dateFrom,
@@ -158,7 +199,6 @@ async function getDailySalesPoints(sku, days = 14) {
       limit: 1000,
       offset: 0,
     },
-    // fallback: sku + day вместе, потом отфильтруем на своей стороне
     {
       date_from: dateFrom,
       date_to: dateTo,
@@ -181,32 +221,28 @@ async function getDailySalesPoints(sku, days = 14) {
         used = body;
         break;
       }
-    } catch (e) {
-      // пробуем следующий формат
-    }
+    } catch (e) {}
   }
 
   if (!rows) return [];
 
-  const map = new Map(); // date -> orders
+  const map = new Map();
 
   for (const row of rows) {
     const dims = row.dimensions || row.dimension || [];
 
-    // если ["day"]
     if (
       used.dimension &&
       used.dimension.length === 1 &&
       used.dimension[0] === "day"
     ) {
-      const dayKey = getDim(row, 0); // ожидаем YYYY-MM-DD
+      const dayKey = getDim(row, 0);
       if (!dayKey) continue;
       const orders = getMetric(row, 0);
       map.set(dayKey, (map.get(dayKey) || 0) + orders);
       continue;
     }
 
-    // fallback: ["sku","day"]
     const skuDim = getDim(row, 0);
     const dayDim = getDim(row, 1);
     if (!skuDim || !dayDim) continue;
@@ -216,7 +252,6 @@ async function getDailySalesPoints(sku, days = 14) {
     map.set(dayDim, (map.get(dayDim) || 0) + orders);
   }
 
-  // Собираем в непрерывную шкалу дней, чтобы график не “рвался”
   const points = [];
   for (let i = days - 1; i >= 0; i--) {
     const d = formatDate(addDays(today, -i));
@@ -257,6 +292,9 @@ function classifyProblemSmart(params) {
   let priority = "средний";
   const tags = [];
 
+  const maturity = getFunnelMaturity({ impressions, clicks, orders });
+
+  // 0) вообще пусто
   if (
     impressions === 0 &&
     clicks === 0 &&
@@ -280,14 +318,16 @@ function classifyProblemSmart(params) {
       refundColor,
       ctr,
       conv,
+      maturity,
     };
   }
 
+  // 1) реклама тратится, заказов нет (это можно диагностировать и при малой зрелости)
   if (ad_spend > 0 && orders === 0) {
     stage = "реклама";
     mainProblem = "реклама тратится, заказов нет";
     recommendation =
-      "остановить/урезать кампанию, проверить ключи и креативы, цену и конкурентов";
+      "урезать/остановить кампанию, проверить ключи/креативы, цену и конкурентов";
     priority = "высокий";
     tags.push("Реклама", "DRR");
     return {
@@ -300,14 +340,34 @@ function classifyProblemSmart(params) {
       refundColor,
       ctr,
       conv,
+      maturity,
     };
   }
 
-  // ✅ FIX: возвраты рассматриваем только если есть статистика
-  if (
-    orders >= THRESHOLDS.minOrdersForStats &&
-    refund_rate >= THRESHOLDS.refundBad
-  ) {
+  // 2) если данных в целом мало — не делаем “уверенные” выводы по CTR/Conv/Refund
+  if (!maturity.overallOk) {
+    stage = "наблюдение";
+    mainProblem = "мало данных для уверенных выводов";
+    recommendation =
+      "дать карточке набрать показы/клики/заказы; пока не резать по CTR/Conv/возвратам";
+    priority = "низкий";
+    tags.push("Наблюдение", "Мало данных");
+    return {
+      mainProblem,
+      recommendation,
+      stage,
+      priority,
+      tags,
+      drrColor,
+      refundColor,
+      ctr,
+      conv,
+      maturity,
+    };
+  }
+
+  // 3) возвраты — только если postOk (или старый порог orders>=minOrdersForStats)
+  if (maturity.postOk && refund_rate >= THRESHOLDS.refundBad) {
     stage = "послепродажа";
     mainProblem = "критично много возвратов";
     recommendation =
@@ -324,13 +384,11 @@ function classifyProblemSmart(params) {
       refundColor,
       ctr,
       conv,
+      maturity,
     };
   }
 
-  if (
-    orders >= THRESHOLDS.minOrdersForStats &&
-    refund_rate >= THRESHOLDS.refundWarn
-  ) {
+  if (maturity.postOk && refund_rate >= THRESHOLDS.refundWarn) {
     stage = "послепродажа";
     mainProblem = "повышенный уровень возвратов";
     recommendation =
@@ -356,11 +414,13 @@ function classifyProblemSmart(params) {
       refundColor,
       ctr,
       conv,
+      maturity,
     };
   }
 
-  if (impressions >= THRESHOLDS.minImpressions) {
-    if (clicks === 0) {
+  // 4) трафик/CTR — только если trafficOk
+  if (maturity.trafficOk) {
+    if (impressions > 0 && clicks === 0) {
       stage = "показы";
       mainProblem = "показы есть, кликов нет";
       recommendation =
@@ -377,6 +437,7 @@ function classifyProblemSmart(params) {
         refundColor,
         ctr,
         conv,
+        maturity,
       };
     }
 
@@ -388,10 +449,20 @@ function classifyProblemSmart(params) {
       priority = "средний";
       tags.push("CTR");
     }
+  } else {
+    // traffic immature
+    if (stage === "неопределено") {
+      stage = "наблюдение";
+      mainProblem = "мало данных по трафику (CTR пока не показатель)";
+      recommendation = `добрать статистику: ≥${FUNNEL_MIN_DATA.IMPRESSIONS} показов или ≥${FUNNEL_MIN_DATA.CLICKS_FOR_CTR} кликов`;
+      priority = "низкий";
+      tags.push("Мало данных");
+    }
   }
 
-  if (clicks >= THRESHOLDS.minClicks) {
-    if (orders === 0) {
+  // 5) карточка/Conv — только если cardOk
+  if (maturity.cardOk) {
+    if (clicks > 0 && orders === 0) {
       stage = "карточка";
       mainProblem = "кликов много, заказов нет";
       recommendation =
@@ -408,6 +479,7 @@ function classifyProblemSmart(params) {
         refundColor,
         ctr,
         conv,
+        maturity,
       };
     }
 
@@ -419,33 +491,19 @@ function classifyProblemSmart(params) {
       priority = "средний";
       tags.push("Конверсия");
     }
+  } else {
+    // card immature
+    if (stage === "неопределено") {
+      stage = "наблюдение";
+      mainProblem = "мало данных по карточке (конверсия пока не показатель)";
+      recommendation = `добрать статистику: ≥${FUNNEL_MIN_DATA.CLICKS_FOR_CONV} кликов или ≥${FUNNEL_MIN_DATA.ORDERS_FOR_CONV} заказов`;
+      priority = "низкий";
+      tags.push("Мало данных");
+    }
   }
 
-  if (orders > 0 && orders < THRESHOLDS.minOrdersForStats) {
-    stage = "наблюдение";
-    mainProblem = "мало данных для уверенных выводов";
-    recommendation =
-      "дать карточке дособрать статистику, аккуратно следить за отзывами и динамикой";
-    priority = "низкий";
-    tags.push("Наблюдение");
-    return {
-      mainProblem,
-      recommendation,
-      stage,
-      priority,
-      tags,
-      drrColor,
-      refundColor,
-      ctr,
-      conv,
-    };
-  }
-
-  if (
-    orders >= THRESHOLDS.minOrdersForStats &&
-    drrColor === "🟩" &&
-    refundColor === "🟩"
-  ) {
+  // 6) масштабирование (если есть “нормальная” зрелость)
+  if (maturity.postOk && drrColor === "🟩" && refundColor === "🟩") {
     stage = "масштабирование";
     mainProblem = "карточка здорова, можно усиливать";
     recommendation =
@@ -462,6 +520,7 @@ function classifyProblemSmart(params) {
       refundColor,
       ctr,
       conv,
+      maturity,
     };
   }
 
@@ -477,6 +536,7 @@ function classifyProblemSmart(params) {
     refundColor,
     ctr,
     conv,
+    maturity,
   };
 }
 
@@ -583,7 +643,6 @@ async function buildFunnel({
     const drr = safeDiv(ad_spend, revenue);
     const avg_check = safeDiv(revenue, orders);
 
-    // ✅ FIX: возвраты могут быть “странными” при агрегировании — клампим долю
     const refund_rate_raw = safeDiv(returns, orders);
     const refund_rate = clamp(refund_rate_raw, 0, 1);
 
@@ -598,6 +657,10 @@ async function buildFunnel({
       drr,
       refund_rate,
     });
+
+    // maturity объект для UI
+    const funnel_maturity =
+      problem.maturity || getFunnelMaturity({ impressions, clicks, orders });
 
     rows.push({
       sku: skuKey,
@@ -624,6 +687,9 @@ async function buildFunnel({
       ctr: problem.ctr,
       conv: problem.conv,
 
+      // ✅ новое: зрелость данных по слоям
+      funnel_maturity,
+
       orders_prev: prevOrders,
       orders_change: relDiff(orders, prevOrders),
 
@@ -644,5 +710,5 @@ async function buildFunnel({
 
 module.exports = {
   buildFunnel,
-  getDailySalesPoints, // ✅ экспорт для графика
+  getDailySalesPoints,
 };

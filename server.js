@@ -329,11 +329,29 @@ app.post("/api/loader/config", (req, res) => {
       "MAX_FUNNEL_HISTORY_DAYS",
     ];
 
+    // ✅ NEW: защита от “убийственных” значений
+    const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+    const rules = {
+      DEMAND_FACTOR: (v) => clamp(v, 0.2, 5),
+      DAYS: (v) => clamp(Math.round(v), 1, 60),
+      DAYS_LONG: (v) => clamp(Math.round(v), 1, 180),
+      MIN_STOCK_DEFAULT: (v) => clamp(Math.round(v), 0, 999999),
+      PACK_SIZE_DEFAULT: (v) => clamp(Math.round(v), 1, 999999),
+      SALES_SMOOTHING_ALPHA: (v) => clamp(v, 0, 1),
+      SPIKE_MULTIPLIER: (v) => clamp(v, 1, 50),
+      SPIKE_CAP_MULTIPLIER: (v) => clamp(v, 0.1, 20),
+      MAX_DAYS_OF_STOCK: (v) => clamp(Math.round(v), 1, 365),
+      MAX_LOADER_HISTORY_DAYS: (v) => clamp(Math.round(v), 1, 5000),
+      MAX_FUNNEL_HISTORY_DAYS: (v) => clamp(Math.round(v), 1, 5000),
+    };
+
     const patch = {};
     for (const key of allowedKeys) {
       if (key in req.body) {
         const val = Number(req.body[key]);
-        if (Number.isFinite(val)) patch[key] = val;
+        if (Number.isFinite(val)) {
+          patch[key] = rules[key] ? rules[key](val) : val;
+        }
       }
     }
 
