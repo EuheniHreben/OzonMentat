@@ -42,7 +42,10 @@ const defaultConfig = {
 const DISABLED_FILE = path.join(__dirname, "loaderDisabled.json");
 
 // 🔎 файл истории прогрузок
-const LOADER_HISTORY_FILE = path.join(__dirname, "loaderHistory.json");
+const LOADER_HISTORY_FILE = path.join(
+  __dirname,
+  "../../../data/loaderHistory.json"
+);
 
 // кэш для поиска по offer_id
 let productsByOfferIdCache = null;
@@ -410,10 +413,13 @@ async function runLoader(runtimeConfig = {}) {
     `✔️ Найдено товаров в products.csv для расчёта: ${allProducts.length}`
   );
 
-  const historyPath = path.join(
-    __dirname,
-    SALES_HISTORY_FILE || "salesHistory.json"
-  );
+  const historyPath = path.isAbsolute(SALES_HISTORY_FILE)
+    ? SALES_HISTORY_FILE
+    : path.join(
+        __dirname,
+        "../../../data",
+        SALES_HISTORY_FILE || "salesHistory.json"
+      );
 
   let salesHistory = {};
 
