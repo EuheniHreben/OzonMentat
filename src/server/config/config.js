@@ -1,5 +1,13 @@
-// config.js
+// src/server/config/config.js
 require("dotenv").config();
+
+const path = require("path");
+
+// =====================================================
+// 📁 Paths
+// =====================================================
+const ROOT_DIR = path.join(__dirname, "../../..");
+const DATA_DIR = path.join(ROOT_DIR, "data");
 
 // ===============================
 // 🔐 Секреты (ТОЛЬКО из .env)
@@ -25,7 +33,7 @@ const PERF_BASE_URL =
   process.env.OZON_PERF_BASE_URL || "https://api-performance.ozon.ru";
 
 // ===============================
-// 🧠 Поведение системы (CONFIG)
+// 🧠 Поведение системы
 // ===============================
 const ADS_ENABLED = process.env.ADS_ENABLED !== "0";
 
@@ -54,11 +62,15 @@ const SPIKE_MULTIPLIER = 3;
 const SPIKE_CAP_MULTIPLIER = 1.5;
 
 // ===============================
-// 📁 Файлы и история
+// 📁 Файлы и история (в /data)
 // ===============================
-const SALES_HISTORY_FILE = "salesHistory.json";
+const SALES_HISTORY_FILE = path.join(DATA_DIR, "salesHistory.json");
 
-const PRICING_CACHE_FILE = process.env.PRICING_CACHE_FILE || "pricingData.json";
+const PRICING_CACHE_FILE = path.join(
+  DATA_DIR,
+  process.env.PRICING_CACHE_FILE || "pricingData.json"
+);
+
 const PRICING_TTL_MS = Number(process.env.PRICING_TTL_MS) || 60 * 60 * 1000;
 
 const MAX_LOADER_HISTORY_DAYS = 200;
@@ -68,6 +80,10 @@ const MAX_FUNNEL_HISTORY_DAYS = 120;
 // 📤 Экспорт
 // ===============================
 module.exports = {
+  // paths
+  ROOT_DIR,
+  DATA_DIR,
+
   // креды
   CLIENT_ID,
   API_KEY,

@@ -2,6 +2,7 @@
 // =====================================================
 // Global state
 // =====================================================
+
 const GRAPH_ENABLED = false;
 
 let allRows = [];
@@ -49,7 +50,7 @@ const SORT_KEYS = {
 // =====================================================
 // 3-цветные дельты (воронка/панель)
 // =====================================================
-const DELTA_MINOR_ABS = 0.05; // 5%
+const DELTA_MINOR_ABS = 0.05; // 5% (пока не используется — оставил на будущее)
 const DELTA_MAJOR_ABS = 0.15; // 15%
 
 function classifyDeltaClass(change, { inverse = false } = {}) {
@@ -98,18 +99,32 @@ function levelFromEmoji(emoji) {
 
 function extractValue(row, field) {
   if (!row || !field) return 0;
+
+  // спец-кейс: если попросили сортировать по status (виртуальное поле)
+  if (field === "status") {
+    const st = evaluateAdsStatus(row);
+    // порядок уровней: bad > warn > immature > neutral > good
+    const weight = { bad: 4, warn: 3, immature: 2, neutral: 1, good: 0 };
+    return weight[st.level] ?? 0;
+  }
+
   const val = row[field];
 
   if (typeof val === "number") return val;
   if (typeof val === "string") return val.toLowerCase();
 
-  // спец-кейс: если попросили сортировать по status (виртуальное поле)
-  if (field === "status") {
-    const st = evaluateAdsStatus(row);
-    // порядок уровней: bad > warn > immature > neutral > good (или иначе — на вкус)
-    const weight = { bad: 4, warn: 3, immature: 2, neutral: 1, good: 0 };
-    return weight[st.level] ?? 0;
-  }
+  // ✅ FIX: аккуратная сортировка для null/undefined/объектов
+  if (val == null) return 0;
+  if (typeof val === "boolean") return val ? 1 : 0;
+
+  try {
+    // если это что-то вроде { value: ... } — берём value
+    if (typeof val === "object" && "value" in val) {
+      const v = val.value;
+      if (typeof v === "number") return v;
+      if (typeof v === "string") return v.toLowerCase();
+    }
+  } catch {}
 
   return 0;
 }
@@ -123,9 +138,7 @@ function classifyStockLevel(row) {
   const days = Number(periodDays || 7);
 
   if (!stock && !orders) return { level: "warn", text: "—" };
-
   if (!stock && orders > 0) return { level: "bad", text: "0" };
-
   if (stock > 0 && orders === 0) return { level: "good", text: String(stock) };
 
   const dailyOrders = orders / Math.max(days, 1);
@@ -165,7 +178,6 @@ function initStoreSwitcher() {
     }
   } catch {}
 
-  const openMenu = () => menu.classList.remove("hidden");
   const closeMenu = () => menu.classList.add("hidden");
   const toggleMenu = () => menu.classList.toggle("hidden");
 
@@ -182,16 +194,12 @@ function initStoreSwitcher() {
       setActiveStore(id, label);
       closeMenu();
 
-      // ✅ placeholder на будущее:
-      // здесь позже будет: переключение токена/магазина + reload данных
+      // placeholder на будущее: здесь будет переключение токена/магазина + reload
       // loadFunnel();
     });
   });
 
-  // close on outside click
   document.addEventListener("click", () => closeMenu());
-
-  // close on Esc
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeMenu();
   });
@@ -204,6 +212,12 @@ function initStoreSwitcher() {
 document.addEventListener("DOMContentLoaded", () => {
   loadSortState();
   initStoreSwitcher();
+
+  // ✅ FIX: если вдруг скрипты подключились не в том порядке
+  if (!window.DataService) {
+    console.error("DataService не найден. Проверь подключение /dataService.js");
+  }
+
   loadFunnel();
   setPageTitle(getActiveTab());
 
@@ -456,7 +470,7 @@ async function loadFunnel() {
   try {
     const json = await DataService.loadFunnel(periodDays);
 
-    // статус по кэшу/лимитам/рекламе (если есть блок)
+    // ✅ FIX: statusEl реально появится только если ты добавишь элемент в HTML
     const statusEl = document.getElementById("funnel-status");
     if (statusEl) {
       const parts = [];
@@ -467,27 +481,27 @@ async function loadFunnel() {
       statusEl.textContent = parts.length ? parts.join(" · ") : "";
     }
 
-    if (!json.ok) {
-      console.error("API /api/funnel error:", json.error);
+    const hasRows = json && Array.isArray(json.rows);
+    const isOk = json && (json.ok === true || (json.ok == null && hasRows));
 
-      if (json.rateLimit) {
+    if (!isOk) {
+      if (json && json.rateLimit) {
+        console.warn("API /api/funnel rate limit:", json);
         alert(
           "OZON вернул лимит запросов (429).\n" +
             "Дай API немного отдохнуть и попробуй ещё раз через 30–60 секунд."
         );
+        return;
       }
 
-      allRows = [];
-      filteredRows = [];
-      adsRows = [];
-      adsFiltered = [];
-      renderTable([]);
-      renderAdsTable([]);
+      console.warn("⚠️ Funnel: невалидный ответ / временный сбой", json);
+      if (statusEl)
+        statusEl.textContent = "⏳ Временный сбой данных — попробуй ещё раз";
       hideDetails();
       return;
     }
 
-    allRows = Array.isArray(json.rows) ? json.rows : [];
+    allRows = hasRows ? json.rows : [];
 
     if (window.Store && typeof Store.applyFunnel === "function") {
       Store.applyFunnel(allRows, { timestamp: Date.now() });
@@ -496,13 +510,11 @@ async function loadFunnel() {
     applyFunnelFiltersAndRender();
     buildAdsFromFunnel();
   } catch (err) {
-    console.error("Ошибка загрузки:", err);
-    allRows = [];
-    filteredRows = [];
-    adsRows = [];
-    adsFiltered = [];
-    renderTable([]);
-    renderAdsTable([]);
+    console.error("Ошибка загрузки /api/funnel:", err);
+
+    const statusEl = document.getElementById("funnel-status");
+    if (statusEl) statusEl.textContent = "🔌 Ошибка соединения с сервером";
+
     hideDetails();
   }
 }
@@ -767,24 +779,20 @@ function renderTable(rows) {
       const span = document.createElement("span");
       span.textContent = value;
 
-      // ✅ если данных мало — помечаем CTR/Conv/Refund как “info”, чтобы не вводили в заблуждение
       const m = row?.funnel_maturity;
       if (m) {
-        // CTR колонка = idx 4
         if (idx === 4 && !m.trafficOk) {
           span.classList.add("level-info");
           span.title = `Мало данных для CTR: ≥${
             m.thresholds?.IMPRESSIONS ?? 200
           } показов или ≥${m.thresholds?.CLICKS_FOR_CTR ?? 10} кликов`;
         }
-        // Conv колонка = idx 6
         if (idx === 6 && !m.cardOk) {
           span.classList.add("level-info");
           span.title = `Мало данных для конверсии: ≥${
             m.thresholds?.CLICKS_FOR_CONV ?? 25
           } кликов или ≥${m.thresholds?.ORDERS_FOR_CONV ?? 2} заказов`;
         }
-        // Refund% колонка = idx 13
         if (idx === 13 && !m.postOk) {
           span.classList.add("level-info");
           span.title = `Мало данных по возвратам: ≥${
@@ -793,42 +801,36 @@ function renderTable(rows) {
         }
       }
 
-      // заказы — 3 цвета по дельте
       if (idx === 5 && row.orders_prev !== undefined) {
         span.classList.add(
           classifyDeltaClass(row.orders_change, { inverse: false })
         );
       }
 
-      // выручка — 3 цвета по дельте
       if (idx === 7 && row.revenue_prev !== undefined) {
         span.classList.add(
           classifyDeltaClass(row.revenue_change, { inverse: false })
         );
       }
 
-      // возвраты % — рост плохо
       if (idx === 13 && row.refund_prev !== undefined) {
         span.classList.add(
           classifyDeltaClass(row.refund_change, { inverse: true })
         );
       }
 
-      // DRR цвет
       if (idx === 9) {
         if (drrLevel === "good") span.classList.add("level-good");
         else if (drrLevel === "warn") span.classList.add("level-warn");
         else span.classList.add("level-bad");
       }
 
-      // возвраты % цвет
       if (idx === 13) {
         if (refundLevel === "good") span.classList.add("level-good");
         else if (refundLevel === "warn") span.classList.add("level-warn");
         else span.classList.add("level-bad");
       }
 
-      // остатки — маркер по дням запаса
       if (idx === 11) {
         if (stockInfo.level === "good") span.classList.add("level-good");
         else if (stockInfo.level === "warn") span.classList.add("level-warn");
@@ -959,7 +961,6 @@ function setLayerStatus(layerKey, data) {
   if (data.title) statusEl.title = data.title;
   else statusEl.removeAttribute("title");
 
-  // reset
   statusEl.classList.remove("ok", "warn", "bad", "info");
   layerEl.classList.remove("layer-ok", "layer-warn", "layer-bad", "layer-info");
 
@@ -983,7 +984,6 @@ function evaluateFunnelLayers(row) {
   const drr = Number(row?.drr || 0);
   const stock = Number(row?.ozon_stock || 0);
 
-  // твои “качество” пороги (как было)
   const CTR_LOW = 0.03;
   const CONV_LOW = 0.05;
   const REFUND_WARN = 0.05;
@@ -991,7 +991,6 @@ function evaluateFunnelLayers(row) {
   const DRR_WARN = 0.3;
   const DRR_BAD = 0.5;
 
-  // ✅ новый коридор адекватности с бэка
   const m = row?.funnel_maturity || null;
   const th = m?.thresholds || {
     IMPRESSIONS: 200,
@@ -1019,9 +1018,6 @@ function evaluateFunnelLayers(row) {
     title: `Нужно: ≥${th.ORDERS_FOR_REFUND} заказов`,
   };
 
-  // ------------------------------
-  // Traffic layer
-  // ------------------------------
   let traffic = { statusClass: "ok", text: "ОК" };
 
   if (impressions === 0 && clicks === 0 && orders === 0) {
@@ -1032,13 +1028,9 @@ function evaluateFunnelLayers(row) {
     traffic = { statusClass: "warn", text: "Низкий CTR" };
   }
 
-  // ------------------------------
-  // Card layer
-  // ------------------------------
   let card = { statusClass: "ok", text: "ОК" };
 
   if (clicks === 0 && impressions > 0) {
-    // показы есть, кликов нет — это уже сигнал, но если maturity говорит “мало данных”, не драматизируем
     if (m && !m.trafficOk) card = infoTraffic;
     else card = { statusClass: "bad", text: "Показы есть, кликов нет" };
   } else if (m && !m.cardOk) {
@@ -1049,9 +1041,6 @@ function evaluateFunnelLayers(row) {
     card = { statusClass: "warn", text: "Низкая конверсия" };
   }
 
-  // ------------------------------
-  // Post layer
-  // ------------------------------
   let post = { statusClass: "ok", text: "ОК" };
 
   if (m && !m.postOk) {
@@ -1062,9 +1051,6 @@ function evaluateFunnelLayers(row) {
     post = { statusClass: "warn", text: "Повышенные возвраты" };
   }
 
-  // ------------------------------
-  // Ads layer
-  // ------------------------------
   let ads = { statusClass: "ok", text: "ОК" };
 
   if (!ad_spend || ad_spend === 0) {
@@ -1075,9 +1061,6 @@ function evaluateFunnelLayers(row) {
     ads = { statusClass: "warn", text: "DRR повышенный" };
   }
 
-  // ------------------------------
-  // Stock layer
-  // ------------------------------
   let stockLayer = { statusClass: "ok", text: "ОК", daysOfStock: null };
 
   if (!stock && !orders) {

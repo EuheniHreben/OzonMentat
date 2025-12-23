@@ -124,7 +124,7 @@ button:active {
   min-width: 260px;
   max-width: 360px;
   width: 100%;
-  padding: 6px 10px;
+  padding: 8px 10px;
   border-radius: 6px;
   border: 1px solid #555;
   background: #121212;
@@ -322,6 +322,10 @@ td small {
   cursor: pointer;
 }
 
+.close-btn:hover {
+  color:#4ade80;
+}
+
 .details-content h3 {
   margin-top: 14px;
   margin-bottom: 8px;
@@ -377,7 +381,7 @@ td small {
   box-shadow: 0 0 6px rgba(255, 255, 255, 0.06);
   border-color: #444;
   cursor: pointer;
-  transform: scale(1.02);
+  transform: scale(1.04);
 }
 
 .funnel-layer-header {
@@ -815,17 +819,6 @@ td small {
   font-weight: 700;
 }
 
-/* INFO: мало данных (часики) */
-.level-info {
-  color: #7ab8ff; /* голубой */
-  font-weight: 700;
-}
-
-.level-info::before {
-  content: "⏳ ";
-  opacity: 0.9;
-}
-
 /* ------------------------------
    Switch store dropdown (UI only)
 ------------------------------ */
@@ -888,7 +881,7 @@ td small {
 }
 
 .level-info::before {
-  content: "⏳";
+  content: "";
   opacity: 0.9;
 }
 

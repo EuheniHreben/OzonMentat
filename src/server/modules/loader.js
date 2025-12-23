@@ -1,4 +1,4 @@
-// loader.js
+// src/server/modules/loader.js
 
 const fs = require("fs");
 const path = require("path");
@@ -17,13 +17,13 @@ const {
   SALES_HISTORY_FILE,
   MAX_DAYS_OF_STOCK,
   MAX_LOADER_HISTORY_DAYS,
-} = require("./config");
+} = require("../config/config");
 
 const { getStocksMap, getSalesMap } = require("./ozonApi");
 const productInfo = require("./productInfo");
 
 // 📂 Папка, куда кладём файл(ы) резки
-const CUT_DIR = path.join(__dirname, "public", "cut");
+const CUT_DIR = path.join(__dirname, "..", "..", "..", "public", "cut");
 
 // дефолтный конфиг, если runtime не передали
 const defaultConfig = {
@@ -296,7 +296,11 @@ async function readCutReservations() {
 
           let skuKey = null;
 
-          const bySku = productInfo.getBySku(rawArt);
+          const bySku =
+            typeof productInfo.getBySku === "function"
+              ? productInfo.getBySku(rawArt)
+              : null;
+
           if (bySku && bySku.sku != null) {
             skuKey = String(bySku.sku);
           } else {
@@ -518,8 +522,9 @@ async function runLoader(runtimeConfig = {}) {
 
     let target_demand = Math.ceil(weekSalesEffective * demand_factor);
 
-    // лимит по дням запаса
-    const avgPerDay = weekSalesEffective / 7;
+    // ✅ FIX: лимит по дням запаса должен учитывать cfg.DAYS, а не всегда 7
+    const denomDays = Math.max(Number(cfg.DAYS) || 7, 1);
+    const avgPerDay = weekSalesEffective / denomDays;
 
     if (avgPerDay > 0 && cfg.MAX_DAYS_OF_STOCK > 0) {
       const capByDays = Math.ceil(avgPerDay * cfg.MAX_DAYS_OF_STOCK);
@@ -536,8 +541,11 @@ async function runLoader(runtimeConfig = {}) {
     let need_raw = target - ozon_stock - in_transit;
     if (need_raw < 0) need_raw = 0;
 
+    // ✅ FIX: если pack_size некорректный — не превращаем потребность в 0
     const NeedGoods =
-      pack_size > 0 ? Math.ceil(need_raw / pack_size) * pack_size : 0;
+      pack_size > 0
+        ? Math.ceil(need_raw / pack_size) * pack_size
+        : Math.ceil(need_raw);
 
     // по умолчанию отключены те, по кому нет данных вообще
     let isDisabled =
@@ -629,7 +637,7 @@ async function runLoader(runtimeConfig = {}) {
 
   const fileName = `Ozon Palantir Ru ${dd}-${mm}-${yyyy}.xlsx`;
 
-  const exportsDir = path.join(__dirname, "exports");
+  const exportsDir = path.join(__dirname, "..", "..", "..", "exports");
   if (!fs.existsSync(exportsDir)) {
     fs.mkdirSync(exportsDir, { recursive: true });
   }

@@ -1,4 +1,4 @@
-require("dotenv").config();
+// src/server/modules/ozonApi.js
 
 const fs = require("fs");
 const path = require("path");
@@ -12,7 +12,8 @@ const {
   PERF_CLIENT_ID,
   PERF_CLIENT_SECRET,
   AD_CACHE_TTL_MS,
-} = require("./config");
+  DATA_DIR,
+} = require("../config/config");
 
 const DEBUG_ADS = String(process.env.DEBUG_ADS || "") === "1";
 
@@ -382,13 +383,15 @@ async function downloadReportByLink(linkPath) {
 // Реклама — КЭШ + ДИСК
 // =====================================================
 const adSpendCache = new Map();
-const AD_CACHE_FILE = path.join(__dirname, "adSpendCache.json");
+const AD_CACHE_FILE = path.join(DATA_DIR, "adSpendCache.json");
 let diskCacheLoaded = false;
 
 function loadAdCacheFromDisk() {
   try {
     if (!fs.existsSync(AD_CACHE_FILE)) return;
     const raw = fs.readFileSync(AD_CACHE_FILE, "utf8");
+    if (!raw.trim()) return;
+
     const json = JSON.parse(raw);
     for (const [k, v] of Object.entries(json)) {
       adSpendCache.set(k, v);
@@ -398,6 +401,9 @@ function loadAdCacheFromDisk() {
 
 function saveAdCacheToDisk() {
   try {
+    // гарантируем существование /data
+    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+
     fs.writeFileSync(
       AD_CACHE_FILE,
       JSON.stringify(Object.fromEntries(adSpendCache.entries()), null, 2),

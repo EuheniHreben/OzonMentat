@@ -4,8 +4,8 @@ const express = require("express");
 const path = require("path");
 const fs = require("fs");
 
-const { buildFunnel, getDailySalesPoints } = require("./funnel");
-const { runLoader, openCutFolder } = require("./loader");
+const { buildFunnel, getDailySalesPoints } = require("./modules/funnel");
+const { runLoader, openCutFolder } = require("./modules/loader");
 
 const {
   DEMAND_FACTOR,
@@ -23,26 +23,26 @@ const {
   ADS_ENABLED,
   FUNNEL_MIN_REFRESH_MS,
   ADS_COOLDOWN_MS,
-} = require("./config");
+} = require("./config/config");
 
 const app = express();
 const PORT = 3000;
 
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "../../public")));
 app.use(express.json());
 
-const exportsDir = path.join(__dirname, "exports");
+const exportsDir = path.join(__dirname, "../../data/exports");
 if (!fs.existsSync(exportsDir)) {
   fs.mkdirSync(exportsDir, { recursive: true });
 }
 app.use("/exports", express.static(exportsDir));
 
-const CUT_DIR = path.join(__dirname, "public", "cut");
+const CUT_DIR = path.join(__dirname, "../../public/cut");
 
 // =====================================================
 // Runtime-config
 // =====================================================
-const CONFIG_FILE = path.join(__dirname, "loaderConfig.json");
+const CONFIG_FILE = path.join(__dirname, "../../data/loaderConfig.json");
 
 const defaultLoaderConfig = {
   DEMAND_FACTOR,
@@ -96,7 +96,7 @@ function funnelKey({ days, adsEnabled }) {
 // =====================================================
 // Disabled SKU
 // =====================================================
-const DISABLED_FILE = path.join(__dirname, "loaderDisabled.json");
+const DISABLED_FILE = path.join(__dirname, "../../data/loaderDisabled.json");
 
 function loadDisabledMap() {
   try {

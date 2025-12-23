@@ -1,4 +1,4 @@
-// funnel.js
+// funnel.js (fixed for new structure)
 
 const fs = require("fs");
 const path = require("path");
@@ -9,32 +9,31 @@ const {
   getAdSpend,
   getStocksMap,
 } = require("./ozonApi");
+
 const productInfo = require("./productInfo");
 
 const {
   DAYS,
   MAX_FUNNEL_HISTORY_DAYS: DEFAULT_MAX_FUNNEL_HISTORY_DAYS,
-} = require("./config");
+} = require("../config/config");
 
-const FUNNEL_HISTORY_FILE = path.join(__dirname, "funnelHistory.json");
+// История теперь лежит в /data
+const FUNNEL_HISTORY_FILE = path.join(
+  __dirname,
+  "../../../data/funnelHistory.json"
+);
 
 // ------------------------------
 // Пороги “минимальной достоверности” (как ADS_MIN_DATA, но для воронки)
 // ------------------------------
 const FUNNEL_MIN_DATA = {
-  // трафик: чтобы делать выводы по CTR
   IMPRESSIONS: 200,
   CLICKS_FOR_CTR: 10,
-
-  // карточка: чтобы делать выводы по конверсии
   CLICKS_FOR_CONV: 25,
   ORDERS_FOR_CONV: 2,
-
-  // послепродажа: чтобы делать выводы по возвратам
   ORDERS_FOR_REFUND: 5,
 };
 
-// пороги “качества” (как было)
 const THRESHOLDS = {
   minImpressions: 100,
   minClicks: 30,
@@ -95,7 +94,6 @@ function getFunnelMaturity({ impressions = 0, clicks = 0, orders = 0 } = {}) {
 
   const postOk = ord >= FUNNEL_MIN_DATA.ORDERS_FOR_REFUND;
 
-  // “общая зрелость” — чтобы быстро решать: можно ли ставить ярлык “норма”
   const overallOk = trafficOk || cardOk || postOk;
 
   return {
@@ -229,8 +227,6 @@ async function getDailySalesPoints(sku, days = 14) {
   const map = new Map();
 
   for (const row of rows) {
-    const dims = row.dimensions || row.dimension || [];
-
     if (
       used.dimension &&
       used.dimension.length === 1 &&
@@ -294,7 +290,6 @@ function classifyProblemSmart(params) {
 
   const maturity = getFunnelMaturity({ impressions, clicks, orders });
 
-  // 0) вообще пусто
   if (
     impressions === 0 &&
     clicks === 0 &&
@@ -322,7 +317,6 @@ function classifyProblemSmart(params) {
     };
   }
 
-  // 1) реклама тратится, заказов нет (это можно диагностировать и при малой зрелости)
   if (ad_spend > 0 && orders === 0) {
     stage = "реклама";
     mainProblem = "реклама тратится, заказов нет";
@@ -344,7 +338,6 @@ function classifyProblemSmart(params) {
     };
   }
 
-  // 2) если данных в целом мало — не делаем “уверенные” выводы по CTR/Conv/Refund
   if (!maturity.overallOk) {
     stage = "наблюдение";
     mainProblem = "мало данных для уверенных выводов";
@@ -366,7 +359,6 @@ function classifyProblemSmart(params) {
     };
   }
 
-  // 3) возвраты — только если postOk (или старый порог orders>=minOrdersForStats)
   if (maturity.postOk && refund_rate >= THRESHOLDS.refundBad) {
     stage = "послепродажа";
     mainProblem = "критично много возвратов";
@@ -418,7 +410,6 @@ function classifyProblemSmart(params) {
     };
   }
 
-  // 4) трафик/CTR — только если trafficOk
   if (maturity.trafficOk) {
     if (impressions > 0 && clicks === 0) {
       stage = "показы";
@@ -450,7 +441,6 @@ function classifyProblemSmart(params) {
       tags.push("CTR");
     }
   } else {
-    // traffic immature
     if (stage === "неопределено") {
       stage = "наблюдение";
       mainProblem = "мало данных по трафику (CTR пока не показатель)";
@@ -460,7 +450,6 @@ function classifyProblemSmart(params) {
     }
   }
 
-  // 5) карточка/Conv — только если cardOk
   if (maturity.cardOk) {
     if (clicks > 0 && orders === 0) {
       stage = "карточка";
@@ -492,7 +481,6 @@ function classifyProblemSmart(params) {
       tags.push("Конверсия");
     }
   } else {
-    // card immature
     if (stage === "неопределено") {
       stage = "наблюдение";
       mainProblem = "мало данных по карточке (конверсия пока не показатель)";
@@ -502,7 +490,6 @@ function classifyProblemSmart(params) {
     }
   }
 
-  // 6) масштабирование (если есть “нормальная” зрелость)
   if (maturity.postOk && drrColor === "🟩" && refundColor === "🟩") {
     stage = "масштабирование";
     mainProblem = "карточка здорова, можно усиливать";
@@ -540,7 +527,6 @@ function classifyProblemSmart(params) {
   };
 }
 
-// сохранение снимка
 async function saveFunnelSnapshot(dateKey, days, rows, maxHistoryDays) {
   let history = {};
   try {
@@ -578,7 +564,6 @@ async function saveFunnelSnapshot(dateKey, days, rows, maxHistoryDays) {
   }
 }
 
-// главный конструктор воронки
 async function buildFunnel({
   days = 7,
   maxHistoryDays,
@@ -658,7 +643,6 @@ async function buildFunnel({
       refund_rate,
     });
 
-    // maturity объект для UI
     const funnel_maturity =
       problem.maturity || getFunnelMaturity({ impressions, clicks, orders });
 
@@ -687,7 +671,6 @@ async function buildFunnel({
       ctr: problem.ctr,
       conv: problem.conv,
 
-      // ✅ новое: зрелость данных по слоям
       funnel_maturity,
 
       orders_prev: prevOrders,

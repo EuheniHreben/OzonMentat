@@ -59,13 +59,29 @@ function detectDelimiter(headerLine) {
   return bestDelim;
 }
 
+// ✅ FIX: корректный путь к data/products.csv от корня проекта
+function resolveProductsPath() {
+  // src/server/modules/productInfo.js -> projectRoot = ../../../
+  const projectRoot = path.resolve(__dirname, "..", "..", "..");
+
+  const primary = path.join(projectRoot, "data", "products.csv");
+  if (fs.existsSync(primary)) return primary;
+
+  // fallback: как было раньше — рядом с модулем (на случай старой структуры)
+  const fallback = path.join(__dirname, "products.csv");
+  if (fs.existsSync(fallback)) return fallback;
+
+  // если нет — всё равно вернём primary (чтобы в логе был понятный путь)
+  return primary;
+}
+
 function loadProductsOnce() {
   if (productsBySku) return;
 
   productsBySku = {};
   allProducts = [];
 
-  const filePath = path.join(__dirname, "products.csv");
+  const filePath = resolveProductsPath();
 
   if (!fs.existsSync(filePath)) {
     console.warn("⚠️ productInfo: файл products.csv не найден:", filePath);
@@ -74,7 +90,7 @@ function loadProductsOnce() {
 
   const raw = fs.readFileSync(filePath, "utf8");
   if (!raw.trim()) {
-    console.warn("⚠️ productInfo: products.csv пустой");
+    console.warn("⚠️ productInfo: products.csv пустой:", filePath);
     return;
   }
 
