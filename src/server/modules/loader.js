@@ -6,6 +6,7 @@ const Excel = require("exceljs");
 const { exec } = require("child_process");
 
 const {
+  DATA_DIR,
   DEMAND_FACTOR,
   DAYS,
   DAYS_LONG,
@@ -39,13 +40,16 @@ const defaultConfig = {
   MAX_LOADER_HISTORY_DAYS,
 };
 
-const DISABLED_FILE = path.join(__dirname, "loaderDisabled.json");
+// ✅ Устойчивые пути (на случай, если структура проекта отличается)
+const DATA_DIR_EFFECTIVE = fs.existsSync(DATA_DIR)
+  ? DATA_DIR
+  : path.join(__dirname, "..", "..", "..", "data");
+
+// 🧩 Единый источник правды: disabled-SKU хранится в /data
+const DISABLED_FILE = path.join(DATA_DIR_EFFECTIVE, "loaderDisabled.json");
 
 // 🔎 файл истории прогрузок
-const LOADER_HISTORY_FILE = path.join(
-  __dirname,
-  "../../../data/loaderHistory.json"
-);
+const LOADER_HISTORY_FILE = path.join(DATA_DIR_EFFECTIVE, "loaderHistory.json");
 
 // кэш для поиска по offer_id
 let productsByOfferIdCache = null;

@@ -12,26 +12,26 @@ OzonMentat помогает селлеру принимать решения н�
 
 ### 📦 Прогрузка (Supply Loader)
 
-- Анализ продаж за неделю по каждому SKU  
-- Сглаживание истории продаж  
-- Расчёт коэффициента спроса на основе тренда  
-- Учёт остатков, товаров в пути и будущих поставок  
-- Минимальные партии, минимальные запасы  
-- Расчёт итоговой потребности  
-- Сохранение истории прогрузок  
+- Анализ продаж за неделю по каждому SKU
+- Сглаживание истории продаж
+- Расчёт коэффициента спроса на основе тренда
+- Учёт остатков, товаров в пути и будущих поставок
+- Минимальные партии, минимальные запасы
+- Расчёт итоговой потребности
+- Сохранение истории прогрузок
 
 ### 📊 Воронка (SKU Funnel)
 
-- Показатели SKU: показы, клики, CTR, заказы, выручка  
-- Поиск, сортировка, фильтры  
-- Копирование артикулов в один клик  
-- Категоризация товаров (активные / в поставке / спящие / отключённые)  
+- Показатели SKU: показы, клики, CTR, заказы, выручка
+- Поиск, сортировка, фильтры
+- Копирование артикулов в один клик
+- Категоризация товаров (активные / в поставке / спящие / отключённые)
 
 ### 📁 Работа с внешними данными
 
-- Загрузка Excel (cut-файлов) с будущими поставками  
-- Чтение нескольких файлов одновременно  
-- Автоматическое объединение данных  
+- Загрузка Excel (cut-файлов) с будущими поставками
+- Чтение нескольких файлов одновременно
+- Автоматическое объединение данных
 
 ---
 
@@ -96,17 +96,17 @@ npm start
 
 ## 📈 Как рассчитывается потребность по SKU
 
-- Берём продажи за последние 7 дней  
-- Сглаживаем историю  
-- Определяем тренд спроса  
-- Адаптируем коэффициент спроса  
+- Берём продажи за последние 7 дней
+- Сглаживаем историю
+- Определяем тренд спроса
+- Адаптируем коэффициент спроса
 - Учитываем:
-  - остаток в Ozon  
-  - товары в пути  
-  - будущие поставки из Excel  
-- Ограничиваем по максимальным дням хранения  
-- Округляем по минимальной партии  
-- Формируем итоговую рекомендацию по поставке  
+  - остаток в Ozon
+  - товары в пути
+  - будущие поставки из Excel
+- Ограничиваем по максимальным дням хранения
+- Округляем по минимальной партии
+- Формируем итоговую рекомендацию по поставке
 
 ---
 
@@ -114,10 +114,10 @@ npm start
 
 Система сохраняет:
 
-- историю продаж  
-- историю расчётов  
-- индивидуальные настройки SKU  
-- будущие поставки  
+- историю продаж
+- историю расчётов
+- индивидуальные настройки SKU
+- будущие поставки
 
 ---
 
@@ -125,11 +125,11 @@ npm start
 
 В рамках разработки я выполнял:
 
-- проектирование логики расчёта спроса  
-- определение архитектуры приложения  
-- формирование требований и структуры данных  
-- тестирование и проверку корректности поведения системы  
-- интеграцию модулей и настройку работы интерфейса  
+- проектирование логики расчёта спроса
+- определение архитектуры приложения
+- формирование требований и структуры данных
+- тестирование и проверку корректности поведения системы
+- интеграцию модулей и настройку работы интерфейса
 
 При разработке части кода использовались инструменты AI,  
 но логика, структура и правила работы системы создавались мной.
@@ -138,11 +138,11 @@ npm start
 
 ## 📌 Планы развития
 
-- Аналитика маржи и DRR  
-- Графики динамики продаж  
-- Модуль ценообразования  
-- Автоматическая оценка сезонности  
-- Панель управления SKU-настройками  
+- Аналитика маржи и DRR
+- Графики динамики продаж
+- Модуль ценообразования
+- Автоматическая оценка сезонности
+- Панель управления SKU-настройками
 
 ---
 
@@ -161,26 +161,26 @@ and providing a clear interface for SKU analytics.
 
 ### 📦 Supply Loader
 
-- Weekly SKU sales analysis  
-- Historical smoothing  
-- Demand coefficient based on trend detection  
-- Stock, in‑transit goods, and future supply handling  
-- Minimum stock and batch-size logic  
-- Final supply recommendation  
-- Supply history logging  
+- Weekly SKU sales analysis
+- Historical smoothing
+- Demand coefficient based on trend detection
+- Stock, in‑transit goods, and future supply handling
+- Minimum stock and batch-size logic
+- Final supply recommendation
+- Supply history logging
 
 ### 📊 SKU Funnel
 
-- SKU metrics: impressions, clicks, CTR, orders, revenue  
-- Search, sorting, filters  
-- One‑click SKU copying  
-- Categorization: active / in supply / dormant / disabled  
+- SKU metrics: impressions, clicks, CTR, orders, revenue
+- Search, sorting, filters
+- One‑click SKU copying
+- Categorization: active / in supply / dormant / disabled
 
 ### 📁 External Data Support
 
-- Excel (cut‑files) import for upcoming supplies  
-- Multi‑file reading  
-- Automatic unification of incoming data  
+- Excel (cut‑files) import for upcoming supplies
+- Multi‑file reading
+- Automatic unification of incoming data
 
 ---
 
@@ -245,17 +245,17 @@ npm start
 
 ## 📈 How Supply is Calculated
 
-- Retrieve last 7 days of sales  
-- Smooth historical data  
-- Determine sales trend  
-- Adapt demand coefficient  
+- Retrieve last 7 days of sales
+- Smooth historical data
+- Determine sales trend
+- Adapt demand coefficient
 - Consider:
-  - Ozon stock  
-  - goods in transit  
-  - future Excel supplies  
-- Restrict by max stock‑days  
-- Round by batch size  
-- Produce final supply recommendation  
+  - Ozon stock
+  - goods in transit
+  - future Excel supplies
+- Restrict by max stock‑days
+- Round by batch size
+- Produce final supply recommendation
 
 ---
 
@@ -263,10 +263,10 @@ npm start
 
 The system stores:
 
-- sales history  
-- supply calculation history  
-- individual SKU settings  
-- planned future supplies  
+- sales history
+- supply calculation history
+- individual SKU settings
+- planned future supplies
 
 ---
 
@@ -274,11 +274,11 @@ The system stores:
 
 Responsibilities included:
 
-- designing demand calculation logic  
-- defining overall system architecture  
-- specifying requirements and data structure  
-- testing and validation  
-- integrating modules and configuring UI workflows  
+- designing demand calculation logic
+- defining overall system architecture
+- specifying requirements and data structure
+- testing and validation
+- integrating modules and configuring UI workflows
 
 Some code was generated with AI assistance,  
 but all logic, rules, and system structure were designed by me.
@@ -287,8 +287,8 @@ but all logic, rules, and system structure were designed by me.
 
 ## 📌 Roadmap
 
-- Margin & DRR analytics  
-- Sales trend charts  
-- Dynamic pricing module  
-- Seasonality analysis  
-- SKU settings management panel  
+- Margin & DRR analytics
+- Sales trend charts
+- Dynamic pricing module
+- Seasonality analysis
+- SKU settings management panel

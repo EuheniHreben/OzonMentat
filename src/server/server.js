@@ -8,6 +8,8 @@ const { buildFunnel, getDailySalesPoints } = require("./modules/funnel");
 const { runLoader, openCutFolder } = require("./modules/loader");
 
 const {
+  ROOT_DIR,
+  DATA_DIR,
   DEMAND_FACTOR,
   DAYS,
   DAYS_LONG,
@@ -28,21 +30,37 @@ const {
 const app = express();
 const PORT = 3000;
 
-app.use(express.static(path.join(__dirname, "../../public")));
+// ✅ Устойчивые пути (на случай, если структура проекта отличается)
+const PUBLIC_DIR = fs.existsSync(path.join(ROOT_DIR, "public"))
+  ? path.join(ROOT_DIR, "public")
+  : path.join(__dirname, "../../public");
+
+const DATA_DIR_EFFECTIVE = fs.existsSync(DATA_DIR)
+  ? DATA_DIR
+  : path.join(__dirname, "../../data");
+
+app.use(express.static(PUBLIC_DIR));
 app.use(express.json());
 
-const exportsDir = path.join(__dirname, "../../data/exports");
+// 📁 exports (в /data)
+const exportsDir = path.join(DATA_DIR_EFFECTIVE, "exports");
 if (!fs.existsSync(exportsDir)) {
   fs.mkdirSync(exportsDir, { recursive: true });
 }
 app.use("/exports", express.static(exportsDir));
 
-const CUT_DIR = path.join(__dirname, "../../public/cut");
+const CUT_DIR = path.join(PUBLIC_DIR, "cut");
 
 // =====================================================
-// Runtime-config
+// Runtime-configs (loader / funnel / ads)
 // =====================================================
-const CONFIG_FILE = path.join(__dirname, "../../data/loaderConfig.json");
+const CONFIG_DIR = DATA_DIR_EFFECTIVE;
+
+const CONFIG_FILES = {
+  loader: path.join(CONFIG_DIR, "loaderConfig.json"),
+  funnel: path.join(CONFIG_DIR, "funnelConfig.json"),
+  ads: path.join(CONFIG_DIR, "adsConfig.json"),
+};
 
 const defaultLoaderConfig = {
   DEMAND_FACTOR,
@@ -58,24 +76,121 @@ const defaultLoaderConfig = {
   MAX_FUNNEL_HISTORY_DAYS,
 };
 
-function loadRuntimeConfig() {
+const defaultFunnelConfig = {
+  CTR_LOW: 0.03,
+  CONV_LOW: 0.05,
+  REFUND_WARN: 0.05,
+  REFUND_BAD: 0.1,
+  DRR_WARN: 0.3,
+  DRR_BAD: 0.5,
+  MATURITY_THRESHOLDS: {
+    IMPRESSIONS: 200,
+    CLICKS_FOR_CTR: 10,
+    CLICKS_FOR_CONV: 25,
+    ORDERS_FOR_CONV: 2,
+    ORDERS_FOR_REFUND: 5,
+  },
+};
+
+const defaultAdsConfig = {
+  ADS_THRESH: {
+    CTR_LOW: 0.03,
+    CTR_BAD: 0.015,
+    CONV_LOW: 0.05,
+
+    DRR_WARN: 0.3,
+    DRR_BAD: 0.5,
+    DRR_GOOD: 0.25,
+
+    STOCK_BAD_DAYS: 3,
+    STOCK_WARN_DAYS: 7,
+
+    NO_ORDER_CLICKS_WARN: 25,
+    NO_ORDER_CLICKS_BAD: 60,
+
+    SPEND_WITHOUT_REVENUE_WARN: 700,
+    SPEND_WITHOUT_REVENUE_BAD: 1500,
+  },
+  ADS_MIN_DATA: {
+    IMPRESSIONS: 800,
+    CLICKS: 20,
+    SPEND: 300,
+  },
+  MIN_STOCK_DAYS_TO_RUN: 3,
+  MIN_STOCK_DAYS_TO_SCALE: 7,
+};
+
+function loadJsonConfig(filePath, defaults) {
   try {
-    if (!fs.existsSync(CONFIG_FILE)) return { ...defaultLoaderConfig };
-    const raw = fs.readFileSync(CONFIG_FILE, "utf8");
-    if (!raw.trim()) return { ...defaultLoaderConfig };
+    if (!fs.existsSync(filePath)) return { ...defaults };
+    const raw = fs.readFileSync(filePath, "utf8");
+    if (!raw.trim()) return { ...defaults };
     const json = JSON.parse(raw);
-    return { ...defaultLoaderConfig, ...json };
+    // shallow merge + nested for known objects
+    const merged = { ...defaults, ...json };
+    if (defaults.MATURITY_THRESHOLDS) {
+      merged.MATURITY_THRESHOLDS = {
+        ...defaults.MATURITY_THRESHOLDS,
+        ...(json.MATURITY_THRESHOLDS || {}),
+      };
+    }
+    if (defaults.ADS_THRESH) {
+      merged.ADS_THRESH = {
+        ...defaults.ADS_THRESH,
+        ...(json.ADS_THRESH || {}),
+      };
+    }
+    if (defaults.ADS_MIN_DATA) {
+      merged.ADS_MIN_DATA = {
+        ...defaults.ADS_MIN_DATA,
+        ...(json.ADS_MIN_DATA || {}),
+      };
+    }
+    return merged;
   } catch (e) {
-    console.warn("⚠️ Не удалось прочитать loaderConfig.json:", e.message);
-    return { ...defaultLoaderConfig };
+    console.warn("⚠️ Не удалось прочитать конфиг:", filePath, e.message);
+    return { ...defaults };
   }
 }
 
-function saveRuntimeConfig(patch) {
-  const current = loadRuntimeConfig();
+function loadModuleConfig(moduleKey) {
+  if (moduleKey === "loader")
+    return loadJsonConfig(CONFIG_FILES.loader, defaultLoaderConfig);
+  if (moduleKey === "funnel")
+    return loadJsonConfig(CONFIG_FILES.funnel, defaultFunnelConfig);
+  if (moduleKey === "ads")
+    return loadJsonConfig(CONFIG_FILES.ads, defaultAdsConfig);
+  return null;
+}
+
+function saveJsonConfig(filePath, defaults, patch) {
+  const current = loadJsonConfig(filePath, defaults);
   const updated = { ...current, ...patch };
-  fs.writeFileSync(CONFIG_FILE, JSON.stringify(updated, null, 2), "utf8");
+  // nested merges
+  if (defaults.MATURITY_THRESHOLDS && patch.MATURITY_THRESHOLDS) {
+    updated.MATURITY_THRESHOLDS = {
+      ...current.MATURITY_THRESHOLDS,
+      ...patch.MATURITY_THRESHOLDS,
+    };
+  }
+  if (defaults.ADS_THRESH && patch.ADS_THRESH) {
+    updated.ADS_THRESH = { ...current.ADS_THRESH, ...patch.ADS_THRESH };
+  }
+  if (defaults.ADS_MIN_DATA && patch.ADS_MIN_DATA) {
+    updated.ADS_MIN_DATA = { ...current.ADS_MIN_DATA, ...patch.ADS_MIN_DATA };
+  }
+  fs.writeFileSync(filePath, JSON.stringify(updated, null, 2), "utf8");
   return updated;
+}
+
+function saveModuleConfig(moduleKey, patch) {
+  if (moduleKey === "loader")
+    return saveJsonConfig(CONFIG_FILES.loader, defaultLoaderConfig, patch);
+  if (moduleKey === "funnel")
+    return saveJsonConfig(CONFIG_FILES.funnel, defaultFunnelConfig, patch);
+  if (moduleKey === "ads")
+    return saveJsonConfig(CONFIG_FILES.ads, defaultAdsConfig, patch);
+  return null;
 }
 
 // =====================================================
@@ -96,7 +211,8 @@ function funnelKey({ days, adsEnabled }) {
 // =====================================================
 // Disabled SKU
 // =====================================================
-const DISABLED_FILE = path.join(__dirname, "../../data/loaderDisabled.json");
+// 🧩 Единый источник правды: disabled-SKU хранится в /data
+const DISABLED_FILE = path.join(DATA_DIR_EFFECTIVE, "loaderDisabled.json");
 
 function loadDisabledMap() {
   try {
@@ -125,7 +241,7 @@ app.get("/api/funnel", async (req, res) => {
   const days = Number(req.query.days) || 7;
   const now = Date.now();
 
-  const runtimeConfig = loadRuntimeConfig();
+  const runtimeConfig = loadModuleConfig("loader");
   const maxHistoryDays = runtimeConfig.MAX_FUNNEL_HISTORY_DAYS;
 
   const adsEnabled = !!ADS_ENABLED && now >= adsCooldownUntil;
@@ -259,7 +375,7 @@ app.get("/api/funnel/daily-sales", async (req, res) => {
 // =====================================================
 app.post("/api/loader/run", async (req, res) => {
   try {
-    const runtimeConfig = loadRuntimeConfig();
+    const runtimeConfig = loadModuleConfig("loader");
     const result = await runLoader(runtimeConfig);
 
     const fileUrl = result.fileName
@@ -308,8 +424,190 @@ app.get("/api/loader/cut-status", (req, res) => {
 // =====================================================
 // API: CONFIG
 // =====================================================
+// Унифицированный API (как у прогрузчика):
+// GET  /api/config/:module   -> { ok, config }
+// POST /api/config/:module   -> { ok, config }
+// POST /api/config/:module/reset -> { ok, config }
+app.get("/api/config/:module", (req, res) => {
+  const moduleKey = String(req.params.module || "").trim();
+  const cfg = loadModuleConfig(moduleKey);
+  if (!cfg) return res.status(404).json({ ok: false, error: "unknown-module" });
+  return res.json({ ok: true, config: cfg });
+});
+
+app.post("/api/config/:module/reset", (req, res) => {
+  try {
+    const moduleKey = String(req.params.module || "").trim();
+    const filePath = CONFIG_FILES[moduleKey];
+    if (!filePath)
+      return res.status(404).json({ ok: false, error: "unknown-module" });
+
+    // перезаписать файл дефолтами (без merge)
+    let defaults = null;
+    if (moduleKey === "loader") defaults = defaultLoaderConfig;
+    if (moduleKey === "funnel") defaults = defaultFunnelConfig;
+    if (moduleKey === "ads") defaults = defaultAdsConfig;
+    if (!defaults)
+      return res.status(404).json({ ok: false, error: "unknown-module" });
+
+    fs.writeFileSync(filePath, JSON.stringify(defaults, null, 2), "utf8");
+    return res.json({ ok: true, config: { ...defaults } });
+  } catch (e) {
+    return res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+app.post("/api/config/:module", (req, res) => {
+  try {
+    const moduleKey = String(req.params.module || "").trim();
+    if (!CONFIG_FILES[moduleKey])
+      return res.status(404).json({ ok: false, error: "unknown-module" });
+
+    // ✅ базовый clamp
+    const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+
+    let patch = {};
+
+    if (moduleKey === "loader") {
+      const allowedKeys = [
+        "DEMAND_FACTOR",
+        "DAYS",
+        "DAYS_LONG",
+        "MIN_STOCK_DEFAULT",
+        "PACK_SIZE_DEFAULT",
+        "SALES_SMOOTHING_ALPHA",
+        "SPIKE_MULTIPLIER",
+        "SPIKE_CAP_MULTIPLIER",
+        "MAX_DAYS_OF_STOCK",
+        "MAX_LOADER_HISTORY_DAYS",
+        "MAX_FUNNEL_HISTORY_DAYS",
+      ];
+      const rules = {
+        DEMAND_FACTOR: (v) => clamp(v, 0.2, 5),
+        DAYS: (v) => clamp(Math.round(v), 1, 60),
+        DAYS_LONG: (v) => clamp(Math.round(v), 1, 180),
+        MIN_STOCK_DEFAULT: (v) => clamp(Math.round(v), 0, 999999),
+        PACK_SIZE_DEFAULT: (v) => clamp(Math.round(v), 1, 999999),
+        SALES_SMOOTHING_ALPHA: (v) => clamp(v, 0, 1),
+        SPIKE_MULTIPLIER: (v) => clamp(v, 1, 50),
+        SPIKE_CAP_MULTIPLIER: (v) => clamp(v, 0.1, 20),
+        MAX_DAYS_OF_STOCK: (v) => clamp(Math.round(v), 1, 365),
+        MAX_LOADER_HISTORY_DAYS: (v) => clamp(Math.round(v), 1, 5000),
+        MAX_FUNNEL_HISTORY_DAYS: (v) => clamp(Math.round(v), 1, 5000),
+      };
+
+      for (const key of allowedKeys) {
+        if (key in (req.body || {})) {
+          const val = Number(req.body[key]);
+          if (Number.isFinite(val))
+            patch[key] = rules[key] ? rules[key](val) : val;
+        }
+      }
+    }
+
+    if (moduleKey === "funnel") {
+      const b = req.body || {};
+      const num = (v, min, max) =>
+        Number.isFinite(Number(v)) ? clamp(Number(v), min, max) : undefined;
+
+      patch = {
+        CTR_LOW: num(b.CTR_LOW, 0, 1),
+        CONV_LOW: num(b.CONV_LOW, 0, 1),
+        REFUND_WARN: num(b.REFUND_WARN, 0, 1),
+        REFUND_BAD: num(b.REFUND_BAD, 0, 1),
+        DRR_WARN: num(b.DRR_WARN, 0, 10),
+        DRR_BAD: num(b.DRR_BAD, 0, 10),
+      };
+
+      const mt = b.MATURITY_THRESHOLDS || {};
+      const int = (v, min, max) =>
+        Number.isFinite(Number(v))
+          ? clamp(Math.round(Number(v)), min, max)
+          : undefined;
+      const mtPatch = {
+        IMPRESSIONS: int(mt.IMPRESSIONS, 0, 1_000_000),
+        CLICKS_FOR_CTR: int(mt.CLICKS_FOR_CTR, 0, 1_000_000),
+        CLICKS_FOR_CONV: int(mt.CLICKS_FOR_CONV, 0, 1_000_000),
+        ORDERS_FOR_CONV: int(mt.ORDERS_FOR_CONV, 0, 1_000_000),
+        ORDERS_FOR_REFUND: int(mt.ORDERS_FOR_REFUND, 0, 1_000_000),
+      };
+      Object.keys(mtPatch).forEach(
+        (k) => mtPatch[k] === undefined && delete mtPatch[k]
+      );
+      if (Object.keys(mtPatch).length) patch.MATURITY_THRESHOLDS = mtPatch;
+    }
+
+    if (moduleKey === "ads") {
+      const b = req.body || {};
+      const num = (v, min, max) =>
+        Number.isFinite(Number(v)) ? clamp(Number(v), min, max) : undefined;
+      const int = (v, min, max) =>
+        Number.isFinite(Number(v))
+          ? clamp(Math.round(Number(v)), min, max)
+          : undefined;
+
+      const th = b.ADS_THRESH || {};
+      const md = b.ADS_MIN_DATA || {};
+
+      const thPatch = {
+        DRR_GOOD: num(th.DRR_GOOD, 0, 10),
+        DRR_WARN: num(th.DRR_WARN, 0, 10),
+        DRR_BAD: num(th.DRR_BAD, 0, 10),
+        CTR_LOW: num(th.CTR_LOW, 0, 1),
+        CTR_BAD: num(th.CTR_BAD, 0, 1),
+        CONV_LOW: num(th.CONV_LOW, 0, 1),
+        STOCK_BAD_DAYS: int(th.STOCK_BAD_DAYS, 0, 365),
+        STOCK_WARN_DAYS: int(th.STOCK_WARN_DAYS, 0, 365),
+        NO_ORDER_CLICKS_WARN: int(th.NO_ORDER_CLICKS_WARN, 0, 1_000_000),
+        NO_ORDER_CLICKS_BAD: int(th.NO_ORDER_CLICKS_BAD, 0, 1_000_000),
+        SPEND_WITHOUT_REVENUE_WARN: int(
+          th.SPEND_WITHOUT_REVENUE_WARN,
+          0,
+          1_000_000_000
+        ),
+        SPEND_WITHOUT_REVENUE_BAD: int(
+          th.SPEND_WITHOUT_REVENUE_BAD,
+          0,
+          1_000_000_000
+        ),
+      };
+      Object.keys(thPatch).forEach(
+        (k) => thPatch[k] === undefined && delete thPatch[k]
+      );
+
+      const mdPatch = {
+        IMPRESSIONS: int(md.IMPRESSIONS, 0, 1_000_000_000),
+        CLICKS: int(md.CLICKS, 0, 1_000_000_000),
+        SPEND: int(md.SPEND, 0, 1_000_000_000),
+      };
+      Object.keys(mdPatch).forEach(
+        (k) => mdPatch[k] === undefined && delete mdPatch[k]
+      );
+
+      patch = {
+        ADS_THRESH: thPatch,
+        ADS_MIN_DATA: mdPatch,
+        MIN_STOCK_DAYS_TO_RUN: int(b.MIN_STOCK_DAYS_TO_RUN, 0, 365),
+        MIN_STOCK_DAYS_TO_SCALE: int(b.MIN_STOCK_DAYS_TO_SCALE, 0, 365),
+      };
+      Object.keys(patch).forEach(
+        (k) => patch[k] === undefined && delete patch[k]
+      );
+      if (patch.ADS_THRESH && Object.keys(patch.ADS_THRESH).length === 0)
+        delete patch.ADS_THRESH;
+      if (patch.ADS_MIN_DATA && Object.keys(patch.ADS_MIN_DATA).length === 0)
+        delete patch.ADS_MIN_DATA;
+    }
+
+    const updated = saveModuleConfig(moduleKey, patch);
+    return res.json({ ok: true, config: updated });
+  } catch (e) {
+    return res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
 app.get("/api/loader/config", (req, res) => {
-  const cfg = loadRuntimeConfig();
+  const cfg = loadModuleConfig("loader");
   res.json({ ok: true, config: cfg });
 });
 
@@ -355,7 +653,7 @@ app.post("/api/loader/config", (req, res) => {
       }
     }
 
-    const updated = saveRuntimeConfig(patch);
+    const updated = saveModuleConfig("loader", patch);
     res.json({ ok: true, config: updated });
   } catch (e) {
     res.status(500).json({ ok: false, error: e.message });

@@ -38,20 +38,28 @@
 
     <!-- Верхний бар: вкладки + поиск -->
     <section class="controls">
-      <div class="chip-group">
-        <button id="tab-funnel" class="chip tab-chip tab-active" type="button">
-          Воронка
+      <div class="chip-group chip-group--tabs chip-group--relative">
+        <button
+          id="tab-funnel"
+          class="chip-btn tab-chip tab-active"
+          type="button"
+        >
+          📊 Воронка
         </button>
-        <button id="tab-loader" class="chip tab-chip" type="button">
-          Прогрузчик
+        <button id="tab-ads" class="chip-btn tab-chip" type="button">
+          📣 Реклама
         </button>
-        <button id="tab-ads" class="chip tab-chip" type="button">
-          Реклама
+        <button id="tab-loader" class="chip-btn tab-chip" type="button">
+          📦 Прогрузчик
         </button>
-        <button id="tab-price" class="chip tab-chip btn-gray" type="button">
+        <button id="tab-price" class="chip-btn tab-chip btn-gray" type="button">
           Ценообразователь
         </button>
-        <button id="tab-scanner" class="chip tab-chip btn-gray" type="button">
+        <button
+          id="tab-scanner"
+          class="chip-btn tab-chip btn-gray"
+          type="button"
+        >
           Сканер ниш
         </button>
       </div>
@@ -125,6 +133,16 @@
               </button>
             </div>
           </div>
+
+          <!-- ⚙️ Настройки воронки -->
+          <button
+            id="funnel-settings"
+            class="icon-btn"
+            type="button"
+            title="Настройки воронки"
+          >
+            ⚙️
+          </button>
         </div>
         <table id="funnel-table" class="funnel-table">
           <thead>
@@ -144,6 +162,103 @@
               <th class="sortable" data-field="returns">Возвраты</th>
               <th class="sortable" data-field="refund_rate">Возвраты %</th>
               <th>Приоритет</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </main>
+    </div>
+
+    <!-- Вьюха рекламы -->
+    <div id="view-ads" class="hidden">
+      <main class="table-wrapper">
+        <div class="loader-header">
+          <div class="loader-left">
+            <button id="reload-btn-ads" class="reload-btn" type="button">
+              Обновить данные
+            </button>
+            <!-- Период -->
+
+            <div class="chip-group">
+              <span class="chip-label">Период:</span>
+              <button
+                class="chip period-chip period-active"
+                data-days="7"
+                type="button"
+              >
+                7 дней
+              </button>
+              <button class="chip period-chip" data-days="30" type="button">
+                30 дней
+              </button>
+            </div>
+
+            <!-- Статус рекламы -->
+            <div class="chip-group">
+              <span class="chip-label">Статус:</span>
+              <button
+                class="chip ads-status-chip priority-active"
+                data-status="all"
+                type="button"
+              >
+                Все
+              </button>
+              <button
+                class="chip ads-status-chip"
+                data-status="good"
+                type="button"
+              >
+                🟩 Масштаб
+              </button>
+              <button
+                class="chip ads-status-chip"
+                data-status="warn"
+                type="button"
+              >
+                🟨 Внимание
+              </button>
+              <button
+                class="chip ads-status-chip"
+                data-status="bad"
+                type="button"
+              >
+                🟥 Стоп
+              </button>
+              <button
+                class="chip ads-status-chip"
+                data-status="immature"
+                type="button"
+              >
+                ⏳ Мало данных
+              </button>
+            </div>
+          </div>
+
+          <!-- ⚙️ Настройки рекламы -->
+          <button
+            id="ads-settings"
+            class="icon-btn"
+            type="button"
+            title="Настройки рекламы"
+          >
+            ⚙️
+          </button>
+        </div>
+
+        <table id="ads-table" class="funnel-table">
+          <thead>
+            <tr>
+              <th class="sortable" data-field="_index">#</th>
+              <th class="sortable" data-field="offer_id">Артикул</th>
+              <th class="sortable" data-field="impressions">Показы</th>
+              <th class="sortable" data-field="orders">Заказы</th>
+              <th class="sortable" data-field="revenue">Продажи</th>
+              <th class="sortable" data-field="ad_spend">Расход</th>
+              <th class="sortable" data-field="drr">DRR</th>
+              <th class="sortable" data-field="ctr">CTR</th>
+              <th class="sortable" data-field="conv">Конверсия</th>
+              <th class="sortable" data-field="ozon_stock">Остаток</th>
+              <th>Статус</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -216,89 +331,6 @@
       </main>
     </div>
 
-    <!-- Вьюха рекламы -->
-    <div id="view-ads" class="hidden">
-      <main class="table-wrapper">
-        <div class="loader-header">
-          <div class="loader-left">
-            <!-- Период -->
-            <div class="chip-group">
-              <span class="chip-label">Период:</span>
-              <button
-                class="chip period-chip period-active"
-                data-days="7"
-                type="button"
-              >
-                7 дней
-              </button>
-              <button class="chip period-chip" data-days="30" type="button">
-                30 дней
-              </button>
-            </div>
-
-            <!-- Статус рекламы -->
-            <div class="chip-group">
-              <span class="chip-label">Статус:</span>
-              <button
-                class="chip ads-status-chip priority-active"
-                data-status="all"
-                type="button"
-              >
-                Все
-              </button>
-              <button
-                class="chip ads-status-chip"
-                data-status="good"
-                type="button"
-              >
-                🟩 Масштаб
-              </button>
-              <button
-                class="chip ads-status-chip"
-                data-status="warn"
-                type="button"
-              >
-                🟨 Внимание
-              </button>
-              <button
-                class="chip ads-status-chip"
-                data-status="bad"
-                type="button"
-              >
-                🟥 Стоп
-              </button>
-              <button
-                class="chip ads-status-chip"
-                data-status="immature"
-                type="button"
-              >
-                ⏳ Мало данных
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <table id="ads-table" class="funnel-table">
-          <thead>
-            <tr>
-              <th class="sortable" data-field="_index">#</th>
-              <th class="sortable" data-field="offer_id">Артикул</th>
-              <th class="sortable" data-field="impressions">Показы</th>
-              <th class="sortable" data-field="orders">Заказы</th>
-              <th class="sortable" data-field="revenue">Продажи</th>
-              <th class="sortable" data-field="ad_spend">Расход</th>
-              <th class="sortable" data-field="drr">DRR</th>
-              <th class="sortable" data-field="ctr">CTR</th>
-              <th class="sortable" data-field="conv">Конверсия</th>
-              <th class="sortable" data-field="ozon_stock">Остаток</th>
-              <th>Статус</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </main>
-    </div>
-
     <!-- Боковая панель (для воронки) -->
     <aside id="details-panel" class="details-panel">
       <div class="details-header">
@@ -328,20 +360,18 @@
                   <span id="d-imp"></span>
                 </span>
               </div>
-              <div class="funnel-metric-row">
-                <span class="funnel-metric-label">CTR</span>
-                <span class="funnel-metric-value">
-                  <span id="d-ctr"></span>
-                </span>
-              </div>
             </div>
           </div>
 
-          <!-- Слой 2: Карточка -->
-          <div class="funnel-layer" data-layer="card" id="layer-card">
+          <!-- Слой 2: Переходы в карточку -->
+          <div class="funnel-layer" data-layer="interest" id="layer-interest">
             <div class="funnel-layer-header">
-              <span class="funnel-layer-title">Переходы</span>
-              <span id="d-layer-card-status" class="funnel-layer-status"></span>
+              <span class="funnel-layer-title">Переходы в карточку</span>
+              <!-- временно используем старый статус -->
+              <span
+                id="d-layer-interest-status"
+                class="funnel-layer-status"
+              ></span>
             </div>
             <div class="funnel-layer-body">
               <div class="funnel-metric-row">
@@ -351,47 +381,41 @@
                 </span>
               </div>
               <div class="funnel-metric-row">
+                <span class="funnel-metric-label">CTR</span>
+                <span class="funnel-metric-value">
+                  <span id="d-ctr"></span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Слой 3: Намерение к покупке -->
+          <div class="funnel-layer" data-layer="intent" id="layer-intent">
+            <div class="funnel-layer-header">
+              <span class="funnel-layer-title">Конверсия покупок</span>
+              <!-- пока тот же статус -->
+              <span
+                id="d-layer-intent-status"
+                class="funnel-layer-status"
+              ></span>
+            </div>
+            <div class="funnel-layer-body">
+              <div class="funnel-metric-row">
                 <span class="funnel-metric-label">Заказы</span>
                 <span class="funnel-metric-value">
                   <span id="d-orders"></span>
-                  <small id="d-orders-delta" class="metric-delta"></small>
                 </span>
               </div>
               <div class="funnel-metric-row">
                 <span class="funnel-metric-label">Конверсия</span>
                 <span class="funnel-metric-value">
                   <span id="d-conv"></span>
-                  <small id="d-conv-delta" class="metric-delta"></small>
                 </span>
               </div>
               <div class="funnel-metric-row">
                 <span class="funnel-metric-label">Выручка</span>
                 <span class="funnel-metric-value">
                   <span id="d-revenue"></span>
-                  <small id="d-revenue-delta" class="metric-delta"></small>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Слой 3: Послепродажа -->
-          <div class="funnel-layer" data-layer="post" id="layer-post">
-            <div class="funnel-layer-header">
-              <span class="funnel-layer-title">Возвраты</span>
-              <span id="d-layer-post-status" class="funnel-layer-status"></span>
-            </div>
-            <div class="funnel-layer-body">
-              <div class="funnel-metric-row">
-                <span class="funnel-metric-label">Возвраты</span>
-                <span class="funnel-metric-value">
-                  <span id="d-returns"></span>
-                </span>
-              </div>
-              <div class="funnel-metric-row">
-                <span class="funnel-metric-label">Возвраты %</span>
-                <span class="funnel-metric-value">
-                  <span id="d-refund"></span>
-                  <small id="d-refund-delta" class="metric-delta"></small>
                 </span>
               </div>
             </div>
@@ -414,7 +438,6 @@
                 <span class="funnel-metric-label">DRR</span>
                 <span class="funnel-metric-value">
                   <span id="d-drr"></span>
-                  <small id="d-drr-delta" class="metric-delta"></small>
                 </span>
               </div>
             </div>
@@ -445,7 +468,29 @@
             </div>
           </div>
 
-          <!-- Слой 6: Настройки SKU -->
+          <!-- Слой 6: Послепродажа -->
+          <div class="funnel-layer" data-layer="post" id="layer-post">
+            <div class="funnel-layer-header">
+              <span class="funnel-layer-title">Возвраты</span>
+              <span id="d-layer-post-status" class="funnel-layer-status"></span>
+            </div>
+            <div class="funnel-layer-body">
+              <div class="funnel-metric-row">
+                <span class="funnel-metric-label">Возвраты</span>
+                <span class="funnel-metric-value">
+                  <span id="d-returns"></span>
+                </span>
+              </div>
+              <div class="funnel-metric-row">
+                <span class="funnel-metric-label">Возвраты %</span>
+                <span class="funnel-metric-value">
+                  <span id="d-refund"></span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Слой 7: Настройки SKU -->
           <div class="funnel-layer funnel-layer-settings" data-layer="settings">
             <div class="funnel-layer-header">
               <span class="funnel-layer-title">Настройки SKU</span>
@@ -492,82 +537,312 @@
         </div>
 
         <h3>📝 Заметки</h3>
-        <div class="chart-container chart-bottom">
-        </div>
+        <div class="chart-container chart-bottom"></div>
       </div>
     </aside>
 
-    <!-- Модалка настроек прогрузчика -->
+    <!-- Модалка настроек Config -->
     <div id="config-modal" class="modal hidden">
       <div id="config-backdrop" class="modal-backdrop"></div>
       <div class="modal-dialog">
         <div class="modal-header">
-          <h2>Настройки прогрузчика</h2>
+          <h2>Настройки</h2>
           <button id="config-close" class="close-btn">✕</button>
         </div>
+
+        <!-- Tabs -->
+        <div class="config-tabs">
+          <button id="cfg-tab-funnel" class="chip tab-chip" type="button">
+            Воронка
+          </button>
+          <button
+            id="cfg-tab-loader"
+            class="chip tab-chip tab-active"
+            type="button"
+          >
+            Прогрузчик
+          </button>
+          <button id="cfg-tab-ads" class="chip tab-chip" type="button">
+            Реклама
+          </button>
+        </div>
+
         <div class="modal-body">
-          <div class="modal-grid">
-            <label>
-              Коэф. спроса (DEMAND_FACTOR)
-              <input id="cfg-demand" type="number" step="0.1" min="0" />
-            </label>
-            <label>
-              Период продаж 1 (DAYS)
-              <input id="cfg-days" type="number" step="1" min="1" />
-            </label>
-            <label>
-              Период продаж 2 (DAYS_LONG)
-              <input id="cfg-days-long" type="number" step="1" min="1" />
-            </label>
-            <label>
-              Мин. запас (MIN_STOCK)
-              <input id="cfg-min-stock" type="number" step="1" min="0" />
-            </label>
-            <label>
-              Размер упаковки (PACK_SIZE)
-              <input id="cfg-pack-size" type="number" step="1" min="1" />
-            </label>
-            <label>
-              Сглаживание (ALPHA)
-              <input id="cfg-alpha" type="number" step="0.05" min="0" max="1" />
-            </label>
-            <label>
-              Множитель всплеска
-              <input id="cfg-spike-mult" type="number" step="0.5" min="0" />
-            </label>
-            <label>
-              Лимит всплеска
-              <input id="cfg-spike-cap" type="number" step="0.1" min="0" />
-            </label>
-            <label>
-              Макс. дней запаса
-              <input id="cfg-max-days" type="number" step="1" min="1" />
-            </label>
-            <label>
-              История прогрузок (дней)
-              <input
-                id="cfg-max-loader-history"
-                type="number"
-                step="1"
-                min="1"
-              />
-            </label>
-            <label>
-              История воронки (дней)
-              <input
-                id="cfg-max-funnel-history"
-                type="number"
-                step="1"
-                min="1"
-              />
-            </label>
+          <!-- Loader view -->
+          <div id="cfg-view-loader" class="config-view">
+            <div class="modal-grid">
+              <label>
+                Коэф. спроса (DEMAND_FACTOR)
+                <input id="cfg-demand" type="number" step="0.1" min="0" />
+              </label>
+              <label>
+                Период продаж 1 (DAYS)
+                <input id="cfg-days" type="number" step="1" min="1" />
+              </label>
+              <label>
+                Период продаж 2 (DAYS_LONG)
+                <input id="cfg-days-long" type="number" step="1" min="1" />
+              </label>
+              <label>
+                Мин. запас (MIN_STOCK)
+                <input id="cfg-min-stock" type="number" step="1" min="0" />
+              </label>
+              <label>
+                Размер упаковки (PACK_SIZE)
+                <input id="cfg-pack-size" type="number" step="1" min="1" />
+              </label>
+              <label>
+                Сглаживание (ALPHA)
+                <input
+                  id="cfg-alpha"
+                  type="number"
+                  step="0.05"
+                  min="0"
+                  max="1"
+                />
+              </label>
+              <label>
+                Множитель всплеска
+                <input id="cfg-spike-mult" type="number" step="0.5" min="0" />
+              </label>
+              <label>
+                Лимит всплеска
+                <input id="cfg-spike-cap" type="number" step="0.1" min="0" />
+              </label>
+              <label>
+                Макс. дней запаса
+                <input id="cfg-max-days" type="number" step="1" min="1" />
+              </label>
+              <label>
+                История прогрузок (дней)
+                <input
+                  id="cfg-max-loader-history"
+                  type="number"
+                  step="1"
+                  min="1"
+                />
+              </label>
+              <label>
+                История воронки (дней)
+                <input
+                  id="cfg-max-funnel-history"
+                  type="number"
+                  step="1"
+                  min="1"
+                />
+              </label>
+            </div>
+            <p class="modal-hint">
+              При изменении параметров новый расчёт будет использовать эти
+              значения. Конфиг сохраняется в <code>loaderConfig.json</code>.
+            </p>
           </div>
-          <p class="modal-hint">
-            При изменении параметров новый расчёт будет использовать эти
-            значения. Конфиг сохраняется в <code>loaderConfig.json</code>.
-          </p>
+
+          <!-- Funnel view -->
+          <div id="cfg-view-funnel" class="config-view hidden">
+            <div class="modal-grid">
+              <label>
+                CTR низкий (доля)
+                <input
+                  id="cfg-funnel-ctr-low"
+                  type="number"
+                  step="0.001"
+                  min="0"
+                  max="1"
+                />
+              </label>
+              <label>
+                Конверсия низкая (доля)
+                <input
+                  id="cfg-funnel-conv-low"
+                  type="number"
+                  step="0.001"
+                  min="0"
+                  max="1"
+                />
+              </label>
+              <label>
+                Возвраты предупреждение (доля)
+                <input
+                  id="cfg-funnel-refund-warn"
+                  type="number"
+                  step="0.001"
+                  min="0"
+                  max="1"
+                />
+              </label>
+              <label>
+                Возвраты критично (доля)
+                <input
+                  id="cfg-funnel-refund-bad"
+                  type="number"
+                  step="0.001"
+                  min="0"
+                  max="1"
+                />
+              </label>
+              <label>
+                DRR предупреждение (доля)
+                <input
+                  id="cfg-funnel-drr-warn"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="5"
+                />
+              </label>
+              <label>
+                DRR критично (доля)
+                <input
+                  id="cfg-funnel-drr-bad"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="5"
+                />
+              </label>
+              <label>
+                Mature: мин. показы
+                <input id="cfg-funnel-mat-imp" type="number" step="1" min="0" />
+              </label>
+              <label>
+                Mature: кликов для CTR
+                <input
+                  id="cfg-funnel-mat-clicks-ctr"
+                  type="number"
+                  step="1"
+                  min="0"
+                />
+              </label>
+              <label>
+                Mature: кликов для конверсии
+                <input
+                  id="cfg-funnel-mat-clicks-conv"
+                  type="number"
+                  step="1"
+                  min="0"
+                />
+              </label>
+              <label>
+                Mature: заказов для конверсии
+                <input
+                  id="cfg-funnel-mat-orders-conv"
+                  type="number"
+                  step="1"
+                  min="0"
+                />
+              </label>
+              <label>
+                Mature: заказов для возвратов
+                <input
+                  id="cfg-funnel-mat-orders-ref"
+                  type="number"
+                  step="1"
+                  min="0"
+                />
+              </label>
+            </div>
+            <p class="modal-hint">
+              Пороговые значения для статусов слоёв воронки
+              (CTR/конверсия/возвраты/DRR) и критерии «достаточно данных».
+              Конфиг сохраняется в <code>funnelConfig.json</code>.
+            </p>
+          </div>
+
+          <!-- Ads view -->
+          <div id="cfg-view-ads" class="config-view hidden">
+            <div class="modal-grid">
+              <label>
+                DRR good (доля)
+                <input
+                  id="cfg-ads-drr-good"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="5"
+                />
+              </label>
+              <label>
+                DRR warn (доля)
+                <input
+                  id="cfg-ads-drr-warn"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="5"
+                />
+              </label>
+              <label>
+                DRR bad (доля)
+                <input
+                  id="cfg-ads-drr-bad"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="5"
+                />
+              </label>
+              <label>
+                CTR low (доля)
+                <input
+                  id="cfg-ads-ctr-low"
+                  type="number"
+                  step="0.001"
+                  min="0"
+                  max="1"
+                />
+              </label>
+              <label>
+                Conv low (доля)
+                <input
+                  id="cfg-ads-conv-low"
+                  type="number"
+                  step="0.001"
+                  min="0"
+                  max="1"
+                />
+              </label>
+              <label>
+                Min показов (maturity)
+                <input id="cfg-ads-min-imp" type="number" step="1" min="0" />
+              </label>
+              <label>
+                Min кликов (maturity)
+                <input id="cfg-ads-min-clicks" type="number" step="1" min="0" />
+              </label>
+              <label>
+                Min расход (maturity)
+                <input id="cfg-ads-min-spend" type="number" step="1" min="0" />
+              </label>
+              <label>
+                Min дней запаса (run)
+                <input
+                  id="cfg-ads-min-stock-run"
+                  type="number"
+                  step="1"
+                  min="0"
+                />
+              </label>
+              <label>
+                Min дней запаса (scale)
+                <input
+                  id="cfg-ads-min-stock-scale"
+                  type="number"
+                  step="1"
+                  min="0"
+                />
+              </label>
+            </div>
+            <p class="modal-hint">
+              Пороговые значения статусов рекламы и критерии «мало данных».
+              Конфиг сохраняется в <code>adsConfig.json</code>.
+            </p>
+          </div>
         </div>
         <div class="modal-footer">
+          <button id="config-reset" class="reload-btn" type="button">
+            Сбросить к дефолту
+          </button>
           <button id="config-save" class="reload-btn" type="button">
             Сохранить
           </button>
@@ -577,6 +852,7 @@
 
     <script src="/dataService.js"></script>
     <script src="/store.js"></script>
-    <script src="/app.js"></script>
+    <script src="/app.core.js"></script>
+    <script src="/app.ui.js"></script>
   </body>
 </html>

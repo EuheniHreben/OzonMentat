@@ -1,4 +1,4 @@
-// funnel.js (fixed for new structure + medians in rows)
+// funnel.js (fixed for new structure)
 
 const fs = require("fs");
 const path = require("path");
@@ -75,121 +75,6 @@ function clamp(n, min, max) {
   if (x < min) return min;
   if (x > max) return max;
   return x;
-}
-
-// ------------------------------
-// Median helpers (for "180 (150)")
-// ------------------------------
-function median(values) {
-  const arr = (Array.isArray(values) ? values : [])
-    .map((v) => Number(v))
-    .filter((v) => Number.isFinite(v));
-
-  if (!arr.length) return null;
-
-  arr.sort((a, b) => a - b);
-  const mid = Math.floor(arr.length / 2);
-  if (arr.length % 2 === 1) return arr[mid];
-  return (arr[mid - 1] + arr[mid]) / 2;
-}
-
-async function readFunnelHistorySafe() {
-  try {
-    if (!fs.existsSync(FUNNEL_HISTORY_FILE)) return {};
-    const raw = await fs.promises.readFile(FUNNEL_HISTORY_FILE, "utf8");
-    if (!raw.trim()) return {};
-    const json = JSON.parse(raw);
-    return json && typeof json === "object" ? json : {};
-  } catch (e) {
-    console.warn("⚠️ Не удалось прочитать funnelHistory.json:", e.message);
-    return {};
-  }
-}
-
-/**
- * Строим индекс медиан по SKU из истории.
- * Берём только history[dateKey][String(days)] (7/30), т.е. сравнение "с собой" в рамках выбранного окна.
- *
- * Возвращает:
- * {
- *   [sku]: {
- *     orders_med, revenue_med, ctr_med, conv_med, drr_med, refund_rate_med,
- *     impressions_med, clicks_med, ad_spend_med, returns_med, ozon_stock_med, avg_check_med
- *   }
- * }
- */
-function buildSkuMedianIndex(history, days, maxHistoryDaysLimit) {
-  const dKey = String(days);
-
-  const dateKeys = Object.keys(history || {})
-    .filter((k) => history[k] && typeof history[k] === "object")
-    .sort();
-
-  // ограничиваем объём истории (последние N дат)
-  const limitedKeys =
-    Number(maxHistoryDaysLimit) && Number(maxHistoryDaysLimit) > 0
-      ? dateKeys.slice(-Number(maxHistoryDaysLimit))
-      : dateKeys;
-
-  // накопители по SKU
-  const acc = new Map();
-  const push = (sku, field, value) => {
-    if (!sku) return;
-    if (!acc.has(sku)) acc.set(sku, {});
-    const bucket = acc.get(sku);
-    if (!bucket[field]) bucket[field] = [];
-    bucket[field].push(value);
-  };
-
-  for (const dateKey of limitedKeys) {
-    const perDay = history[dateKey];
-    if (!perDay || typeof perDay !== "object") continue;
-
-    const rows = perDay[dKey];
-    if (!Array.isArray(rows) || !rows.length) continue;
-
-    for (const r of rows) {
-      const sku = String(r.sku || "").trim();
-      if (!sku) continue;
-
-      // берём те поля, которые уже есть в снапшотах
-      push(sku, "orders", r.orders);
-      push(sku, "revenue", r.revenue);
-      push(sku, "ctr", r.ctr);
-      push(sku, "conv", r.conv);
-      push(sku, "drr", r.drr);
-      push(sku, "refund_rate", r.refund_rate);
-
-      push(sku, "impressions", r.impressions);
-      push(sku, "clicks", r.clicks);
-      push(sku, "ad_spend", r.ad_spend);
-      push(sku, "returns", r.returns);
-      push(sku, "ozon_stock", r.ozon_stock);
-      push(sku, "avg_check", r.avg_check);
-    }
-  }
-
-  // финальный индекс медиан
-  const out = {};
-  for (const [sku, bucket] of acc.entries()) {
-    out[sku] = {
-      orders_med: median(bucket.orders),
-      revenue_med: median(bucket.revenue),
-      ctr_med: median(bucket.ctr),
-      conv_med: median(bucket.conv),
-      drr_med: median(bucket.drr),
-      refund_rate_med: median(bucket.refund_rate),
-
-      impressions_med: median(bucket.impressions),
-      clicks_med: median(bucket.clicks),
-      ad_spend_med: median(bucket.ad_spend),
-      returns_med: median(bucket.returns),
-      ozon_stock_med: median(bucket.ozon_stock),
-      avg_check_med: median(bucket.avg_check),
-    };
-  }
-
-  return out;
 }
 
 // ------------------------------
@@ -527,6 +412,7 @@ function classifyProblemSmart(params) {
 
   if (maturity.trafficOk) {
     if (impressions > 0 && clicks === 0) {
+      // Переходы в карточку: пользователь видит превью, но не кликает
       stage = "переходы";
       mainProblem = "показы есть, кликов нет";
       recommendation =
@@ -548,8 +434,13 @@ function classifyProblemSmart(params) {
     }
 
     if (ctr < THRESHOLDS.ctrLow) {
+      // Дробим причины плохого CTR:
+      // 1) если карточка конвертит (conv норм) — вероятнее слабое превью/главное фото
+      // 2) если и CTR, и конверсия низкие — чаще цена/ожидание (особенно в склейках с одинаковыми фото)
+      // 3) если данных по конверсии мало — не делаем сильных выводов, вероятнее релевантность/витрина
       stage = "переходы";
 
+      // если по карточке ещё мало данных — не обвиняем цену/конверсию
       if (!maturity.cardOk) {
         mainProblem = "низкий CTR (мало кликов)";
         recommendation =
@@ -620,6 +511,7 @@ function classifyProblemSmart(params) {
     }
   }
 
+  // Масштабировать можно только если и переходы (CTR), и намерение (конверсия) в норме.
   if (
     maturity.postOk &&
     drrColor === "🟩" &&
@@ -727,16 +619,6 @@ async function buildFunnel({
 
   const stocksMap = await getStocksMap();
 
-  // ✅ читаем историю и строим индекс медиан по SKU (до сохранения текущего снапшота)
-  const history = await readFunnelHistorySafe();
-
-  const historyLimit =
-    Number(maxHistoryDays) && Number(maxHistoryDays) > 0
-      ? Number(maxHistoryDays)
-      : DEFAULT_MAX_FUNNEL_HISTORY_DAYS;
-
-  const medIndex = buildSkuMedianIndex(history, days, historyLimit);
-
   const rows = [];
 
   const allProducts =
@@ -792,15 +674,14 @@ async function buildFunnel({
     const funnel_maturity =
       problem.maturity || getFunnelMaturity({ impressions, clicks, orders });
 
-    // ✅ медианы по истории (если истории нет — null)
-    const med = medIndex[skuKey] || {};
-
     rows.push({
       sku: skuKey,
       offer_id: product.offer_id,
       name: product.name || "",
 
       // ✅ Признак ручного отключения в products.csv
+      // Используется UI (воронка), чтобы честно показывать "не участвует" и
+      // не давать ложный тумблер там, где отключение задано в справочнике.
       disabled: !!product.disabled,
 
       impressions,
@@ -813,20 +694,6 @@ async function buildFunnel({
       avg_check: Number(avg_check.toFixed(0)),
       returns,
       refund_rate,
-
-      // ✅ медианы для "180 (150)"
-      impressions_med: med.impressions_med ?? null,
-      clicks_med: med.clicks_med ?? null,
-      orders_med: med.orders_med ?? null,
-      revenue_med: med.revenue_med ?? null,
-      ozon_stock_med: med.ozon_stock_med ?? null,
-      ad_spend_med: med.ad_spend_med ?? null,
-      drr_med: med.drr_med ?? null,
-      avg_check_med: med.avg_check_med ?? null,
-      returns_med: med.returns_med ?? null,
-      refund_rate_med: med.refund_rate_med ?? null,
-      ctr_med: med.ctr_med ?? null,
-      conv_med: med.conv_med ?? null,
 
       stage: problem.stage,
       priority: problem.priority,
