@@ -2,7 +2,7 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <title>Воронка по SKU (Lite)</title>
+    <title>Marketplace Mentat</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/style.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -10,12 +10,12 @@
 
   <body>
     <header class="header">
-      <h1 id="page-title">📊 Воронка по SKU</h1>
+      <h1 id="page-title">📊 Воронка</h1>
 
       <div class="store-switch">
         <button
           id="store-switch-btn"
-          class="reload-btn btn-green store-switch-btn"
+          class="btn btn--green store-switch-btn"
           type="button"
         >
           Palantir Ru
@@ -39,27 +39,17 @@
     <!-- Верхний бар: вкладки + поиск -->
     <section class="controls">
       <div class="chip-group chip-group--tabs chip-group--relative">
-        <button
-          id="tab-funnel"
-          class="chip-btn tab-chip tab-active"
-          type="button"
-        >
+        <button id="tab-funnel" class="tab-chip tab-active" type="button">
           📊 Воронка
         </button>
-        <button id="tab-ads" class="chip-btn tab-chip" type="button">
-          📣 Реклама
-        </button>
-        <button id="tab-loader" class="chip-btn tab-chip" type="button">
+        <button id="tab-ads" class="tab-chip" type="button">📣 Реклама</button>
+        <button id="tab-loader" class="tab-chip" type="button">
           📦 Прогрузчик
         </button>
-        <button id="tab-price" class="chip-btn tab-chip btn-gray" type="button">
+        <button id="tab-price" class="tab-chip tab-disabled" type="button">
           Ценообразователь
         </button>
-        <button
-          id="tab-scanner"
-          class="chip-btn tab-chip btn-gray"
-          type="button"
-        >
+        <button id="tab-scanner" class="tab-chip tab-disabled" type="button">
           Сканер ниш
         </button>
       </div>
@@ -81,7 +71,7 @@
           <div class="loader-left">
             <button
               id="reload-btn"
-              class="reload-btn btn-with-progress"
+              class="btn reload-btn btn-with-progress"
               type="button"
             >
               Обновить данные
@@ -174,7 +164,7 @@
       <main class="table-wrapper">
         <div class="loader-header">
           <div class="loader-left">
-            <button id="reload-btn-ads" class="reload-btn" type="button">
+            <button id="reload-btn-ads" class="btn reload-btn" type="button">
               Обновить данные
             </button>
             <!-- Период -->
@@ -278,7 +268,7 @@
             ></audio> -->
             <button
               id="loader-run"
-              class="reload-btn loader-btn btn-with-progress"
+              class="btn reload-btn loader-btn btn-with-progress"
               type="button"
             >
               <span>Запустить прогрузку</span>
@@ -550,19 +540,15 @@
           <button id="config-close" class="close-btn">✕</button>
         </div>
 
-        <!-- Tabs -->
-        <div class="config-tabs">
-          <button id="cfg-tab-funnel" class="chip tab-chip" type="button">
+        <!-- Tabs (same style as top page tabs) -->
+        <div class="chip-group chip-group--tabs config-tabs">
+          <button id="cfg-tab-funnel" class="tab-chip" type="button">
             Воронка
           </button>
-          <button
-            id="cfg-tab-loader"
-            class="chip tab-chip tab-active"
-            type="button"
-          >
+          <button id="cfg-tab-loader" class="tab-chip tab-active" type="button">
             Прогрузчик
           </button>
-          <button id="cfg-tab-ads" class="chip tab-chip" type="button">
+          <button id="cfg-tab-ads" class="tab-chip" type="button">
             Реклама
           </button>
         </div>
@@ -840,10 +826,10 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button id="config-reset" class="reload-btn" type="button">
+          <button id="config-reset" class="btn reload-btn" type="button">
             Сбросить к дефолту
           </button>
-          <button id="config-save" class="reload-btn" type="button">
+          <button id="config-save" class="btn reload-btn" type="button">
             Сохранить
           </button>
         </div>
