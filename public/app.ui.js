@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   hydrateFunnelFromCache();
   loadFunnel({ background: true }); // обновим в фоне
-  startAutoRefresh();
+  scheduleNextAutoRefresh("init");
   setPageTitle(getActiveTab());
 
   const reloadBtn = document.getElementById("reload-btn");
@@ -173,7 +173,7 @@ function setActiveRow({ tableId, offerId }) {
   if (!offerId) return;
 
   const selector = `#${tableId} tbody tr[data-offer-id="${CSS.escape(
-    String(offerId)
+    String(offerId),
   )}"]`;
   const tr = document.querySelector(selector);
   if (tr) tr.classList.add("row-active");
@@ -319,19 +319,19 @@ function renderTable(rows) {
 
       if (idx === 5 && row.orders_prev !== undefined) {
         span.classList.add(
-          classifyDeltaClass(row.orders_change, { inverse: false })
+          classifyDeltaClass(row.orders_change, { inverse: false }),
         );
       }
 
       if (idx === 7 && row.revenue_prev !== undefined) {
         span.classList.add(
-          classifyDeltaClass(row.revenue_change, { inverse: false })
+          classifyDeltaClass(row.revenue_change, { inverse: false }),
         );
       }
 
       if (idx === 13 && row.refund_prev !== undefined) {
         span.classList.add(
-          classifyDeltaClass(row.refund_change, { inverse: true })
+          classifyDeltaClass(row.refund_change, { inverse: true }),
         );
       }
 
@@ -361,7 +361,7 @@ function renderTable(rows) {
           const dos = daily > 0 ? stock / daily : null;
           if (dos != null && Number.isFinite(dos)) {
             span.title = `Дней запаса ≈ ${dos.toFixed(
-              1
+              1,
             )} (порог: ≤3 плохо, ≤7 внимание)`;
           }
         }
@@ -414,25 +414,40 @@ function drawSkuChart(points) {
   });
 }
 async function loadDailySalesChart(row) {
-  const skuKey = String(row?.sku || row?.offer_id || "").trim();
-  if (!skuKey) return drawSkuChart([]);
+  // ✅ берем ТОЛЬКО sku (а не offer_id/название)
+  const skuKey =
+    typeof getSkuKey === "function"
+      ? getSkuKey(row)
+      : String(row?.sku || "").trim();
 
+  if (!skuKey) {
+    console.warn("Нет sku у строки — график не строим:", row);
+    return drawSkuChart([]);
+  }
+
+  const reqId = ++skuChartReqId;
   drawSkuChart([]);
 
   try {
-    const days = 14;
+    // const days = Number(periodDays || 7);
+    const days = Number(periodDays || 14) * 3;
+
     const res = await fetch(
-      `/api/funnel/daily-sales?sku=${encodeURIComponent(skuKey)}&days=${days}`
+      `/api/funnel/daily-sales?sku=${encodeURIComponent(skuKey)}&days=${days}`,
     );
     const json = await res.json();
+
+    if (reqId !== skuChartReqId) return;
 
     if (!json.ok || !Array.isArray(json.points)) return drawSkuChart([]);
     drawSkuChart(json.points);
   } catch (e) {
+    if (reqId !== skuChartReqId) return;
     console.error("Ошибка загрузки дневного графика:", e);
     drawSkuChart([]);
   }
 }
+
 function setDelta(id, change, inverse = false) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -456,7 +471,7 @@ function setDelta(id, change, inverse = false) {
 function setLayerStatus(layerKey, data) {
   const statusEl = document.getElementById(`d-layer-${layerKey}-status`);
   const layerEl = document.querySelector(
-    `.funnel-layer[data-layer="${layerKey}"]`
+    `.funnel-layer[data-layer="${layerKey}"]`,
   );
   if (!statusEl || !layerEl || !data) return;
 
@@ -553,9 +568,19 @@ function showDetails(row) {
 
   panel.classList.add("visible");
 }
+
 function hideDetails() {
   const panel = document.getElementById("details-panel");
   if (panel) panel.classList.remove("visible");
+
+  // отменяем любые «висящие» ответы по графику
+  skuChartReqId++;
+
+  // очищаем график, чтобы при следующем SKU не мигал старый
+  if (skuChart) {
+    skuChart.destroy();
+    skuChart = null;
+  }
 
   // снять подсветку активных строк
   activeFunnelOfferId = null;
@@ -563,6 +588,7 @@ function hideDetails() {
   setActiveRow({ tableId: "funnel-table", offerId: null });
   setActiveRow({ tableId: "ads-table", offerId: null });
 }
+
 function withFakeProgress(btn, asyncFn) {
   if (!btn) return asyncFn();
 
@@ -826,7 +852,7 @@ function renderAdsTable(rows) {
           "level-good",
           "level-warn",
           "level-bad",
-          "level-info"
+          "level-info",
         );
 
         if (status.level === "good") span.classList.add("level-good");

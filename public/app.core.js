@@ -3,7 +3,7 @@
 // Global state
 // =====================================================
 
-const GRAPH_ENABLED = false;
+const GRAPH_ENABLED = true;
 
 let allRows = [];
 let filteredRows = [];
@@ -26,6 +26,7 @@ let AdsConfig = null;
 
 // маленький график
 let skuChart = null;
+let skuChartReqId = 0;
 
 // прогрузчик
 let loaderItems = [];
@@ -377,25 +378,59 @@ function initStoreSwitcher() {
 // Дедупликация одинаковых запросов (store + period)
 const funnelInFlight = new Map();
 
-const AUTO_REFRESH_MS = 15 * 60 * 1000; // 15 минут (или 30*60*1000)
-
 let autoRefreshTimer = null;
 
-function startAutoRefresh() {
-  stopAutoRefresh();
-  autoRefreshTimer = setInterval(autoRefreshSafe, AUTO_REFRESH_MS);
-}
+const AUTO_REFRESH_AFTER_SUCCESS_MS = 60 * 60 * 1000; // 30 минут (или 60*60*1000)
 
 function stopAutoRefresh() {
-  if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+  if (autoRefreshTimer) clearTimeout(autoRefreshTimer);
   autoRefreshTimer = null;
 }
 
-function autoRefreshSafe() {
-  if (document.hidden) return;
-  if (navigator.onLine === false) return;
-  if (funnelInFlight.size > 0) return;
-  loadFunnel({ background: true });
+function scheduleNextAutoRefresh(reason = "normal") {
+  stopAutoRefresh();
+
+  // оффлайн — пробуем чаще, но без спама
+  if (navigator.onLine === false) {
+    autoRefreshTimer = setTimeout(
+      () => scheduleNextAutoRefresh("offline"),
+      60 * 1000,
+    );
+    return;
+  }
+
+  const last = Number(REFRESH_UI.lastSuccessAt || 0);
+  const base = last > 0 ? last : Date.now(); // если успеха не было — считаем от сейчас
+  const nextAt = base + AUTO_REFRESH_AFTER_SUCCESS_MS;
+  const delay = Math.max(1000, nextAt - Date.now());
+
+  autoRefreshTimer = setTimeout(async () => {
+    // вкладка скрыта — не дёргаем API, но и не крутимся каждую секунду
+    if (document.hidden) {
+      autoRefreshTimer = setTimeout(
+        () => scheduleNextAutoRefresh("hidden"),
+        5 * 60 * 1000, // 5 минут
+      );
+      return;
+    }
+
+    // оффлайн или уже идёт запрос
+    if (navigator.onLine === false || funnelInFlight.size > 0) {
+      autoRefreshTimer = setTimeout(
+        () => scheduleNextAutoRefresh("blocked"),
+        60 * 1000,
+      );
+      return;
+    }
+
+    try {
+      await loadFunnel({ background: true });
+      // lastSuccessAt обновляется внутри loadFunnel
+    } finally {
+      // следующий цикл — уже от нового lastSuccessAt
+      scheduleNextAutoRefresh("success");
+    }
+  }, delay);
 }
 
 // =====================================================
@@ -514,7 +549,7 @@ function renderRefreshButtons() {
     text = ago ? `Обновлено · ${ago}` : "Обновлено";
     title = lastSuccessAt
       ? `Последнее успешное обновление: ${new Date(
-          lastSuccessAt
+          lastSuccessAt,
         ).toLocaleString("ru-RU")}`
       : "Последнее успешное обновление";
   } else if (state === "cache") {
@@ -537,7 +572,7 @@ function renderRefreshButtons() {
       const ago = formatAgo(lastSuccessAt);
       text = `Обновлено · ${ago}`;
       title = `Последнее успешное обновление: ${new Date(
-        lastSuccessAt
+        lastSuccessAt,
       ).toLocaleString("ru-RU")}`;
     }
   }
@@ -561,6 +596,20 @@ function startRefreshUiTicker() {
     // просто перерисуем текст типа "12 мин" раз в минуту
     renderRefreshButtons();
   }, 60 * 1000);
+}
+
+// === Auto refresh: resume when tab becomes visible ===
+let visibilityHookInited = false;
+
+function initAutoRefreshVisibilityHook() {
+  if (visibilityHookInited) return;
+  visibilityHookInited = true;
+
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+      scheduleNextAutoRefresh("tab-visible");
+    }
+  });
 }
 
 // =====================================================
@@ -772,7 +821,7 @@ function hydrateFunnelFromCache() {
   setFunnelStatus(
     fresh
       ? "🧠 мгновенный старт · данные свежие"
-      : "🧠 мгновенный старт · данные могут быть устаревшими · обновляю…"
+      : "🧠 мгновенный старт · данные могут быть устаревшими · обновляю…",
   );
 
   // ✅ Кнопка = статус: показываем, что сейчас отображается кэш
@@ -793,7 +842,7 @@ async function loadFunnel(opts = {}) {
   const ds = window.DataService;
   if (!ds || typeof ds.loadFunnel !== "function") {
     console.error(
-      "DataService.loadFunnel недоступен. Проверь подключение dataService.js"
+      "DataService.loadFunnel недоступен. Проверь подключение dataService.js",
     );
     setFunnelStatus("🔌 DataService не найден");
 
@@ -841,12 +890,12 @@ async function loadFunnel(opts = {}) {
       const rows = Array.isArray(json?.rows)
         ? json.rows
         : Array.isArray(json?.items)
-        ? json.items
-        : Array.isArray(json?.data)
-        ? json.data
-        : Array.isArray(json)
-        ? json
-        : [];
+          ? json.items
+          : Array.isArray(json?.data)
+            ? json.data
+            : Array.isArray(json)
+              ? json
+              : [];
 
       const isOk =
         (json && json.ok === true) ||
@@ -888,7 +937,7 @@ async function loadFunnel(opts = {}) {
 
       // 9) Статус
       setFunnelStatus(
-        "✅ Обновлено · " + new Date(ts).toLocaleTimeString("ru-RU")
+        "✅ Обновлено · " + new Date(ts).toLocaleTimeString("ru-RU"),
       );
 
       // ✅ Кнопка = статус: "обновлено · X мин"
@@ -900,6 +949,8 @@ async function loadFunnel(opts = {}) {
         bg: false,
         lastSuccessAt: ts,
       });
+
+      scheduleNextAutoRefresh();
     } catch (err) {
       console.error("Ошибка загрузки /api/funnel:", err);
 
@@ -907,7 +958,7 @@ async function loadFunnel(opts = {}) {
 
       if (background) {
         setFunnelStatus(
-          "🧠 мгновенный старт · сеть не ответила · показываю кэш"
+          "🧠 мгновенный старт · сеть не ответила · показываю кэш",
         );
 
         setRefreshUiState({
@@ -1259,6 +1310,7 @@ function evaluateFunnelLayers(row) {
   return { traffic, interest, intent, post, ads, stock: stockLayer };
 }
 
+// =====================================================
 // Details panel
 // =====================================================
 function getMinBatchStorageKey(row) {
@@ -1343,7 +1395,7 @@ async function bindParticipateToggle(row) {
         cb.checked = !participate;
         console.warn("Не удалось сохранить участие SKU в прогрузке:", json);
         alert(
-          "Не удалось сохранить настройку участия в прогрузке. Проверь соединение и попробуй ещё раз."
+          "Не удалось сохранить настройку участия в прогрузке. Проверь соединение и попробуй ещё раз.",
         );
         return;
       }
@@ -1358,17 +1410,13 @@ async function bindParticipateToggle(row) {
       cb.checked = !participate;
       console.warn("Ошибка при сохранении disabled SKU:", e);
       alert(
-        "Ошибка при сохранении настройки участия в прогрузке. Попробуй ещё раз."
+        "Ошибка при сохранении настройки участия в прогрузке. Попробуй ещё раз.",
       );
     } finally {
       cb.disabled = false;
     }
   };
 }
-
-// =====================================================
-// Fake progress for buttons
-// =====================================================
 
 // =====================================================
 // Loader (frontend)
@@ -1622,11 +1670,11 @@ function initConfigModal() {
         activeModule === "ads"
           ? "Реклама"
           : activeModule === "funnel"
-          ? "Воронка"
-          : "Прогрузчик";
+            ? "Воронка"
+            : "Прогрузчик";
 
       const ok = confirm(
-        `Точно сбросить настройки модуля «${moduleName}» к дефолту?\n\nТекущие значения будут потеряны.`
+        `Точно сбросить настройки модуля «${moduleName}» к дефолту?\n\nТекущие значения будут потеряны.`,
       );
       if (!ok) return;
 
@@ -1640,7 +1688,7 @@ function initConfigModal() {
         if (!res.ok || !json || !json.ok) {
           alert(
             "Не удалось сбросить конфиг: " +
-              ((json && json.error) || "см. консоль")
+              ((json && json.error) || "см. консоль"),
           );
           return;
         }
@@ -1754,7 +1802,7 @@ function applyLoaderConfigSideEffects(cfg) {
   // обновить подписи/tooltip в таблице прогрузчика (как было раньше)
 
   const salesTh = document.querySelector(
-    '#loader-table thead th[data-field="week_sales_raw"]'
+    '#loader-table thead th[data-field="week_sales_raw"]',
   );
   if (salesTh) {
     salesTh.innerHTML = `Продажи<br><small>за ${cfg.DAYS} д</small>`;
@@ -1762,7 +1810,7 @@ function applyLoaderConfigSideEffects(cfg) {
   }
 
   const salesLongTh = document.querySelector(
-    '#loader-table thead th[data-field="week_sales_long_raw"]'
+    '#loader-table thead th[data-field="week_sales_long_raw"]',
   );
   if (salesLongTh) {
     salesLongTh.innerHTML = `Продажи<br><small>за ${cfg.DAYS_LONG} д</small>`;
@@ -1770,7 +1818,7 @@ function applyLoaderConfigSideEffects(cfg) {
   }
 
   const smoothTh = document.querySelector(
-    '#loader-table thead th[data-field="week_sales_effective"]'
+    '#loader-table thead th[data-field="week_sales_effective"]',
   );
   if (smoothTh) {
     smoothTh.title =
@@ -1778,7 +1826,7 @@ function applyLoaderConfigSideEffects(cfg) {
   }
 
   const targetTh = document.querySelector(
-    '#loader-table thead th[data-field="target_demand"]'
+    '#loader-table thead th[data-field="target_demand"]',
   );
   if (targetTh) {
     targetTh.innerHTML = `Цель спроса`;
@@ -1787,7 +1835,7 @@ function applyLoaderConfigSideEffects(cfg) {
   }
 
   const demandTh = document.querySelector(
-    '#loader-table thead th[data-field="demand_factor"]'
+    '#loader-table thead th[data-field="demand_factor"]',
   );
   if (demandTh) {
     demandTh.innerHTML = `Кэфф. спроса<br><small>база ${cfg.DEMAND_FACTOR}</small>`;
@@ -1796,7 +1844,7 @@ function applyLoaderConfigSideEffects(cfg) {
   }
 
   const needTh = document.querySelector(
-    '#loader-table thead th[data-field="need_raw"]'
+    '#loader-table thead th[data-field="need_raw"]',
   );
   if (needTh) {
     needTh.title =
@@ -1804,7 +1852,7 @@ function applyLoaderConfigSideEffects(cfg) {
   }
 
   const supplyTh = document.querySelector(
-    '#loader-table thead th[data-field="NeedGoods"]'
+    '#loader-table thead th[data-field="NeedGoods"]',
   );
   if (supplyTh) {
     supplyTh.title =
@@ -1897,7 +1945,7 @@ function collectModuleConfig(moduleKey) {
       CONV_LOW: read("cfg-ads-conv-low"),
     };
     Object.keys(ADS_THRESH).forEach(
-      (k) => ADS_THRESH[k] === undefined && delete ADS_THRESH[k]
+      (k) => ADS_THRESH[k] === undefined && delete ADS_THRESH[k],
     );
 
     const ADS_MIN_DATA = {
@@ -1906,7 +1954,7 @@ function collectModuleConfig(moduleKey) {
       SPEND: read("cfg-ads-min-spend"),
     };
     Object.keys(ADS_MIN_DATA).forEach(
-      (k) => ADS_MIN_DATA[k] === undefined && delete ADS_MIN_DATA[k]
+      (k) => ADS_MIN_DATA[k] === undefined && delete ADS_MIN_DATA[k],
     );
 
     const data = {
@@ -2040,7 +2088,7 @@ function evaluateAdsStatus(row) {
       level: "immature",
       label: "Мало данных",
       title: `Сырые данные: показы ${impressions}, клики ${clicks}, расход ${formatNumber(
-        spend
+        spend,
       )} ₽ (порог: ≥${ADS_MIN_DATA.IMPRESSIONS} показов или ≥${
         ADS_MIN_DATA.CLICKS
       } кликов или ≥${ADS_MIN_DATA.SPEND} ₽)`,
@@ -2082,7 +2130,7 @@ function evaluateAdsStatus(row) {
       level: "warn",
       label: "🟨 Мало запаса",
       title: `Дней запаса ≈ ${daysOfStock.toFixed(
-        1
+        1,
       )} (< ${MIN_STOCK_DAYS_TO_RUN}). Лучше не разгонять рекламу.`,
     };
   }
@@ -2128,7 +2176,7 @@ function evaluateAdsStatus(row) {
       level: "warn",
       label: "🟨 Расход без продаж",
       title: `Расход ${formatNumber(
-        spend
+        spend,
       )} ₽, выручка 0 — дай время/проверь атрибуцию`,
     };
   }
@@ -2196,7 +2244,7 @@ function applyAdsFiltersAndRender() {
   // фильтр по статусу
   if (currentAdsStatus && currentAdsStatus !== "all") {
     rows = rows.filter(
-      (row) => evaluateAdsStatus(row).level === currentAdsStatus
+      (row) => evaluateAdsStatus(row).level === currentAdsStatus,
     );
   }
 

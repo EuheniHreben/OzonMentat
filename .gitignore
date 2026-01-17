@@ -23,6 +23,7 @@ loaderConfig.json
 funnelConfig.json
 adsConfig.json
 skuSettings.json
+adSpendCache.json
 
 # ------------------------------
 # 📁 EXCEL / ИМПОРТЫ
@@ -31,6 +32,7 @@ public/cut/*.xlsx
 public/cut/*.xls
 *.xlsx
 *.xls
+*.csv
 
 # ------------------------------
 # 🔧 РАБОЧИЕ ФАЙЛЫ

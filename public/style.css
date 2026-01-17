@@ -51,7 +51,7 @@ button {
 
 button:active {
   box-shadow: 0px 1px #4ade80;
-  top: 1px;
+  top: 2px !important;
 }
 
 /* Кнопка обновления / primary */
@@ -352,7 +352,7 @@ td small {
   position: fixed;
   top: 0;
   right: 0;
-  width: 380px;
+  /* width: 380px; */
   height: 100%;
   background: #1b1b1b;
   color: #fff;
@@ -361,7 +361,7 @@ td small {
   opacity: 0;
   pointer-events: none;
   transition: transform 0.25s ease-out, opacity 0.25s ease-out;
-  padding: 30px;
+  padding: 30px 40px;
   z-index: 9999;
   overflow-y: auto;
 }
@@ -392,6 +392,12 @@ td small {
 
 .close-btn:hover {
   color: #4ade80;
+}
+
+.details-content {
+  display: grid;
+  grid-template-columns: 400px 400px;
+  gap: 40px;
 }
 
 .details-content h3 {
@@ -673,7 +679,7 @@ td small {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px 20px;
-  margin-bottom: 10px;
+  margin: 10px 0px;
 }
 
 .modal-grid label {

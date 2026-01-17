@@ -2583,5 +2583,905 @@
         "impressions": 5
       }
     }
+  },
+  "ads:7:2026-01-07:2026-01-13": {
+    "ts": 1768316630288,
+    "map": {
+      "2246178924": {
+        "ad_spend": 494.79,
+        "clicks": 27,
+        "impressions": 798
+      },
+      "2246236119": {
+        "ad_spend": 0,
+        "clicks": 0,
+        "impressions": 0
+      },
+      "2354028243": {
+        "ad_spend": 1608.7099999999998,
+        "clicks": 92,
+        "impressions": 4688
+      },
+      "2354042441": {
+        "ad_spend": 3673.02,
+        "clicks": 208,
+        "impressions": 5734
+      },
+      "2354071804": {
+        "ad_spend": 258.98,
+        "clicks": 10,
+        "impressions": 944
+      },
+      "2354073597": {
+        "ad_spend": 826.18,
+        "clicks": 35,
+        "impressions": 3071
+      },
+      "2354073828": {
+        "ad_spend": 10718.5,
+        "clicks": 354,
+        "impressions": 11741
+      },
+      "2354074772": {
+        "ad_spend": 588.74,
+        "clicks": 40,
+        "impressions": 2663
+      },
+      "2354082231": {
+        "ad_spend": 689.24,
+        "clicks": 28,
+        "impressions": 2678
+      },
+      "2354082457": {
+        "ad_spend": 2072.48,
+        "clicks": 86,
+        "impressions": 5573
+      },
+      "2354085122": {
+        "ad_spend": 21147.48,
+        "clicks": 703,
+        "impressions": 17742
+      },
+      "2354085254": {
+        "ad_spend": 3843.54,
+        "clicks": 113,
+        "impressions": 6162
+      },
+      "2354085741": {
+        "ad_spend": 6798.75,
+        "clicks": 222,
+        "impressions": 7379
+      },
+      "2354086335": {
+        "ad_spend": 3303.68,
+        "clicks": 115,
+        "impressions": 5649
+      },
+      "2795478758": {
+        "ad_spend": 0,
+        "clicks": 0,
+        "impressions": 141
+      },
+      "2800895785": {
+        "ad_spend": 6055.35,
+        "clicks": 186,
+        "impressions": 8567
+      },
+      "2899071004": {
+        "ad_spend": 9529.51,
+        "clicks": 725,
+        "impressions": 23476
+      },
+      "2899071764": {
+        "ad_spend": 13217.74,
+        "clicks": 1298,
+        "impressions": 17299
+      },
+      "2899071820": {
+        "ad_spend": 0,
+        "clicks": 0,
+        "impressions": 0
+      },
+      "2899072161": {
+        "ad_spend": 0,
+        "clicks": 0,
+        "impressions": 13
+      },
+      "2899072977": {
+        "ad_spend": 21.76,
+        "clicks": 1,
+        "impressions": 237
+      },
+      "2899073013": {
+        "ad_spend": 3484.46,
+        "clicks": 530,
+        "impressions": 14313
+      },
+      "2899073424": {
+        "ad_spend": 191.96,
+        "clicks": 11,
+        "impressions": 425
+      },
+      "2923719843": {
+        "ad_spend": 8010.14,
+        "clicks": 396,
+        "impressions": 13754
+      },
+      "2923720024": {
+        "ad_spend": 0,
+        "clicks": 0,
+        "impressions": 0
+      },
+      "2923720149": {
+        "ad_spend": 6486.06,
+        "clicks": 189,
+        "impressions": 9482
+      },
+      "3168364386": {
+        "ad_spend": 1660.14,
+        "clicks": 110,
+        "impressions": 7058
+      },
+      "3168376571": {
+        "ad_spend": 12760.13,
+        "clicks": 416,
+        "impressions": 18209
+      },
+      "3259748568": {
+        "ad_spend": 403.08,
+        "clicks": 23,
+        "impressions": 1256
+      }
+    }
+  },
+  "ads:7:2026-01-08:2026-01-14": {
+    "ts": 1768354571649,
+    "map": {
+      "2246178924": {
+        "ad_spend": 852.98,
+        "clicks": 42,
+        "impressions": 1166
+      },
+      "2246236119": {
+        "ad_spend": 0,
+        "clicks": 0,
+        "impressions": 0
+      },
+      "2354028243": {
+        "ad_spend": 1519.1000000000001,
+        "clicks": 87,
+        "impressions": 4345
+      },
+      "2354042441": {
+        "ad_spend": 3187.19,
+        "clicks": 184,
+        "impressions": 5312
+      },
+      "2354071804": {
+        "ad_spend": 433.92,
+        "clicks": 15,
+        "impressions": 1300
+      },
+      "2354073597": {
+        "ad_spend": 601.94,
+        "clicks": 26,
+        "impressions": 2757
+      },
+      "2354073828": {
+        "ad_spend": 10776.94,
+        "clicks": 358,
+        "impressions": 11522
+      },
+      "2354074772": {
+        "ad_spend": 547.33,
+        "clicks": 37,
+        "impressions": 2389
+      },
+      "2354082231": {
+        "ad_spend": 630.67,
+        "clicks": 25,
+        "impressions": 2469
+      },
+      "2354082457": {
+        "ad_spend": 1717.41,
+        "clicks": 71,
+        "impressions": 4606
+      },
+      "2354085122": {
+        "ad_spend": 17843.97,
+        "clicks": 607,
+        "impressions": 15799
+      },
+      "2354085254": {
+        "ad_spend": 3406.09,
+        "clicks": 101,
+        "impressions": 5635
+      },
+      "2354085741": {
+        "ad_spend": 6005.85,
+        "clicks": 196,
+        "impressions": 6272
+      },
+      "2354086335": {
+        "ad_spend": 3223.54,
+        "clicks": 113,
+        "impressions": 5500
+      },
+      "2795478758": {
+        "ad_spend": 0,
+        "clicks": 0,
+        "impressions": 175
+      },
+      "2800895785": {
+        "ad_spend": 5591.58,
+        "clicks": 173,
+        "impressions": 8008
+      },
+      "2899071004": {
+        "ad_spend": 8486.45,
+        "clicks": 644,
+        "impressions": 20742
+      },
+      "2899071764": {
+        "ad_spend": 12061.92,
+        "clicks": 1186,
+        "impressions": 15789
+      },
+      "2899071820": {
+        "ad_spend": 0,
+        "clicks": 0,
+        "impressions": 0
+      },
+      "2899072161": {
+        "ad_spend": 0,
+        "clicks": 0,
+        "impressions": 13
+      },
+      "2899072977": {
+        "ad_spend": 67.72,
+        "clicks": 5,
+        "impressions": 539
+      },
+      "2899073013": {
+        "ad_spend": 4284.2,
+        "clicks": 718,
+        "impressions": 20419
+      },
+      "2899073424": {
+        "ad_spend": 320.15,
+        "clicks": 18,
+        "impressions": 888
+      },
+      "2923719843": {
+        "ad_spend": 7118.02,
+        "clicks": 355,
+        "impressions": 12343
+      },
+      "2923720149": {
+        "ad_spend": 5637.39,
+        "clicks": 166,
+        "impressions": 8183
+      },
+      "3168364386": {
+        "ad_spend": 1527.42,
+        "clicks": 102,
+        "impressions": 6435
+      },
+      "3168376571": {
+        "ad_spend": 11351.06,
+        "clicks": 372,
+        "impressions": 16516
+      },
+      "3259748568": {
+        "ad_spend": 656.89,
+        "clicks": 37,
+        "impressions": 1713
+      }
+    }
+  },
+  "ads:7:2026-01-09:2026-01-15": {
+    "ts": 1768487141355,
+    "map": {
+      "2246178924": {
+        "ad_spend": 2309.05,
+        "clicks": 110,
+        "impressions": 2465
+      },
+      "2246236119": {
+        "ad_spend": 0,
+        "clicks": 0,
+        "impressions": 0
+      },
+      "2354028243": {
+        "ad_spend": 1580.0500000000002,
+        "clicks": 91,
+        "impressions": 4665
+      },
+      "2354042441": {
+        "ad_spend": 3156.59,
+        "clicks": 183,
+        "impressions": 5487
+      },
+      "2354071804": {
+        "ad_spend": 863.08,
+        "clicks": 25,
+        "impressions": 2607
+      },
+      "2354073597": {
+        "ad_spend": 673.35,
+        "clicks": 28,
+        "impressions": 2709
+      },
+      "2354073828": {
+        "ad_spend": 10699.56,
+        "clicks": 363,
+        "impressions": 12329
+      },
+      "2354074772": {
+        "ad_spend": 418.8,
+        "clicks": 28,
+        "impressions": 1894
+      },
+      "2354082231": {
+        "ad_spend": 841.29,
+        "clicks": 28,
+        "impressions": 2769
+      },
+      "2354082457": {
+        "ad_spend": 1371,
+        "clicks": 57,
+        "impressions": 3659
+      },
+      "2354085122": {
+        "ad_spend": 16251.33,
+        "clicks": 558,
+        "impressions": 15619
+      },
+      "2354085254": {
+        "ad_spend": 3453.07,
+        "clicks": 103,
+        "impressions": 5773
+      },
+      "2354085741": {
+        "ad_spend": 4710.3,
+        "clicks": 154,
+        "impressions": 5142
+      },
+      "2354086335": {
+        "ad_spend": 4362.83,
+        "clicks": 152,
+        "impressions": 6583
+      },
+      "2795478758": {
+        "ad_spend": 92.67,
+        "clicks": 2,
+        "impressions": 418
+      },
+      "2800895785": {
+        "ad_spend": 4940.74,
+        "clicks": 152,
+        "impressions": 7942
+      },
+      "2899071004": {
+        "ad_spend": 8385.789999999999,
+        "clicks": 594,
+        "impressions": 19644
+      },
+      "2899071764": {
+        "ad_spend": 13026.2,
+        "clicks": 1234,
+        "impressions": 17167
+      },
+      "2899071820": {
+        "ad_spend": 94.62,
+        "clicks": 20,
+        "impressions": 390
+      },
+      "2899072161": {
+        "ad_spend": 0,
+        "clicks": 0,
+        "impressions": 13
+      },
+      "2899072977": {
+        "ad_spend": 179.71,
+        "clicks": 11,
+        "impressions": 858
+      },
+      "2899073013": {
+        "ad_spend": 6076.38,
+        "clicks": 1392,
+        "impressions": 39714
+      },
+      "2899073424": {
+        "ad_spend": 1748.17,
+        "clicks": 92,
+        "impressions": 3460
+      },
+      "2923719843": {
+        "ad_spend": 6518.93,
+        "clicks": 339,
+        "impressions": 11882
+      },
+      "2923720149": {
+        "ad_spend": 4487.41,
+        "clicks": 143,
+        "impressions": 7480
+      },
+      "3168364386": {
+        "ad_spend": 1486.91,
+        "clicks": 99,
+        "impressions": 6561
+      },
+      "3168376571": {
+        "ad_spend": 12208.5,
+        "clicks": 411,
+        "impressions": 17704
+      },
+      "3259748568": {
+        "ad_spend": 1407.35,
+        "clicks": 80,
+        "impressions": 4080
+      }
+    }
+  },
+  "ads:7:2026-01-10:2026-01-16": {
+    "ts": 1768544667941,
+    "map": {
+      "2246178924": {
+        "ad_spend": 2949.29,
+        "clicks": 147,
+        "impressions": 3036
+      },
+      "2354028243": {
+        "ad_spend": 1405.73,
+        "clicks": 81,
+        "impressions": 4258
+      },
+      "2354042441": {
+        "ad_spend": 2536.34,
+        "clicks": 147,
+        "impressions": 4919
+      },
+      "2354071804": {
+        "ad_spend": 1046.16,
+        "clicks": 29,
+        "impressions": 3130
+      },
+      "2354073597": {
+        "ad_spend": 582.56,
+        "clicks": 24,
+        "impressions": 2482
+      },
+      "2354073828": {
+        "ad_spend": 8303.19,
+        "clicks": 289,
+        "impressions": 10680
+      },
+      "2354074772": {
+        "ad_spend": 315.86,
+        "clicks": 20,
+        "impressions": 1454
+      },
+      "2354082231": {
+        "ad_spend": 667.09,
+        "clicks": 20,
+        "impressions": 2547
+      },
+      "2354082457": {
+        "ad_spend": 1140.87,
+        "clicks": 48,
+        "impressions": 2822
+      },
+      "2354085122": {
+        "ad_spend": 13001.76,
+        "clicks": 444,
+        "impressions": 13368
+      },
+      "2354085254": {
+        "ad_spend": 2700.68,
+        "clicks": 80,
+        "impressions": 5109
+      },
+      "2354085741": {
+        "ad_spend": 2895.53,
+        "clicks": 95,
+        "impressions": 3447
+      },
+      "2354086335": {
+        "ad_spend": 4256.1,
+        "clicks": 148,
+        "impressions": 6497
+      },
+      "2795478758": {
+        "ad_spend": 92.67,
+        "clicks": 2,
+        "impressions": 506
+      },
+      "2800895785": {
+        "ad_spend": 4037.57,
+        "clicks": 124,
+        "impressions": 6773
+      },
+      "2899071004": {
+        "ad_spend": 7423.41,
+        "clicks": 487,
+        "impressions": 16560
+      },
+      "2899071764": {
+        "ad_spend": 12223.36,
+        "clicks": 1115,
+        "impressions": 16227
+      },
+      "2899071820": {
+        "ad_spend": 739.74,
+        "clicks": 127,
+        "impressions": 3527
+      },
+      "2899072161": {
+        "ad_spend": 0,
+        "clicks": 0,
+        "impressions": 13
+      },
+      "2899072977": {
+        "ad_spend": 179.71,
+        "clicks": 11,
+        "impressions": 858
+      },
+      "2899073013": {
+        "ad_spend": 6076.38,
+        "clicks": 1392,
+        "impressions": 39714
+      },
+      "2899073424": {
+        "ad_spend": 2538.21,
+        "clicks": 132,
+        "impressions": 4512
+      },
+      "2923719843": {
+        "ad_spend": 5179.72,
+        "clicks": 280,
+        "impressions": 10045
+      },
+      "2923720149": {
+        "ad_spend": 3487.92,
+        "clicks": 118,
+        "impressions": 6177
+      },
+      "3168364386": {
+        "ad_spend": 1304.78,
+        "clicks": 87,
+        "impressions": 5796
+      },
+      "3168376571": {
+        "ad_spend": 11603.37,
+        "clicks": 394,
+        "impressions": 16647
+      },
+      "3259748568": {
+        "ad_spend": 2025.58,
+        "clicks": 111,
+        "impressions": 5103
+      }
+    }
+  },
+  "ads:30:2025-12-18:2026-01-16": {
+    "ts": 1768543212504,
+    "map": {
+      "2246178924": {
+        "ad_spend": 2936.75,
+        "clicks": 146,
+        "impressions": 3021
+      },
+      "2246236119": {
+        "ad_spend": 12356.44,
+        "clicks": 542,
+        "impressions": 9792
+      },
+      "2354028243": {
+        "ad_spend": 2982.16,
+        "clicks": 177,
+        "impressions": 9381
+      },
+      "2354042441": {
+        "ad_spend": 5511.84,
+        "clicks": 317,
+        "impressions": 10453
+      },
+      "2354056789": {
+        "ad_spend": 469.53,
+        "clicks": 34,
+        "impressions": 1279
+      },
+      "2354065387": {
+        "ad_spend": 2774.48,
+        "clicks": 165,
+        "impressions": 3563
+      },
+      "2354069462": {
+        "ad_spend": 2048.93,
+        "clicks": 154,
+        "impressions": 5631
+      },
+      "2354071804": {
+        "ad_spend": 7887.99,
+        "clicks": 282,
+        "impressions": 10645
+      },
+      "2354073597": {
+        "ad_spend": 3564.6,
+        "clicks": 133,
+        "impressions": 10328
+      },
+      "2354073828": {
+        "ad_spend": 18725.18,
+        "clicks": 607,
+        "impressions": 26383
+      },
+      "2354074772": {
+        "ad_spend": 17017.64,
+        "clicks": 733,
+        "impressions": 24173
+      },
+      "2354082231": {
+        "ad_spend": 3961.71,
+        "clicks": 125,
+        "impressions": 10594
+      },
+      "2354082457": {
+        "ad_spend": 7500.12,
+        "clicks": 338,
+        "impressions": 17382
+      },
+      "2354085122": {
+        "ad_spend": 46945.64,
+        "clicks": 1486,
+        "impressions": 48632
+      },
+      "2354085254": {
+        "ad_spend": 10395.46,
+        "clicks": 311,
+        "impressions": 17815
+      },
+      "2354085741": {
+        "ad_spend": 14277.91,
+        "clicks": 470,
+        "impressions": 18044
+      },
+      "2354086335": {
+        "ad_spend": 19151.19,
+        "clicks": 596,
+        "impressions": 24974
+      },
+      "2795478758": {
+        "ad_spend": 92.67,
+        "clicks": 2,
+        "impressions": 505
+      },
+      "2800895785": {
+        "ad_spend": 11380.05,
+        "clicks": 363,
+        "impressions": 19210
+      },
+      "2899071004": {
+        "ad_spend": 19404.86,
+        "clicks": 1184,
+        "impressions": 42070
+      },
+      "2899071764": {
+        "ad_spend": 55711.59,
+        "clicks": 4132,
+        "impressions": 61984
+      },
+      "2899071820": {
+        "ad_spend": 8420.25,
+        "clicks": 1313,
+        "impressions": 28268
+      },
+      "2899072161": {
+        "ad_spend": 0,
+        "clicks": 0,
+        "impressions": 13
+      },
+      "2899072977": {
+        "ad_spend": 2554.06,
+        "clicks": 144,
+        "impressions": 3552
+      },
+      "2899073013": {
+        "ad_spend": 17958.81,
+        "clicks": 2982,
+        "impressions": 78500
+      },
+      "2899073424": {
+        "ad_spend": 2538.21,
+        "clicks": 132,
+        "impressions": 4485
+      },
+      "2923719733": {
+        "ad_spend": 397.4,
+        "clicks": 18,
+        "impressions": 1313
+      },
+      "2923719843": {
+        "ad_spend": 35274.21,
+        "clicks": 1990,
+        "impressions": 75147
+      },
+      "2923720024": {
+        "ad_spend": 3966.59,
+        "clicks": 162,
+        "impressions": 7785
+      },
+      "2923720149": {
+        "ad_spend": 12564.25,
+        "clicks": 399,
+        "impressions": 21363
+      },
+      "3168357754": {
+        "ad_spend": 9861.41,
+        "clicks": 246,
+        "impressions": 14515
+      },
+      "3168364386": {
+        "ad_spend": 7112.37,
+        "clicks": 393,
+        "impressions": 22853
+      },
+      "3168368244": {
+        "ad_spend": 1545.21,
+        "clicks": 39,
+        "impressions": 3653
+      },
+      "3168376571": {
+        "ad_spend": 21267.52,
+        "clicks": 704,
+        "impressions": 38434
+      },
+      "3259748568": {
+        "ad_spend": 2025.58,
+        "clicks": 111,
+        "impressions": 5078
+      }
+    }
+  },
+  "ads:7:2026-01-11:2026-01-17": {
+    "ts": 1768666540367,
+    "map": {
+      "2246178924": {
+        "ad_spend": 4372.5,
+        "clicks": 223,
+        "impressions": 4418
+      },
+      "2354028243": {
+        "ad_spend": 1534.83,
+        "clicks": 90,
+        "impressions": 4479
+      },
+      "2354042441": {
+        "ad_spend": 2666.22,
+        "clicks": 155,
+        "impressions": 4918
+      },
+      "2354071804": {
+        "ad_spend": 2124.39,
+        "clicks": 51,
+        "impressions": 4536
+      },
+      "2354073597": {
+        "ad_spend": 854.57,
+        "clicks": 31,
+        "impressions": 2849
+      },
+      "2354073828": {
+        "ad_spend": 6569.44,
+        "clicks": 238,
+        "impressions": 9175
+      },
+      "2354074772": {
+        "ad_spend": 230.77,
+        "clicks": 15,
+        "impressions": 1024
+      },
+      "2354082231": {
+        "ad_spend": 1539.37,
+        "clicks": 36,
+        "impressions": 3349
+      },
+      "2354082457": {
+        "ad_spend": 868.81,
+        "clicks": 36,
+        "impressions": 1963
+      },
+      "2354085122": {
+        "ad_spend": 10339.05,
+        "clicks": 360,
+        "impressions": 11802
+      },
+      "2354085254": {
+        "ad_spend": 2758.94,
+        "clicks": 82,
+        "impressions": 4967
+      },
+      "2354085741": {
+        "ad_spend": 1601.78,
+        "clicks": 52,
+        "impressions": 1927
+      },
+      "2354086335": {
+        "ad_spend": 7570.12,
+        "clicks": 238,
+        "impressions": 8343
+      },
+      "2795478758": {
+        "ad_spend": 326.71,
+        "clicks": 4,
+        "impressions": 759
+      },
+      "2800895785": {
+        "ad_spend": 4352.2,
+        "clicks": 129,
+        "impressions": 7039
+      },
+      "2899071004": {
+        "ad_spend": 6965.82,
+        "clicks": 461,
+        "impressions": 15403
+      },
+      "2899071764": {
+        "ad_spend": 14287.52,
+        "clicks": 1141,
+        "impressions": 18020
+      },
+      "2899071820": {
+        "ad_spend": 1166.68,
+        "clicks": 290,
+        "impressions": 9656
+      },
+      "2899072161": {
+        "ad_spend": 0,
+        "clicks": 0,
+        "impressions": 13
+      },
+      "2899072977": {
+        "ad_spend": 179.71,
+        "clicks": 11,
+        "impressions": 858
+      },
+      "2899073013": {
+        "ad_spend": 8072.38,
+        "clicks": 1479,
+        "impressions": 41942
+      },
+      "2899073424": {
+        "ad_spend": 4180.46,
+        "clicks": 212,
+        "impressions": 7321
+      },
+      "2923719843": {
+        "ad_spend": 3947.91,
+        "clicks": 231,
+        "impressions": 8559
+      },
+      "2923720149": {
+        "ad_spend": 2582.66,
+        "clicks": 94,
+        "impressions": 4729
+      },
+      "3168364386": {
+        "ad_spend": 1194.45,
+        "clicks": 80,
+        "impressions": 4926
+      },
+      "3168376571": {
+        "ad_spend": 10956.36,
+        "clicks": 386,
+        "impressions": 17044
+      },
+      "3259748568": {
+        "ad_spend": 3788.46,
+        "clicks": 195,
+        "impressions": 8205
+      }
+    }
   }
 }

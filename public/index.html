@@ -329,205 +329,202 @@
       </div>
 
       <div class="details-content">
-        <p><strong>Период:</strong> <span id="d-period"></span></p>
-
-        <h3>Воронка по SKU</h3>
-
-        <div class="funnel-layers">
-          <!-- Слой 1: Показы -->
-          <div class="funnel-layer" data-layer="traffic" id="layer-traffic">
-            <div class="funnel-layer-header">
-              <span class="funnel-layer-title">Показы</span>
-              <span
-                id="d-layer-traffic-status"
-                class="funnel-layer-status"
-              ></span>
-            </div>
-            <div class="funnel-layer-body">
-              <div class="funnel-metric-row">
-                <span class="funnel-metric-label">Показы</span>
-                <span class="funnel-metric-value">
-                  <span id="d-imp"></span>
-                </span>
+        <div class="funnel-col">
+          <p><strong>Период:</strong> <span id="d-period"></span></p>
+          <h3>Воронка по SKU</h3>
+          <div class="funnel-layers">
+            <!-- Слой 1: Показы -->
+            <div class="funnel-layer" data-layer="traffic" id="layer-traffic">
+              <div class="funnel-layer-header">
+                <span class="funnel-layer-title">Показы</span>
+                <span
+                  id="d-layer-traffic-status"
+                  class="funnel-layer-status"
+                ></span>
+              </div>
+              <div class="funnel-layer-body">
+                <div class="funnel-metric-row">
+                  <span class="funnel-metric-label">Показы</span>
+                  <span class="funnel-metric-value">
+                    <span id="d-imp"></span>
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-
-          <!-- Слой 2: Переходы в карточку -->
-          <div class="funnel-layer" data-layer="interest" id="layer-interest">
-            <div class="funnel-layer-header">
-              <span class="funnel-layer-title">Переходы в карточку</span>
-              <!-- временно используем старый статус -->
-              <span
-                id="d-layer-interest-status"
-                class="funnel-layer-status"
-              ></span>
-            </div>
-            <div class="funnel-layer-body">
-              <div class="funnel-metric-row">
-                <span class="funnel-metric-label">Клики</span>
-                <span class="funnel-metric-value">
-                  <span id="d-clicks"></span>
-                </span>
+            <!-- Слой 2: Переходы в карточку -->
+            <div class="funnel-layer" data-layer="interest" id="layer-interest">
+              <div class="funnel-layer-header">
+                <span class="funnel-layer-title">Переходы в карточку</span>
+                <!-- временно используем старый статус -->
+                <span
+                  id="d-layer-interest-status"
+                  class="funnel-layer-status"
+                ></span>
               </div>
-              <div class="funnel-metric-row">
-                <span class="funnel-metric-label">CTR</span>
-                <span class="funnel-metric-value">
-                  <span id="d-ctr"></span>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Слой 3: Намерение к покупке -->
-          <div class="funnel-layer" data-layer="intent" id="layer-intent">
-            <div class="funnel-layer-header">
-              <span class="funnel-layer-title">Конверсия покупок</span>
-              <!-- пока тот же статус -->
-              <span
-                id="d-layer-intent-status"
-                class="funnel-layer-status"
-              ></span>
-            </div>
-            <div class="funnel-layer-body">
-              <div class="funnel-metric-row">
-                <span class="funnel-metric-label">Заказы</span>
-                <span class="funnel-metric-value">
-                  <span id="d-orders"></span>
-                </span>
-              </div>
-              <div class="funnel-metric-row">
-                <span class="funnel-metric-label">Конверсия</span>
-                <span class="funnel-metric-value">
-                  <span id="d-conv"></span>
-                </span>
-              </div>
-              <div class="funnel-metric-row">
-                <span class="funnel-metric-label">Выручка</span>
-                <span class="funnel-metric-value">
-                  <span id="d-revenue"></span>
-                </span>
+              <div class="funnel-layer-body">
+                <div class="funnel-metric-row">
+                  <span class="funnel-metric-label">Клики</span>
+                  <span class="funnel-metric-value">
+                    <span id="d-clicks"></span>
+                  </span>
+                </div>
+                <div class="funnel-metric-row">
+                  <span class="funnel-metric-label">CTR</span>
+                  <span class="funnel-metric-value">
+                    <span id="d-ctr"></span>
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-
-          <!-- Слой 4: Реклама -->
-          <div class="funnel-layer" data-layer="ads" id="layer-ads">
-            <div class="funnel-layer-header">
-              <span class="funnel-layer-title">Реклама</span>
-              <span id="d-layer-ads-status" class="funnel-layer-status"></span>
-            </div>
-            <div class="funnel-layer-body">
-              <div class="funnel-metric-row">
-                <span class="funnel-metric-label">Расход на рекламу</span>
-                <span class="funnel-metric-value">
-                  <span id="d-adspend"></span>
-                </span>
+            <!-- Слой 3: Намерение к покупке -->
+            <div class="funnel-layer" data-layer="intent" id="layer-intent">
+              <div class="funnel-layer-header">
+                <span class="funnel-layer-title">Конверсия покупок</span>
+                <!-- пока тот же статус -->
+                <span
+                  id="d-layer-intent-status"
+                  class="funnel-layer-status"
+                ></span>
               </div>
-              <div class="funnel-metric-row">
-                <span class="funnel-metric-label">DRR</span>
-                <span class="funnel-metric-value">
-                  <span id="d-drr"></span>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Слой 5: Остатки / наличие -->
-          <div class="funnel-layer" data-layer="stock" id="layer-stock">
-            <div class="funnel-layer-header">
-              <span class="funnel-layer-title">Остатки / наличие</span>
-              <span
-                id="d-layer-stock-status"
-                class="funnel-layer-status"
-              ></span>
-            </div>
-            <div class="funnel-layer-body">
-              <div class="funnel-metric-row">
-                <span class="funnel-metric-label">Остатки</span>
-                <span class="funnel-metric-value">
-                  <span id="d-stock"></span>
-                </span>
-              </div>
-              <div class="funnel-metric-row">
-                <span class="funnel-metric-label">Дней запаса (≈)</span>
-                <span class="funnel-metric-value">
-                  <span id="d-stock-days"></span>
-                </span>
+              <div class="funnel-layer-body">
+                <div class="funnel-metric-row">
+                  <span class="funnel-metric-label">Заказы</span>
+                  <span class="funnel-metric-value">
+                    <span id="d-orders"></span>
+                  </span>
+                </div>
+                <div class="funnel-metric-row">
+                  <span class="funnel-metric-label">Конверсия</span>
+                  <span class="funnel-metric-value">
+                    <span id="d-conv"></span>
+                  </span>
+                </div>
+                <div class="funnel-metric-row">
+                  <span class="funnel-metric-label">Выручка</span>
+                  <span class="funnel-metric-value">
+                    <span id="d-revenue"></span>
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-
-          <!-- Слой 6: Послепродажа -->
-          <div class="funnel-layer" data-layer="post" id="layer-post">
-            <div class="funnel-layer-header">
-              <span class="funnel-layer-title">Возвраты</span>
-              <span id="d-layer-post-status" class="funnel-layer-status"></span>
-            </div>
-            <div class="funnel-layer-body">
-              <div class="funnel-metric-row">
-                <span class="funnel-metric-label">Возвраты</span>
-                <span class="funnel-metric-value">
-                  <span id="d-returns"></span>
-                </span>
+            <!-- Слой 4: Реклама -->
+            <div class="funnel-layer" data-layer="ads" id="layer-ads">
+              <div class="funnel-layer-header">
+                <span class="funnel-layer-title">Реклама</span>
+                <span id="d-layer-ads-status" class="funnel-layer-status"></span>
               </div>
-              <div class="funnel-metric-row">
-                <span class="funnel-metric-label">Возвраты %</span>
-                <span class="funnel-metric-value">
-                  <span id="d-refund"></span>
-                </span>
+              <div class="funnel-layer-body">
+                <div class="funnel-metric-row">
+                  <span class="funnel-metric-label">Расход на рекламу</span>
+                  <span class="funnel-metric-value">
+                    <span id="d-adspend"></span>
+                  </span>
+                </div>
+                <div class="funnel-metric-row">
+                  <span class="funnel-metric-label">DRR</span>
+                  <span class="funnel-metric-value">
+                    <span id="d-drr"></span>
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-
-          <!-- Слой 7: Настройки SKU -->
-          <div class="funnel-layer funnel-layer-settings" data-layer="settings">
-            <div class="funnel-layer-header">
-              <span class="funnel-layer-title">Настройки SKU</span>
-            </div>
-            <div class="funnel-layer-body">
-              <div class="funnel-metric-row">
-                <span class="funnel-metric-label">Мин. партия</span>
-                <span class="funnel-metric-value">
-                  <input
-                    id="d-min-batch"
-                    class="min-batch-input"
-                    type="number"
-                    min="0"
-                    step="1"
-                  />
-                </span>
+            <!-- Слой 5: Остатки / наличие -->
+            <div class="funnel-layer" data-layer="stock" id="layer-stock">
+              <div class="funnel-layer-header">
+                <span class="funnel-layer-title">Остатки / наличие</span>
+                <span
+                  id="d-layer-stock-status"
+                  class="funnel-layer-status"
+                ></span>
               </div>
-              <div class="funnel-metric-row">
-                <span class="funnel-metric-label">Участвует в прогрузке</span>
-                <span class="funnel-metric-value">
-                  <label class="participate-label">
+              <div class="funnel-layer-body">
+                <div class="funnel-metric-row">
+                  <span class="funnel-metric-label">Остатки</span>
+                  <span class="funnel-metric-value">
+                    <span id="d-stock"></span>
+                  </span>
+                </div>
+                <div class="funnel-metric-row">
+                  <span class="funnel-metric-label">Дней запаса (≈)</span>
+                  <span class="funnel-metric-value">
+                    <span id="d-stock-days"></span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <!-- Слой 6: Послепродажа -->
+            <div class="funnel-layer" data-layer="post" id="layer-post">
+              <div class="funnel-layer-header">
+                <span class="funnel-layer-title">Возвраты</span>
+                <span id="d-layer-post-status" class="funnel-layer-status"></span>
+              </div>
+              <div class="funnel-layer-body">
+                <div class="funnel-metric-row">
+                  <span class="funnel-metric-label">Возвраты</span>
+                  <span class="funnel-metric-value">
+                    <span id="d-returns"></span>
+                  </span>
+                </div>
+                <div class="funnel-metric-row">
+                  <span class="funnel-metric-label">Возвраты %</span>
+                  <span class="funnel-metric-value">
+                    <span id="d-refund"></span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <!-- Слой 7: Настройки SKU -->
+            <div class="funnel-layer funnel-layer-settings" data-layer="settings">
+              <div class="funnel-layer-header">
+                <span class="funnel-layer-title">Настройки SKU</span>
+              </div>
+              <div class="funnel-layer-body">
+                <div class="funnel-metric-row">
+                  <span class="funnel-metric-label">Мин. партия</span>
+                  <span class="funnel-metric-value">
                     <input
-                      id="d-participate"
-                      class="participate-checkbox"
-                      type="checkbox"
+                      id="d-min-batch"
+                      class="min-batch-input"
+                      type="number"
+                      min="0"
+                      step="1"
                     />
-                    <span>Да</span>
-                  </label>
-                </span>
+                  </span>
+                </div>
+                <div class="funnel-metric-row">
+                  <span class="funnel-metric-label">Участвует в прогрузке</span>
+                  <span class="funnel-metric-value">
+                    <label class="participate-label">
+                      <input
+                        id="d-participate"
+                        class="participate-checkbox"
+                        type="checkbox"
+                      />
+                      <span>Да</span>
+                    </label>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
+          <h3>🩺 Диагностика</h3>
+          <p id="d-diagnosis"></p>
+          <h3>🎯 Совет</h3>
+          <p id="d-rec"></p>
         </div>
 
-        <h3>🩺 Диагностика</h3>
-        <p id="d-diagnosis"></p>
-
-        <h3>🎯 Совет</h3>
-        <p id="d-rec"></p>
-
-        <h3>📊 Срез по SKU</h3>
-        <div class="chart-container chart-bottom">
-          <canvas id="sku-chart"></canvas>
+        <div class="funnel-col">
+          <h3>📊 Срез по SKU</h3>
+          <div class="chart-container chart-bottom">
+            <canvas id="sku-chart"></canvas>
+          </div>
+          <h3>📊 Срез по цене</h3>
+          <div class="chart-container chart-bottom">
+            <canvas id="sku-chart"></canvas>
+          </div>
+          <h3>📝 Заметки</h3>
+          <div class="chart-container chart-bottom"></div>
         </div>
-
-        <h3>📝 Заметки</h3>
-        <div class="chart-container chart-bottom"></div>
       </div>
     </aside>
 
