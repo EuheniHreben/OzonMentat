@@ -126,8 +126,10 @@ function loadJsonConfig(filePath, defaults) {
     const raw = fs.readFileSync(filePath, "utf8");
     if (!raw.trim()) return { ...defaults };
     const json = JSON.parse(raw);
+
     // shallow merge + nested for known objects
     const merged = { ...defaults, ...json };
+
     if (defaults.MATURITY_THRESHOLDS) {
       merged.MATURITY_THRESHOLDS = {
         ...defaults.MATURITY_THRESHOLDS,
@@ -146,6 +148,7 @@ function loadJsonConfig(filePath, defaults) {
         ...(json.ADS_MIN_DATA || {}),
       };
     }
+
     return merged;
   } catch (e) {
     console.warn("⚠️ Не удалось прочитать конфиг:", filePath, e.message);
@@ -163,9 +166,12 @@ function loadModuleConfig(moduleKey) {
   return null;
 }
 
+// ✅ ВАЖНО: эта функция НЕ должна знать про moduleKey или res.
+// Она просто сохраняет конфиг и возвращает объект.
 function saveJsonConfig(filePath, defaults, patch) {
   const current = loadJsonConfig(filePath, defaults);
   const updated = { ...current, ...patch };
+
   // nested merges
   if (defaults.MATURITY_THRESHOLDS && patch.MATURITY_THRESHOLDS) {
     updated.MATURITY_THRESHOLDS = {
@@ -179,7 +185,10 @@ function saveJsonConfig(filePath, defaults, patch) {
   if (defaults.ADS_MIN_DATA && patch.ADS_MIN_DATA) {
     updated.ADS_MIN_DATA = { ...current.ADS_MIN_DATA, ...patch.ADS_MIN_DATA };
   }
+
+  // ✅ сохраняем ИМЕННО updated, а не defaults
   fs.writeFileSync(filePath, JSON.stringify(updated, null, 2), "utf8");
+
   return updated;
 }
 
@@ -211,7 +220,6 @@ function funnelKey({ days, adsEnabled }) {
 // =====================================================
 // Disabled SKU
 // =====================================================
-// 🧩 Единый источник правды: disabled-SKU хранится в /data
 const DISABLED_FILE = path.join(DATA_DIR_EFFECTIVE, "loaderDisabled.json");
 
 function loadDisabledMap() {
@@ -269,7 +277,7 @@ app.get("/api/funnel", async (req, res) => {
       stale: true,
       adsEnabled,
       warning: `Частое обновление — показан кэш. Следующая сборка через ~${Math.ceil(
-        waitMs / 1000
+        waitMs / 1000,
       )}с`,
     });
   }
@@ -424,10 +432,6 @@ app.get("/api/loader/cut-status", (req, res) => {
 // =====================================================
 // API: CONFIG
 // =====================================================
-// Унифицированный API (как у прогрузчика):
-// GET  /api/config/:module   -> { ok, config }
-// POST /api/config/:module   -> { ok, config }
-// POST /api/config/:module/reset -> { ok, config }
 app.get("/api/config/:module", (req, res) => {
   const moduleKey = String(req.params.module || "").trim();
   const cfg = loadModuleConfig(moduleKey);
@@ -442,7 +446,6 @@ app.post("/api/config/:module/reset", (req, res) => {
     if (!filePath)
       return res.status(404).json({ ok: false, error: "unknown-module" });
 
-    // перезаписать файл дефолтами (без merge)
     let defaults = null;
     if (moduleKey === "loader") defaults = defaultLoaderConfig;
     if (moduleKey === "funnel") defaults = defaultFunnelConfig;
@@ -451,6 +454,14 @@ app.post("/api/config/:module/reset", (req, res) => {
       return res.status(404).json({ ok: false, error: "unknown-module" });
 
     fs.writeFileSync(filePath, JSON.stringify(defaults, null, 2), "utf8");
+
+    // ✅ reset funnel/ads -> сброс кэша воронки
+    if (moduleKey === "funnel" || moduleKey === "ads") {
+      funnelCache.clear();
+      funnelNextAllowedAt.clear();
+      funnelInFlight.clear();
+    }
+
     return res.json({ ok: true, config: { ...defaults } });
   } catch (e) {
     return res.status(500).json({ ok: false, error: e.message });
@@ -463,7 +474,6 @@ app.post("/api/config/:module", (req, res) => {
     if (!CONFIG_FILES[moduleKey])
       return res.status(404).json({ ok: false, error: "unknown-module" });
 
-    // ✅ базовый clamp
     const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 
     let patch = {};
@@ -524,6 +534,7 @@ app.post("/api/config/:module", (req, res) => {
         Number.isFinite(Number(v))
           ? clamp(Math.round(Number(v)), min, max)
           : undefined;
+
       const mtPatch = {
         IMPRESSIONS: int(mt.IMPRESSIONS, 0, 1_000_000),
         CLICKS_FOR_CTR: int(mt.CLICKS_FOR_CTR, 0, 1_000_000),
@@ -532,9 +543,13 @@ app.post("/api/config/:module", (req, res) => {
         ORDERS_FOR_REFUND: int(mt.ORDERS_FOR_REFUND, 0, 1_000_000),
       };
       Object.keys(mtPatch).forEach(
-        (k) => mtPatch[k] === undefined && delete mtPatch[k]
+        (k) => mtPatch[k] === undefined && delete mtPatch[k],
       );
       if (Object.keys(mtPatch).length) patch.MATURITY_THRESHOLDS = mtPatch;
+
+      Object.keys(patch).forEach(
+        (k) => patch[k] === undefined && delete patch[k],
+      );
     }
 
     if (moduleKey === "ads") {
@@ -563,16 +578,16 @@ app.post("/api/config/:module", (req, res) => {
         SPEND_WITHOUT_REVENUE_WARN: int(
           th.SPEND_WITHOUT_REVENUE_WARN,
           0,
-          1_000_000_000
+          1_000_000_000,
         ),
         SPEND_WITHOUT_REVENUE_BAD: int(
           th.SPEND_WITHOUT_REVENUE_BAD,
           0,
-          1_000_000_000
+          1_000_000_000,
         ),
       };
       Object.keys(thPatch).forEach(
-        (k) => thPatch[k] === undefined && delete thPatch[k]
+        (k) => thPatch[k] === undefined && delete thPatch[k],
       );
 
       const mdPatch = {
@@ -581,7 +596,7 @@ app.post("/api/config/:module", (req, res) => {
         SPEND: int(md.SPEND, 0, 1_000_000_000),
       };
       Object.keys(mdPatch).forEach(
-        (k) => mdPatch[k] === undefined && delete mdPatch[k]
+        (k) => mdPatch[k] === undefined && delete mdPatch[k],
       );
 
       patch = {
@@ -591,7 +606,7 @@ app.post("/api/config/:module", (req, res) => {
         MIN_STOCK_DAYS_TO_SCALE: int(b.MIN_STOCK_DAYS_TO_SCALE, 0, 365),
       };
       Object.keys(patch).forEach(
-        (k) => patch[k] === undefined && delete patch[k]
+        (k) => patch[k] === undefined && delete patch[k],
       );
       if (patch.ADS_THRESH && Object.keys(patch.ADS_THRESH).length === 0)
         delete patch.ADS_THRESH;
@@ -600,12 +615,21 @@ app.post("/api/config/:module", (req, res) => {
     }
 
     const updated = saveModuleConfig(moduleKey, patch);
+
+    // ✅ СРАЗУ сбрасываем кэш воронки для funnel/ads
+    if (moduleKey === "funnel" || moduleKey === "ads") {
+      funnelCache.clear();
+      funnelNextAllowedAt.clear();
+      funnelInFlight.clear();
+    }
+
     return res.json({ ok: true, config: updated });
   } catch (e) {
     return res.status(500).json({ ok: false, error: e.message });
   }
 });
 
+// (оставил как у тебя — если используешь где-то ещё)
 app.get("/api/loader/config", (req, res) => {
   const cfg = loadModuleConfig("loader");
   res.json({ ok: true, config: cfg });
@@ -627,7 +651,6 @@ app.post("/api/loader/config", (req, res) => {
       "MAX_FUNNEL_HISTORY_DAYS",
     ];
 
-    // ✅ NEW: защита от “убийственных” значений
     const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
     const rules = {
       DEMAND_FACTOR: (v) => clamp(v, 0.2, 5),

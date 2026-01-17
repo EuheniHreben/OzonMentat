@@ -32,7 +32,7 @@ body {
 }
 
 /* Базовый стиль кнопок */
-button {
+.button {
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -49,7 +49,7 @@ button {
   transition: all 0.1s ease-in;
 }
 
-button:active {
+.button:active {
   box-shadow: 0px 1px #4ade80;
   top: 2px !important;
 }
@@ -107,7 +107,10 @@ button:active {
   box-shadow: 0px 3px #4ade80;
   position: relative;
   top: 0;
-  transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.1s ease;
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
 }
 .chip:hover {
   background: #444;
@@ -119,7 +122,9 @@ button:active {
 }
 
 .chip:focus-visible {
-  box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.25), 0px 3px #4ade80;
+  box-shadow:
+    0 0 0 2px rgba(74, 222, 128, 0.25),
+    0px 3px #4ade80;
 }
 
 .chip-btn {
@@ -135,7 +140,10 @@ button:active {
   box-shadow: 0px 3px #4ade80;
   position: relative;
   top: 0;
-  transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.1s ease;
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
 }
 
 .period-active,
@@ -157,6 +165,7 @@ button:active {
   padding: 14px 4px 12px;
   color: #b8c4d0;
   position: relative;
+  cursor: pointer;
 }
 
 .tab-chip:hover {
@@ -184,9 +193,10 @@ button:active {
 
 /* Поиск */
 .search-group {
-  display: flex;
   flex: 1;
   justify-content: flex-end;
+  position: relative;
+  display: flex;
 }
 
 #search-input {
@@ -199,6 +209,7 @@ button:active {
   background: #121212;
   color: #fff;
   font-size: 13px;
+  padding-right: 40px;
 }
 
 #search-input::placeholder {
@@ -208,6 +219,45 @@ button:active {
 #search-input:focus {
   outline: none;
   border-color: #4ade80;
+}
+
+.search-clear {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 22px;
+  height: 22px;
+
+  /* ✅ сброс глобальных button-стилей */
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  letter-spacing: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  top: 50% !important; /* ✅ чтобы button:active не сбивал позицию */
+  border-radius: 6px;
+
+  display: none; /* показываем только когда есть текст */
+  align-items: center;
+  justify-content: center;
+
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.search-clear:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.search-clear:active {
+  /* transform: translateY(-50%) !important;  */
 }
 
 /* ------------------------------
@@ -360,7 +410,9 @@ td small {
   transform: translateX(100%);
   opacity: 0;
   pointer-events: none;
-  transition: transform 0.25s ease-out, opacity 0.25s ease-out;
+  transition:
+    transform 0.25s ease-out,
+    opacity 0.25s ease-out;
   padding: 30px 40px;
   z-index: 9999;
   overflow-y: auto;
@@ -451,7 +503,10 @@ td small {
 /* Мягкий hover-эффект */
 .funnel-layer:hover {
   background: #191919;
-  transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
   box-shadow: 0 0 6px rgba(255, 255, 255, 0.06);
   border-color: #444;
   cursor: pointer;
@@ -584,7 +639,10 @@ td small {
   box-shadow: 0px 3px #4ade80;
   position: relative;
   top: 0;
-  transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.1s ease;
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
 }
 .icon-btn:hover {
   background: #444;
@@ -596,7 +654,9 @@ td small {
 }
 
 .icon-btn:focus-visible {
-  box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.25), 0px 3px #4ade80;
+  box-shadow:
+    0 0 0 2px rgba(74, 222, 128, 0.25),
+    0px 3px #4ade80;
 }
 
 /* ------------------------------
@@ -853,7 +913,10 @@ td small {
   padding: 2px 2px 0px;
   border-radius: 4px;
   border: 1px solid transparent;
-  transition: opacity 0.15s ease, border-color 0.15s ease, background 0.15s ease,
+  transition:
+    opacity 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease,
     transform 0.15s ease;
 }
 
@@ -897,9 +960,11 @@ td small {
 
 /* Кнопка "Открыть папку..." — плавные переходы */
 #loader-open-cut-folder {
-  transition: background-color 0.2s ease, border-color 0.2s ease,
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
     color 0.2s ease;
-    border: 2px solid #000 !important;
+  border: 2px solid #000 !important;
 }
 
 .btn-blue {
@@ -987,6 +1052,7 @@ td small {
   text-align: left;
   letter-spacing: 0;
   box-shadow: none;
+  color: #fff;
 }
 
 .store-item:hover {

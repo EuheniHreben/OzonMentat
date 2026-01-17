@@ -1096,12 +1096,14 @@ function updateSortIndicators() {
 // Search (умный: цифры и текст)
 // =====================================================
 function extractOfferNumbers(row) {
-  const base = `${row.offer_id || ""} ${row.name || ""}`;
+  // ✅ добавил sku тоже, чтобы поиск по цифрам в SKU работал
+  const base = `${row.offer_id || ""} ${row.sku || ""} ${row.name || ""}`;
   const nums = [];
   const re = /\d+(?:[.,]\d+)?/g;
   let m;
-  while ((m = re.exec(base)) !== null)
+  while ((m = re.exec(base)) !== null) {
     nums.push(m[0].replace(",", ".").toLowerCase());
+  }
   return nums;
 }
 
@@ -1112,33 +1114,69 @@ function matchesSearch(row, queryRaw) {
   const tokens = q.split(/\s+/).filter(Boolean);
   if (!tokens.length) return true;
 
-  const bigStr = `${row.offer_id || ""} ${row.sku || ""} ${
-    row.name || ""
-  }`.toLowerCase();
+  const bigStr =
+    `${row.offer_id || ""} ${row.sku || ""} ${row.name || ""}`.toLowerCase();
 
   const numericTokens = [];
   const textTokens = [];
 
   for (const t of tokens) {
-    if (/\d/.test(t)) numericTokens.push(t);
-    else textTokens.push(t);
+    const tNorm = t.replace(",", ".").toLowerCase();
+
+    // ✅ числовой токен только если он ЦЕЛИКОМ число
+    if (/^\d+(?:[.]\d+)?$/.test(tNorm)) numericTokens.push(tNorm);
+    else textTokens.push(tNorm);
   }
 
+  // текстовые токены ищем как подстроку
   for (const t of textTokens) {
     if (!bigStr.includes(t)) return false;
   }
 
+  // если числовых токенов нет — достаточно совпадения текста
   if (numericTokens.length === 0) return true;
 
+  // числовые токены должны совпасть с любым найденным числом (точно)
   const offerNums = extractOfferNumbers(row);
   for (const t of numericTokens) {
-    const tNorm = t.replace(",", ".").toLowerCase();
-    const found = offerNums.some((n) => n === tNorm);
+    const found = offerNums.some((n) => n === t);
     if (!found) return false;
   }
 
   return true;
 }
+
+const searchInput = document.getElementById("search-input");
+const searchClear = document.getElementById("search-clear");
+
+function syncSearchClear() {
+  searchClear.style.display = searchInput.value.trim() ? "block" : "none";
+}
+
+searchInput.addEventListener("input", () => {
+  syncSearchClear();
+  // тут уже вызывается твоя фильтрация
+});
+
+searchClear.addEventListener("click", () => {
+  searchInput.value = "";
+  syncSearchClear();
+
+  // ⚠️ важно: триггерим тот же путь, что и обычный ввод
+  searchInput.dispatchEvent(new Event("input", { bubbles: true }));
+
+  searchInput.focus();
+});
+
+searchInput.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && searchInput.value) {
+    searchInput.value = "";
+    syncSearchClear();
+    searchInput.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+});
+
+syncSearchClear();
 
 // =====================================================
 // Copy icon for offer_id
@@ -1655,6 +1693,25 @@ function initConfigModal() {
       if (activeModule === "ads") {
         AdsConfig = json.config;
         window.AdsConfig = AdsConfig;
+      }
+
+      // ✅ СРАЗУ пересчитать текущий модуль
+      // (используем тот же механизм, что и кнопки "Обновить данные")
+      try {
+        if (activeModule === "funnel") {
+          const btn = document.getElementById("reload-btn");
+          if (btn) btn.click();
+        } else if (activeModule === "ads") {
+          const btn = document.getElementById("reload-btn-ads");
+          if (btn) btn.click();
+        } else if (activeModule === "loader") {
+          // если у прогрузчика есть своя "обновить данные" — кликни её.
+          // если нет — просто оставим (побочки уже применены через applyLoaderConfigSideEffects)
+          const btn = document.getElementById("reload-btn-loader");
+          if (btn) btn.click();
+        }
+      } catch (e) {
+        console.warn("Не удалось авто-пересчитать модуль после сохранения:", e);
       }
 
       closeModal();

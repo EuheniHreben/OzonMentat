@@ -1,4 +1,4 @@
-// funnel.js (fixed for new structure + medians in rows)
+// funnel.js (fixed for new structure)
 
 const fs = require("fs");
 const path = require("path");
@@ -20,34 +20,111 @@ const {
 // История теперь лежит в /data
 const FUNNEL_HISTORY_FILE = path.join(
   __dirname,
-  "../../../data/funnelHistory.json"
+  "../../../data/funnelHistory.json",
 );
 
 // ------------------------------
-// Пороги “минимальной достоверности” (как ADS_MIN_DATA, но для воронки)
+// Runtime funnel config (thresholds are editable via /data/funnelConfig.json)
 // ------------------------------
-const FUNNEL_MIN_DATA = {
-  IMPRESSIONS: 200,
-  CLICKS_FOR_CTR: 10,
-  CLICKS_FOR_CONV: 25,
-  ORDERS_FOR_CONV: 2,
-  ORDERS_FOR_REFUND: 5,
+
+const DEFAULT_FUNNEL_CONFIG = {
+  CTR_LOW: 0.03,
+  CONV_LOW: 0.05,
+  REFUND_WARN: 0.05,
+  REFUND_BAD: 0.1,
+  DRR_WARN: 0.3,
+  DRR_BAD: 0.5,
+  MATURITY_THRESHOLDS: {
+    IMPRESSIONS: 200,
+    CLICKS_FOR_CTR: 10,
+    CLICKS_FOR_CONV: 25,
+    ORDERS_FOR_CONV: 2,
+    ORDERS_FOR_REFUND: 5,
+  },
 };
 
-const THRESHOLDS = {
-  minImpressions: 100,
-  minClicks: 30,
-  minOrdersForStats: 5,
+function resolveDataFile(fileName) {
+  const candidates = [
+    // typical monorepo layout
+    path.join(__dirname, "../../../data", fileName),
+    // if running from project root
+    path.join(process.cwd(), "data", fileName),
+    // fallback: alongside this file
+    path.join(__dirname, fileName),
+  ];
+  for (const fp of candidates) {
+    try {
+      if (fs.existsSync(fp)) return fp;
+    } catch (_) {}
+  }
+  // default to cwd/data even if file doesn't exist yet
+  return candidates[1];
+}
 
-  ctrLow: 0.03,
-  convLow: 0.05,
+const FUNNEL_CONFIG_FILE = resolveDataFile("funnelConfig.json");
 
-  refundWarn: 0.05,
-  refundBad: 0.1,
+let _funnelCfgCache = { mtimeMs: 0, value: { ...DEFAULT_FUNNEL_CONFIG } };
 
-  drrWarn: 0.3,
-  drrBad: 0.5,
-};
+function loadFunnelConfig() {
+  try {
+    if (!fs.existsSync(FUNNEL_CONFIG_FILE)) return { ...DEFAULT_FUNNEL_CONFIG };
+    const st = fs.statSync(FUNNEL_CONFIG_FILE);
+    if (_funnelCfgCache.value && st.mtimeMs === _funnelCfgCache.mtimeMs) {
+      return _funnelCfgCache.value;
+    }
+    const raw = fs.readFileSync(FUNNEL_CONFIG_FILE, "utf8");
+    const json = raw && raw.trim() ? JSON.parse(raw) : {};
+
+    const merged = { ...DEFAULT_FUNNEL_CONFIG, ...json };
+    merged.MATURITY_THRESHOLDS = {
+      ...DEFAULT_FUNNEL_CONFIG.MATURITY_THRESHOLDS,
+      ...(json.MATURITY_THRESHOLDS || {}),
+    };
+
+    _funnelCfgCache = { mtimeMs: st.mtimeMs, value: merged };
+    return merged;
+  } catch (e) {
+    console.warn(
+      "⚠️ funnelConfig.json read failed, using defaults:",
+      e.message,
+    );
+    return { ...DEFAULT_FUNNEL_CONFIG };
+  }
+}
+
+function getFunnelThresholds() {
+  const cfg = loadFunnelConfig();
+  return {
+    ctrLow: Number(cfg.CTR_LOW ?? DEFAULT_FUNNEL_CONFIG.CTR_LOW),
+    convLow: Number(cfg.CONV_LOW ?? DEFAULT_FUNNEL_CONFIG.CONV_LOW),
+    refundWarn: Number(cfg.REFUND_WARN ?? DEFAULT_FUNNEL_CONFIG.REFUND_WARN),
+    refundBad: Number(cfg.REFUND_BAD ?? DEFAULT_FUNNEL_CONFIG.REFUND_BAD),
+    drrWarn: Number(cfg.DRR_WARN ?? DEFAULT_FUNNEL_CONFIG.DRR_WARN),
+    drrBad: Number(cfg.DRR_BAD ?? DEFAULT_FUNNEL_CONFIG.DRR_BAD),
+    maturity: {
+      IMPRESSIONS: Number(
+        cfg.MATURITY_THRESHOLDS?.IMPRESSIONS ??
+          DEFAULT_FUNNEL_CONFIG.MATURITY_THRESHOLDS.IMPRESSIONS,
+      ),
+      CLICKS_FOR_CTR: Number(
+        cfg.MATURITY_THRESHOLDS?.CLICKS_FOR_CTR ??
+          DEFAULT_FUNNEL_CONFIG.MATURITY_THRESHOLDS.CLICKS_FOR_CTR,
+      ),
+      CLICKS_FOR_CONV: Number(
+        cfg.MATURITY_THRESHOLDS?.CLICKS_FOR_CONV ??
+          DEFAULT_FUNNEL_CONFIG.MATURITY_THRESHOLDS.CLICKS_FOR_CONV,
+      ),
+      ORDERS_FOR_CONV: Number(
+        cfg.MATURITY_THRESHOLDS?.ORDERS_FOR_CONV ??
+          DEFAULT_FUNNEL_CONFIG.MATURITY_THRESHOLDS.ORDERS_FOR_CONV,
+      ),
+      ORDERS_FOR_REFUND: Number(
+        cfg.MATURITY_THRESHOLDS?.ORDERS_FOR_REFUND ??
+          DEFAULT_FUNNEL_CONFIG.MATURITY_THRESHOLDS.ORDERS_FOR_REFUND,
+      ),
+    },
+  };
+}
 
 function formatDate(d) {
   return d.toISOString().slice(0, 10);
@@ -78,136 +155,23 @@ function clamp(n, min, max) {
 }
 
 // ------------------------------
-// Median helpers (for "180 (150)")
-// ------------------------------
-function median(values) {
-  const arr = (Array.isArray(values) ? values : [])
-    .map((v) => Number(v))
-    .filter((v) => Number.isFinite(v));
-
-  if (!arr.length) return null;
-
-  arr.sort((a, b) => a - b);
-  const mid = Math.floor(arr.length / 2);
-  if (arr.length % 2 === 1) return arr[mid];
-  return (arr[mid - 1] + arr[mid]) / 2;
-}
-
-async function readFunnelHistorySafe() {
-  try {
-    if (!fs.existsSync(FUNNEL_HISTORY_FILE)) return {};
-    const raw = await fs.promises.readFile(FUNNEL_HISTORY_FILE, "utf8");
-    if (!raw.trim()) return {};
-    const json = JSON.parse(raw);
-    return json && typeof json === "object" ? json : {};
-  } catch (e) {
-    console.warn("⚠️ Не удалось прочитать funnelHistory.json:", e.message);
-    return {};
-  }
-}
-
-/**
- * Строим индекс медиан по SKU из истории.
- * Берём только history[dateKey][String(days)] (7/30), т.е. сравнение "с собой" в рамках выбранного окна.
- *
- * Возвращает:
- * {
- *   [sku]: {
- *     orders_med, revenue_med, ctr_med, conv_med, drr_med, refund_rate_med,
- *     impressions_med, clicks_med, ad_spend_med, returns_med, ozon_stock_med, avg_check_med
- *   }
- * }
- */
-function buildSkuMedianIndex(history, days, maxHistoryDaysLimit) {
-  const dKey = String(days);
-
-  const dateKeys = Object.keys(history || {})
-    .filter((k) => history[k] && typeof history[k] === "object")
-    .sort();
-
-  // ограничиваем объём истории (последние N дат)
-  const limitedKeys =
-    Number(maxHistoryDaysLimit) && Number(maxHistoryDaysLimit) > 0
-      ? dateKeys.slice(-Number(maxHistoryDaysLimit))
-      : dateKeys;
-
-  // накопители по SKU
-  const acc = new Map();
-  const push = (sku, field, value) => {
-    if (!sku) return;
-    if (!acc.has(sku)) acc.set(sku, {});
-    const bucket = acc.get(sku);
-    if (!bucket[field]) bucket[field] = [];
-    bucket[field].push(value);
-  };
-
-  for (const dateKey of limitedKeys) {
-    const perDay = history[dateKey];
-    if (!perDay || typeof perDay !== "object") continue;
-
-    const rows = perDay[dKey];
-    if (!Array.isArray(rows) || !rows.length) continue;
-
-    for (const r of rows) {
-      const sku = String(r.sku || "").trim();
-      if (!sku) continue;
-
-      // берём те поля, которые уже есть в снапшотах
-      push(sku, "orders", r.orders);
-      push(sku, "revenue", r.revenue);
-      push(sku, "ctr", r.ctr);
-      push(sku, "conv", r.conv);
-      push(sku, "drr", r.drr);
-      push(sku, "refund_rate", r.refund_rate);
-
-      push(sku, "impressions", r.impressions);
-      push(sku, "clicks", r.clicks);
-      push(sku, "ad_spend", r.ad_spend);
-      push(sku, "returns", r.returns);
-      push(sku, "ozon_stock", r.ozon_stock);
-      push(sku, "avg_check", r.avg_check);
-    }
-  }
-
-  // финальный индекс медиан
-  const out = {};
-  for (const [sku, bucket] of acc.entries()) {
-    out[sku] = {
-      orders_med: median(bucket.orders),
-      revenue_med: median(bucket.revenue),
-      ctr_med: median(bucket.ctr),
-      conv_med: median(bucket.conv),
-      drr_med: median(bucket.drr),
-      refund_rate_med: median(bucket.refund_rate),
-
-      impressions_med: median(bucket.impressions),
-      clicks_med: median(bucket.clicks),
-      ad_spend_med: median(bucket.ad_spend),
-      returns_med: median(bucket.returns),
-      ozon_stock_med: median(bucket.ozon_stock),
-      avg_check_med: median(bucket.avg_check),
-    };
-  }
-
-  return out;
-}
-
-// ------------------------------
 // Maturity helpers (коридор адекватности)
 // ------------------------------
-function getFunnelMaturity({ impressions = 0, clicks = 0, orders = 0 } = {}) {
+function getFunnelMaturity(
+  { impressions = 0, clicks = 0, orders = 0 } = {},
+  maturity = getFunnelThresholds().maturity,
+) {
   const imp = Number(impressions || 0);
   const clk = Number(clicks || 0);
   const ord = Number(orders || 0);
 
   const trafficOk =
-    imp >= FUNNEL_MIN_DATA.IMPRESSIONS || clk >= FUNNEL_MIN_DATA.CLICKS_FOR_CTR;
+    imp >= maturity.IMPRESSIONS || clk >= maturity.CLICKS_FOR_CTR;
 
   const cardOk =
-    clk >= FUNNEL_MIN_DATA.CLICKS_FOR_CONV ||
-    ord >= FUNNEL_MIN_DATA.ORDERS_FOR_CONV;
+    clk >= maturity.CLICKS_FOR_CONV || ord >= maturity.ORDERS_FOR_CONV;
 
-  const postOk = ord >= FUNNEL_MIN_DATA.ORDERS_FOR_REFUND;
+  const postOk = ord >= maturity.ORDERS_FOR_REFUND;
 
   const overallOk = trafficOk || cardOk || postOk;
 
@@ -216,7 +180,7 @@ function getFunnelMaturity({ impressions = 0, clicks = 0, orders = 0 } = {}) {
     trafficOk,
     cardOk,
     postOk,
-    thresholds: FUNNEL_MIN_DATA,
+    thresholds: maturity,
   };
 }
 
@@ -384,18 +348,20 @@ function classifyProblemSmart(params) {
     refund_rate = 0,
   } = params;
 
+  const thr = getFunnelThresholds();
+  const mat = thr.maturity;
+
   const ctr = safeDiv(clicks, impressions);
   const conv = safeDiv(orders, clicks);
 
-  const drrColor =
-    drr > THRESHOLDS.drrBad ? "🟥" : drr > THRESHOLDS.drrWarn ? "🟨" : "🟩";
+  const drrColor = drr > thr.drrBad ? "🟥" : drr > thr.drrWarn ? "🟨" : "🟩";
 
   const refundColor =
-    refund_rate > THRESHOLDS.refundBad
+    refund_rate > thr.refundBad
       ? "🟥"
-      : refund_rate > THRESHOLDS.refundWarn
-      ? "🟨"
-      : "🟩";
+      : refund_rate > thr.refundWarn
+        ? "🟨"
+        : "🟩";
 
   let mainProblem = "нужен ручной разбор";
   let recommendation = "посмотреть цену, фото, описание, конкурентов";
@@ -474,7 +440,7 @@ function classifyProblemSmart(params) {
     };
   }
 
-  if (maturity.postOk && refund_rate >= THRESHOLDS.refundBad) {
+  if (maturity.postOk && refund_rate >= thr.refundBad) {
     stage = "послепродажа";
     mainProblem = "критично много возвратов";
     recommendation =
@@ -495,7 +461,7 @@ function classifyProblemSmart(params) {
     };
   }
 
-  if (maturity.postOk && refund_rate >= THRESHOLDS.refundWarn) {
+  if (maturity.postOk && refund_rate >= thr.refundWarn) {
     stage = "послепродажа";
     mainProblem = "повышенный уровень возвратов";
     recommendation =
@@ -504,7 +470,7 @@ function classifyProblemSmart(params) {
     tags.push("Возвраты");
   }
 
-  if (revenue > 0 && ad_spend > 0 && drr >= THRESHOLDS.drrBad) {
+  if (revenue > 0 && ad_spend > 0 && drr >= thr.drrBad) {
     stage = "реклама";
     mainProblem = "высокий DRR (реклама съедает маржу)";
     recommendation =
@@ -527,6 +493,7 @@ function classifyProblemSmart(params) {
 
   if (maturity.trafficOk) {
     if (impressions > 0 && clicks === 0) {
+      // Переходы в карточку: пользователь видит превью, но не кликает
       stage = "переходы";
       mainProblem = "показы есть, кликов нет";
       recommendation =
@@ -547,16 +514,21 @@ function classifyProblemSmart(params) {
       };
     }
 
-    if (ctr < THRESHOLDS.ctrLow) {
+    if (ctr < thr.ctrLow) {
+      // Дробим причины плохого CTR:
+      // 1) если карточка конвертит (conv норм) — вероятнее слабое превью/главное фото
+      // 2) если и CTR, и конверсия низкие — чаще цена/ожидание (особенно в склейках с одинаковыми фото)
+      // 3) если данных по конверсии мало — не делаем сильных выводов, вероятнее релевантность/витрина
       stage = "переходы";
 
+      // если по карточке ещё мало данных — не обвиняем цену/конверсию
       if (!maturity.cardOk) {
         mainProblem = "низкий CTR (мало кликов)";
         recommendation =
           "сначала добери клики (или показы): проверь релевантность названия/тегов/категории и качество превью; потом уже делай выводы про конверсию";
         priority = "низкий";
         tags.push("Переходы", "CTR", "Релевантность", "Мало данных");
-      } else if (conv >= THRESHOLDS.convLow) {
+      } else if (conv >= thr.convLow) {
         mainProblem = "слабое превью (не кликают)";
         recommendation =
           "карточка продаёт, но в неё не заходят — усили главное фото/обложку, бейджи, читаемость, УТП на превью";
@@ -574,7 +546,7 @@ function classifyProblemSmart(params) {
     if (stage === "неопределено") {
       stage = "наблюдение";
       mainProblem = "мало данных по трафику (CTR пока не показатель)";
-      recommendation = `добрать статистику: ≥${FUNNEL_MIN_DATA.IMPRESSIONS} показов или ≥${FUNNEL_MIN_DATA.CLICKS_FOR_CTR} кликов`;
+      recommendation = `добрать статистику: ≥${mat.IMPRESSIONS} показов или ≥${mat.CLICKS_FOR_CTR} кликов`;
       priority = "низкий";
       tags.push("Мало данных");
     }
@@ -602,7 +574,7 @@ function classifyProblemSmart(params) {
       };
     }
 
-    if (conv < THRESHOLDS.convLow) {
+    if (conv < thr.convLow) {
       stage = "намерение";
       mainProblem = "низкая конверсия в покупку";
       recommendation =
@@ -614,18 +586,19 @@ function classifyProblemSmart(params) {
     if (stage === "неопределено") {
       stage = "наблюдение";
       mainProblem = "мало данных по карточке (конверсия пока не показатель)";
-      recommendation = `добрать статистику: ≥${FUNNEL_MIN_DATA.CLICKS_FOR_CONV} кликов или ≥${FUNNEL_MIN_DATA.ORDERS_FOR_CONV} заказов`;
+      recommendation = `добрать статистику: ≥${mat.CLICKS_FOR_CONV} кликов или ≥${mat.ORDERS_FOR_CONV} заказов`;
       priority = "низкий";
       tags.push("Мало данных");
     }
   }
 
+  // Масштабировать можно только если и переходы (CTR), и намерение (конверсия) в норме.
   if (
     maturity.postOk &&
     drrColor === "🟩" &&
     refundColor === "🟩" &&
-    ctr >= THRESHOLDS.ctrLow &&
-    conv >= THRESHOLDS.convLow
+    ctr >= thr.ctrLow &&
+    conv >= thr.convLow
   ) {
     stage = "масштабирование";
     mainProblem = "карточка здорова, можно усиливать";
@@ -693,7 +666,7 @@ async function saveFunnelSnapshot(dateKey, days, rows, maxHistoryDays) {
     await fs.promises.writeFile(
       FUNNEL_HISTORY_FILE,
       JSON.stringify(history, null, 2),
-      "utf8"
+      "utf8",
     );
   } catch (e) {
     console.warn("⚠️ Не удалось сохранить funnelHistory.json:", e.message);
@@ -726,16 +699,6 @@ async function buildFunnel({
   }
 
   const stocksMap = await getStocksMap();
-
-  // ✅ читаем историю и строим индекс медиан по SKU (до сохранения текущего снапшота)
-  const history = await readFunnelHistorySafe();
-
-  const historyLimit =
-    Number(maxHistoryDays) && Number(maxHistoryDays) > 0
-      ? Number(maxHistoryDays)
-      : DEFAULT_MAX_FUNNEL_HISTORY_DAYS;
-
-  const medIndex = buildSkuMedianIndex(history, days, historyLimit);
 
   const rows = [];
 
@@ -792,15 +755,14 @@ async function buildFunnel({
     const funnel_maturity =
       problem.maturity || getFunnelMaturity({ impressions, clicks, orders });
 
-    // ✅ медианы по истории (если истории нет — null)
-    const med = medIndex[skuKey] || {};
-
     rows.push({
       sku: skuKey,
       offer_id: product.offer_id,
       name: product.name || "",
 
       // ✅ Признак ручного отключения в products.csv
+      // Используется UI (воронка), чтобы честно показывать "не участвует" и
+      // не давать ложный тумблер там, где отключение задано в справочнике.
       disabled: !!product.disabled,
 
       impressions,
@@ -813,20 +775,6 @@ async function buildFunnel({
       avg_check: Number(avg_check.toFixed(0)),
       returns,
       refund_rate,
-
-      // ✅ медианы для "180 (150)"
-      impressions_med: med.impressions_med ?? null,
-      clicks_med: med.clicks_med ?? null,
-      orders_med: med.orders_med ?? null,
-      revenue_med: med.revenue_med ?? null,
-      ozon_stock_med: med.ozon_stock_med ?? null,
-      ad_spend_med: med.ad_spend_med ?? null,
-      drr_med: med.drr_med ?? null,
-      avg_check_med: med.avg_check_med ?? null,
-      returns_med: med.returns_med ?? null,
-      refund_rate_med: med.refund_rate_med ?? null,
-      ctr_med: med.ctr_med ?? null,
-      conv_med: med.conv_med ?? null,
 
       stage: problem.stage,
       priority: problem.priority,

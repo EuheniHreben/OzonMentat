@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
@@ -15,7 +15,7 @@
       <div class="store-switch">
         <button
           id="store-switch-btn"
-          class="btn btn--green store-switch-btn"
+          class="button btn--green store-switch-btn"
           type="button"
         >
           Palantir Ru
@@ -60,6 +60,15 @@
           type="text"
           placeholder="Поиск по артикулу / SKU (например: 200 3 20)"
         />
+        <button
+          id="search-clear"
+          type="button"
+          class="search-clear"
+          aria-label="Очистить поиск"
+          title="Очистить"
+        >
+          ×
+        </button>
       </div>
     </section>
 
@@ -71,7 +80,7 @@
           <div class="loader-left">
             <button
               id="reload-btn"
-              class="btn reload-btn btn-with-progress"
+              class="button reload-btn btn-with-progress"
               type="button"
             >
               Обновить данные
@@ -127,7 +136,7 @@
           <!-- ⚙️ Настройки воронки -->
           <button
             id="funnel-settings"
-            class="icon-btn"
+            class="button icon-btn"
             type="button"
             title="Настройки воронки"
           >
@@ -164,7 +173,7 @@
       <main class="table-wrapper">
         <div class="loader-header">
           <div class="loader-left">
-            <button id="reload-btn-ads" class="btn reload-btn" type="button">
+            <button id="reload-btn-ads" class="button reload-btn" type="button">
               Обновить данные
             </button>
             <!-- Период -->
@@ -227,7 +236,7 @@
           <!-- ⚙️ Настройки рекламы -->
           <button
             id="ads-settings"
-            class="icon-btn"
+            class="button icon-btn"
             type="button"
             title="Настройки рекламы"
           >
@@ -268,7 +277,7 @@
             ></audio> -->
             <button
               id="loader-run"
-              class="btn reload-btn loader-btn btn-with-progress"
+              class="button reload-btn loader-btn btn-with-progress"
               type="button"
             >
               <span>Запустить прогрузку</span>
@@ -282,7 +291,7 @@
 
           <button
             id="loader-settings"
-            class="icon-btn"
+            class="button icon-btn"
             type="button"
             title="Настройки прогрузчика"
           >
@@ -411,7 +420,10 @@
             <div class="funnel-layer" data-layer="ads" id="layer-ads">
               <div class="funnel-layer-header">
                 <span class="funnel-layer-title">Реклама</span>
-                <span id="d-layer-ads-status" class="funnel-layer-status"></span>
+                <span
+                  id="d-layer-ads-status"
+                  class="funnel-layer-status"
+                ></span>
               </div>
               <div class="funnel-layer-body">
                 <div class="funnel-metric-row">
@@ -456,7 +468,10 @@
             <div class="funnel-layer" data-layer="post" id="layer-post">
               <div class="funnel-layer-header">
                 <span class="funnel-layer-title">Возвраты</span>
-                <span id="d-layer-post-status" class="funnel-layer-status"></span>
+                <span
+                  id="d-layer-post-status"
+                  class="funnel-layer-status"
+                ></span>
               </div>
               <div class="funnel-layer-body">
                 <div class="funnel-metric-row">
@@ -474,7 +489,10 @@
               </div>
             </div>
             <!-- Слой 7: Настройки SKU -->
-            <div class="funnel-layer funnel-layer-settings" data-layer="settings">
+            <div
+              class="funnel-layer funnel-layer-settings"
+              data-layer="settings"
+            >
               <div class="funnel-layer-header">
                 <span class="funnel-layer-title">Настройки SKU</span>
               </div>
@@ -534,7 +552,7 @@
       <div class="modal-dialog">
         <div class="modal-header">
           <h2>Настройки</h2>
-          <button id="config-close" class="close-btn">✕</button>
+          <button id="config-close" class="button close-btn">✕</button>
         </div>
 
         <!-- Tabs (same style as top page tabs) -->
@@ -823,10 +841,10 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button id="config-reset" class="btn reload-btn" type="button">
+          <button id="config-reset" class="button reload-btn" type="button">
             Сбросить к дефолту
           </button>
-          <button id="config-save" class="btn reload-btn" type="button">
+          <button id="config-save" class="button reload-btn" type="button">
             Сохранить
           </button>
         </div>
