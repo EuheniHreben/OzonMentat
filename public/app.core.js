@@ -1007,6 +1007,7 @@ function applyFunnelFiltersAndRender() {
 
   if (currentSort.field) sortFunnelRowsInPlace();
 
+  window.currentFunnelRows = filteredRows;
   renderTable(filteredRows);
   updateSortIndicators();
   hideDetails();
@@ -1039,6 +1040,7 @@ function sortBy(field) {
   sortFunnelRowsInPlace();
   saveFunnelSortState();
 
+  window.currentFunnelRows = filteredRows;
   renderTable(filteredRows);
   updateSortIndicators();
 }

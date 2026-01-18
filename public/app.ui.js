@@ -374,7 +374,23 @@ function renderTable(rows) {
     tbody.appendChild(tr);
   });
 }
-function drawSkuChart(points) {
+
+// cache last drawn sku chart so we can redraw it after notes changes
+let __lastSkuChart = { row: null, points: [] };
+
+function redrawSkuChartIfNeeded(row) {
+  if (!GRAPH_ENABLED) return;
+  if (!skuChart) return;
+  if (!__lastSkuChart.row) return;
+
+  // перерисовываем только если это тот же offer_id
+  if (String(__lastSkuChart.row.offer_id || "") !== String(row.offer_id || ""))
+    return;
+
+  drawSkuChart(__lastSkuChart.points || [], __lastSkuChart.row);
+}
+
+function drawSkuChart(points, row) {
   if (!GRAPH_ENABLED) return;
   const canvas = document.getElementById("sku-chart");
   if (!canvas || typeof Chart === "undefined") return;
@@ -387,19 +403,93 @@ function drawSkuChart(points) {
   }
 
   const safePoints = Array.isArray(points) ? points : [];
+
+  // ---------- NOTES MAP: YYYY-MM-DD -> [noteText,...] ----------
+  const storeId = Store.getActiveStore();
+  const offerId = row?.offer_id;
+
+  const notes = offerId ? loadNotes(storeId, offerId) : [];
+
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const localDateKey = (ts) => {
+    const d = new Date(ts);
+    return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+  };
+
+  const notesByDate = {};
+  notes.forEach((n) => {
+    const k = localDateKey(n.ts);
+    if (!notesByDate[k]) notesByDate[k] = [];
+    const t = String(n.text || "").trim();
+    if (t) notesByDate[k].push(t);
+  });
+
+  // ---------- CHART DATA ----------
   const labels = safePoints.map((p) => (p.date || "").slice(5)); // MM-DD
   const data = safePoints.map((p) => Number(p.orders || 0));
+
+  // есть ли заметка на эту дату
+  const hasNoteArr = safePoints.map((p) => !!notesByDate[p.date]);
+
+  // визуальный маркер: толще обводка у баров с заметкой
+  const borderWidthArr = hasNoteArr.map((has) => (has ? 3 : 1));
+  const borderColorArr = hasNoteArr.map((has) =>
+    has ? "rgba(74, 222, 128, 0.85)" : "rgba(255,255,255,0.25)",
+  );
 
   skuChart = new Chart(ctx, {
     type: "bar",
     data: {
       labels,
-      datasets: [{ label: "Заказано, шт", data, borderWidth: 1 }],
+      datasets: [
+        {
+          label: "Заказано, шт",
+          data,
+
+          // ✅ ВОЗВРАЩАЕМ ЦВЕТ БАРОВ
+          backgroundColor: "rgba(74, 222, 128, 0.35)",
+
+          // маркеры заметок
+          borderWidth: borderWidthArr,
+          borderColor: borderColorArr,
+        },
+      ],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            // добавим к тултипу заметки
+            afterBody: (items) => {
+              if (!items || !items.length) return;
+
+              const i = items[0].dataIndex;
+              const point = safePoints[i];
+              const dateKey = point?.date;
+              const texts = dateKey ? notesByDate[dateKey] : null;
+
+              if (!texts || !texts.length) return;
+
+              // показываем до 3 заметок, остальное "и ещё N"
+              const max = 3;
+              const shown = texts.slice(0, max).map((t) => {
+                const oneLine = t.replace(/\s+/g, " ").trim();
+                const cut =
+                  oneLine.length > 70 ? oneLine.slice(0, 70) + "…" : oneLine;
+                return `📝 ${cut}`;
+              });
+
+              if (texts.length > max)
+                shown.push(`…и ещё ${texts.length - max}`);
+
+              return shown;
+            },
+          },
+        },
+      },
       scales: {
         x: {
           ticks: { color: "#fff" },
@@ -413,6 +503,7 @@ function drawSkuChart(points) {
     },
   });
 }
+
 async function loadDailySalesChart(row) {
   // ✅ берем ТОЛЬКО sku (а не offer_id/название)
   const skuKey =
@@ -420,13 +511,23 @@ async function loadDailySalesChart(row) {
       ? getSkuKey(row)
       : String(row?.sku || "").trim();
 
+  // ✅ запомним, какой row сейчас в панели (даже если данных нет)
+  if (typeof __lastSkuChart === "object" && __lastSkuChart) {
+    __lastSkuChart.row = row;
+  }
+
   if (!skuKey) {
     console.warn("Нет sku у строки — график не строим:", row);
-    return drawSkuChart([]);
+    if (typeof __lastSkuChart === "object" && __lastSkuChart) {
+      __lastSkuChart.points = [];
+    }
+    return drawSkuChart([], row);
   }
 
   const reqId = ++skuChartReqId;
-  drawSkuChart([]);
+
+  // ✅ очистка графика
+  drawSkuChart([], row);
 
   try {
     // const days = Number(periodDays || 7);
@@ -439,12 +540,28 @@ async function loadDailySalesChart(row) {
 
     if (reqId !== skuChartReqId) return;
 
-    if (!json.ok || !Array.isArray(json.points)) return drawSkuChart([]);
-    drawSkuChart(json.points);
+    if (!json.ok || !Array.isArray(json.points)) {
+      if (typeof __lastSkuChart === "object" && __lastSkuChart) {
+        __lastSkuChart.points = [];
+      }
+      return drawSkuChart([], row);
+    }
+
+    // ✅ кэшируем точки, чтобы можно было redraw после заметок без запроса
+    if (typeof __lastSkuChart === "object" && __lastSkuChart) {
+      __lastSkuChart = { row, points: json.points };
+    }
+
+    drawSkuChart(json.points, row);
   } catch (e) {
     if (reqId !== skuChartReqId) return;
     console.error("Ошибка загрузки дневного графика:", e);
-    drawSkuChart([]);
+
+    if (typeof __lastSkuChart === "object" && __lastSkuChart) {
+      __lastSkuChart.points = [];
+    }
+
+    drawSkuChart([], row);
   }
 }
 
@@ -491,6 +608,7 @@ function setLayerStatus(layerKey, data) {
     else if (data.statusClass === "info") layerEl.classList.add("layer-info");
   }
 }
+
 function showDetails(row) {
   const panel = document.getElementById("details-panel");
   if (!panel) return;
@@ -548,7 +666,6 @@ function showDetails(row) {
       else minInput.value = baseDefault;
     };
   }
-
   // ✅ Участвует в прогрузке — синхронизировано с модулем прогрузчика
   bindParticipateToggle(row);
 
@@ -565,6 +682,10 @@ function showDetails(row) {
   else set("d-stock-days", "—");
 
   if (GRAPH_ENABLED) loadDailySalesChart(row);
+
+  // ✅ ЗАМЕТКИ: важно обновлять "текущий row" и отрисовать список
+  setCurrentNotesRow(row);
+  renderNotes(row);
 
   panel.classList.add("visible");
 }
@@ -587,6 +708,278 @@ function hideDetails() {
   activeAdsOfferId = null;
   setActiveRow({ tableId: "funnel-table", offerId: null });
   setActiveRow({ tableId: "ads-table", offerId: null });
+}
+
+// ================================
+// NOTES LOGIC (side panel notes)
+// ================================
+
+const NOTES_VERSION = "v1";
+
+function deleteNote(storeId, offerId, noteId) {
+  const notes = loadNotes(storeId, offerId);
+  const next = notes.filter((n) => n.id !== noteId);
+  saveNotes(storeId, offerId, next);
+}
+
+/**
+ * Получаем ключ localStorage
+ */
+function getNotesStorageKey(storeId, offerId) {
+  return `notes:${NOTES_VERSION}:${storeId}:offer:${offerId}`;
+}
+
+/**
+ * Загрузка заметок
+ */
+function loadNotes(storeId, offerId) {
+  try {
+    const raw = localStorage.getItem(getNotesStorageKey(storeId, offerId));
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    console.warn("Failed to load notes", e);
+    return [];
+  }
+}
+
+/**
+ * Сохранение заметок
+ */
+function saveNotes(storeId, offerId, notes) {
+  localStorage.setItem(
+    getNotesStorageKey(storeId, offerId),
+    JSON.stringify(notes),
+  );
+}
+
+/**
+ * Формат даты
+ */
+function formatDate(ts) {
+  const d = new Date(ts);
+  return (
+    d.toLocaleDateString("ru-RU") +
+    " " +
+    d.toLocaleTimeString("ru-RU", {
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+  );
+}
+
+/**
+ * Сколько дней прошло
+ */
+function daysAgo(ts) {
+  const diffMs = Date.now() - ts;
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (days === 0) return "сегодня";
+  if (days === 1) return "1 день назад";
+  return `${days} дней назад`;
+}
+
+/**
+ * Создаём слепок метрик из текущего row
+ */
+function makeSnapshot(row) {
+  return {
+    impressions: row.impressions,
+    clicks: row.clicks,
+    ctr: row.ctr,
+    orders: row.orders,
+    conv: row.conv,
+    revenue: row.revenue,
+    ad_spend: row.ad_spend,
+    drr: row.drr,
+    stock: row.ozon_stock,
+    returns: row.returns,
+    refund_rate: row.refund_rate,
+  };
+}
+
+/**
+ * Рендер заметок
+ */
+function renderNotes(row) {
+  const storeId = Store.getActiveStore();
+  const offerId = row.offer_id;
+  const list = document.getElementById("notes-list");
+  if (!list) return;
+
+  const notes = loadNotes(storeId, offerId);
+  list.innerHTML = "";
+
+  if (!notes.length) {
+    list.innerHTML = `<div class="muted">Заметок пока нет</div>`;
+    return;
+  }
+
+  notes
+    .slice()
+    .reverse()
+    .forEach((note) => {
+      const card = document.createElement("div");
+      card.className = "note-card";
+
+      // ---- META (date + daysAgo + delete) ----
+      const meta = document.createElement("div");
+      meta.className = "note-meta";
+
+      const left = document.createElement("span");
+      left.textContent = formatDate(note.ts);
+
+      const right = document.createElement("span");
+      right.textContent = daysAgo(note.ts);
+
+      const delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "note-del";
+      delBtn.textContent = "✕";
+      delBtn.title = "Удалить заметку";
+
+      delBtn.addEventListener("click", (e) => {
+        e.stopPropagation(); // чтобы не сработало закрытие панели по клику вне
+        deleteNote(storeId, offerId, note.id);
+        renderNotes(row);
+        redrawSkuChartIfNeeded(row);
+      });
+
+      const rightBox = document.createElement("span");
+      rightBox.style.display = "inline-flex";
+      rightBox.style.alignItems = "center";
+      rightBox.style.gap = "8px";
+      rightBox.appendChild(right);
+      rightBox.appendChild(delBtn);
+
+      meta.appendChild(left);
+      meta.appendChild(rightBox);
+
+      const text = document.createElement("div");
+      text.className = "note-text";
+      text.textContent = note.text;
+
+      card.appendChild(meta);
+      card.appendChild(text);
+
+      // ---- METRICS COMPARISON ----
+      if (note.snapshot) {
+        const metrics = document.createElement("div");
+        metrics.className = "note-metrics";
+
+        const fields = [
+          ["orders", "Заказы"],
+          ["revenue", "Выручка"],
+          ["ctr", "CTR"],
+          ["conv", "Конверсия"],
+          ["drr", "DRR"],
+          ["ad_spend", "Расход"],
+          ["stock", "Остаток"],
+        ];
+
+        fields.forEach(([key, label]) => {
+          const oldVal = note.snapshot[key];
+          const curVal = key === "stock" ? row.ozon_stock : row[key];
+
+          if (oldVal == null || curVal == null) return;
+
+          // delta в % (для отображения)
+          let deltaPct = null;
+          if (oldVal !== 0) {
+            deltaPct = ((curVal - oldVal) / oldVal) * 100;
+          }
+
+          // class нужен в "долях" (как в setDelta), поэтому делим на 100
+          const cls =
+            deltaPct == null
+              ? "metric-mid"
+              : classifyDeltaClass(deltaPct / 100, { inverse: key === "drr" });
+
+          const fmt = (k, v) => {
+            if (k === "ctr" || k === "conv" || k === "drr") {
+              return `${(Number(v) * 100).toFixed(2)}%`;
+            }
+            return typeof formatNumber === "function"
+              ? formatNumber(v || 0)
+              : String(v);
+          };
+
+          const rowEl = document.createElement("div");
+          rowEl.className = "note-row";
+          rowEl.innerHTML = `
+            <span class="label">${label}</span>
+            <span class="vals ${cls}">
+              ${fmt(key, oldVal)} → ${fmt(key, curVal)}
+              ${
+                deltaPct != null
+                  ? ` (${deltaPct > 0 ? "+" : ""}${deltaPct.toFixed(1)}%)`
+                  : ""
+              }
+            </span>
+          `;
+          metrics.appendChild(rowEl);
+        });
+
+        card.appendChild(metrics);
+      }
+
+      list.appendChild(card);
+    });
+}
+
+/**
+ * Инициализация UI заметок (вызывать из showDetails)
+ */
+
+// текущий row, для которого открыта панель
+let __notesCurrentRow = null;
+
+function setCurrentNotesRow(row) {
+  __notesCurrentRow = row;
+  initNotesUi(); // гарантируем, что кнопка привязана
+}
+
+function initNotesUi() {
+  const textarea = document.getElementById("note-text");
+  const saveBtn = document.getElementById("note-save");
+  if (!textarea || !saveBtn) return;
+
+  // биндим кнопку только один раз
+  if (saveBtn.dataset.bound === "1") return;
+  saveBtn.dataset.bound = "1";
+
+  saveBtn.addEventListener("click", () => {
+    const row = __notesCurrentRow;
+    if (!row) return;
+
+    const text = textarea.value.trim();
+    if (!text) return;
+
+    const storeId = Store.getActiveStore();
+    const offerId = row.offer_id;
+
+    const notes = loadNotes(storeId, offerId);
+
+    notes.push({
+      id:
+        window.crypto && crypto.randomUUID
+          ? crypto.randomUUID()
+          : String(Date.now()),
+      ts: Date.now(),
+      text,
+      snapshot: makeSnapshot(row),
+    });
+
+    saveNotes(storeId, offerId, notes);
+
+    textarea.value = "";
+
+    // обновляем список заметок
+    renderNotes(row);
+
+    // ✅ сразу обновляем график, чтобы тултип увидел новую заметку
+    redrawSkuChartIfNeeded(row);
+  });
 }
 
 function withFakeProgress(btn, asyncFn) {
@@ -870,3 +1263,60 @@ function renderAdsTable(rows) {
     tbody.appendChild(tr);
   });
 }
+
+// ================================
+// HOTKEYS: ArrowUp / ArrowDown
+// ================================
+
+document.addEventListener("keydown", (e) => {
+  // не мешаем вводу текста
+  const tag = document.activeElement?.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA") return;
+
+  // панель должна быть открыта
+  const panel = document.getElementById("details-panel");
+  if (!panel || !panel.classList.contains("visible")) return;
+
+  if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+
+  e.preventDefault();
+
+  const table = document.getElementById("funnel-table");
+  if (!table) return;
+
+  const rows = Array.from(table.querySelectorAll("tbody tr"));
+  if (!rows.length) return;
+
+  let idx = rows.findIndex((tr) => tr.classList.contains("row-active"));
+
+  // если вдруг нет активной строки — берём первую
+  if (idx === -1) idx = 0;
+
+  if (e.key === "ArrowUp") idx = Math.max(0, idx - 1);
+  if (e.key === "ArrowDown") idx = Math.min(rows.length - 1, idx + 1);
+
+  const nextRowEl = rows[idx];
+  if (!nextRowEl) return;
+
+  const offerId = nextRowEl.dataset.offerId;
+  if (!offerId) return;
+
+  // ищем данные строки по offer_id
+  const rowData =
+    (window.currentFunnelRows || []).find(
+      (r) => String(r.offer_id) === String(offerId),
+    ) || null;
+
+  if (!rowData) return;
+
+  // подсветка + открытие
+  activeFunnelOfferId = offerId;
+  setActiveRow({ tableId: "funnel-table", offerId });
+  showDetails(rowData);
+
+  // аккуратно скроллим таблицу
+  nextRowEl.scrollIntoView({
+    block: "nearest",
+    behavior: "smooth",
+  });
+});

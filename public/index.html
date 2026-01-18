@@ -58,6 +58,7 @@
         <input
           id="search-input"
           type="text"
+          class="input"
           placeholder="Поиск по артикулу / SKU (например: 200 3 20)"
         />
         <button
@@ -334,13 +335,13 @@
     <aside id="details-panel" class="details-panel">
       <div class="details-header">
         <h2 id="details-title">—</h2>
-        <button id="details-close" class="close-btn">✕</button>
+        <button id="details-close" class="button close-btn">✕</button>
       </div>
 
       <div class="details-content">
         <div class="funnel-col">
-          <p><strong>Период:</strong> <span id="d-period"></span></p>
           <h3>Воронка по SKU</h3>
+          <p><strong>Период:</strong> <span id="d-period"></span></p>
           <div class="funnel-layers">
             <!-- Слой 1: Показы -->
             <div class="funnel-layer" data-layer="traffic" id="layer-traffic">
@@ -525,10 +526,10 @@
               </div>
             </div>
           </div>
-          <h3>🩺 Диагностика</h3>
+          <!-- <h3>🩺 Диагностика</h3>
           <p id="d-diagnosis"></p>
           <h3>🎯 Совет</h3>
-          <p id="d-rec"></p>
+          <p id="d-rec"></p> -->
         </div>
 
         <div class="funnel-col">
@@ -540,8 +541,27 @@
           <div class="chart-container chart-bottom">
             <canvas id="sku-chart"></canvas>
           </div>
+          <h3>📊 Срез по остаткам</h3>
+          <div class="chart-container chart-bottom">
+            <canvas id="sku-chart"></canvas>
+          </div>
+        </div>
+
+        <div class="funnel-col">
           <h3>📝 Заметки</h3>
-          <div class="chart-container chart-bottom"></div>
+          <div class="notes-box">
+            <textarea
+              id="note-text"
+              class="input"
+              placeholder="Что сделали / что изменили?"
+            ></textarea>
+            <div class="notes-actions">
+              <button id="note-save" class="button reload-btn" type="button">
+                Сохранить
+              </button>
+            </div>
+          </div>
+          <div id="notes-list" class="notes-list"></div>
         </div>
       </div>
     </aside>
