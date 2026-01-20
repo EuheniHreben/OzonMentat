@@ -23,107 +23,180 @@ const FUNNEL_HISTORY_FILE = path.join(
   "../../../data/funnelHistory.json",
 );
 
-// ------------------------------
-// Runtime funnel config (thresholds are editable via /data/funnelConfig.json)
-// ------------------------------
+// ✅ История снапшотов остатков (факт). Используется для графиков остатков.
+const STOCK_SNAPSHOTS_FILE = path.join(
+  __dirname,
+  "../../../data/stockSnapshots.json",
+);
 
-const DEFAULT_FUNNEL_CONFIG = {
-  CTR_LOW: 0.03,
-  CONV_LOW: 0.05,
-  REFUND_WARN: 0.05,
-  REFUND_BAD: 0.1,
-  DRR_WARN: 0.3,
-  DRR_BAD: 0.5,
-  MATURITY_THRESHOLDS: {
-    IMPRESSIONS: 200,
-    CLICKS_FOR_CTR: 10,
-    CLICKS_FOR_CONV: 25,
-    ORDERS_FOR_CONV: 2,
-    ORDERS_FOR_REFUND: 5,
-  },
+/**
+ * Runtime funnel config (from /data/funnelConfig.json)
+ * Нужен чтобы UI-настройки применялись без перезапуска
+ */
+const FUNNEL_CONFIG_FILE = path.join(
+  __dirname,
+  "../../../data/funnelConfig.json",
+);
+
+// ------------------------------
+// Пороги “минимальной достоверности” (как ADS_MIN_DATA, но для воронки)
+// ------------------------------
+const FUNNEL_MIN_DATA = {
+  IMPRESSIONS: 200,
+  CLICKS_FOR_CTR: 10,
+  CLICKS_FOR_CONV: 25,
+  ORDERS_FOR_CONV: 2,
+  ORDERS_FOR_REFUND: 5,
 };
 
-function resolveDataFile(fileName) {
-  const candidates = [
-    // typical monorepo layout
-    path.join(__dirname, "../../../data", fileName),
-    // if running from project root
-    path.join(process.cwd(), "data", fileName),
-    // fallback: alongside this file
-    path.join(__dirname, fileName),
-  ];
-  for (const fp of candidates) {
-    try {
-      if (fs.existsSync(fp)) return fp;
-    } catch (_) {}
-  }
-  // default to cwd/data even if file doesn't exist yet
-  return candidates[1];
-}
-
-const FUNNEL_CONFIG_FILE = resolveDataFile("funnelConfig.json");
-
-let _funnelCfgCache = { mtimeMs: 0, value: { ...DEFAULT_FUNNEL_CONFIG } };
-
-function loadFunnelConfig() {
+// =====================================================
+// Stock snapshots (FACT)
+// =====================================================
+function readJsonSafe(filePath, fallback) {
   try {
-    if (!fs.existsSync(FUNNEL_CONFIG_FILE)) return { ...DEFAULT_FUNNEL_CONFIG };
-    const st = fs.statSync(FUNNEL_CONFIG_FILE);
-    if (_funnelCfgCache.value && st.mtimeMs === _funnelCfgCache.mtimeMs) {
-      return _funnelCfgCache.value;
-    }
-    const raw = fs.readFileSync(FUNNEL_CONFIG_FILE, "utf8");
-    const json = raw && raw.trim() ? JSON.parse(raw) : {};
-
-    const merged = { ...DEFAULT_FUNNEL_CONFIG, ...json };
-    merged.MATURITY_THRESHOLDS = {
-      ...DEFAULT_FUNNEL_CONFIG.MATURITY_THRESHOLDS,
-      ...(json.MATURITY_THRESHOLDS || {}),
-    };
-
-    _funnelCfgCache = { mtimeMs: st.mtimeMs, value: merged };
-    return merged;
+    if (!fs.existsSync(filePath)) return fallback;
+    const raw = fs.readFileSync(filePath, "utf8");
+    if (!raw.trim()) return fallback;
+    return JSON.parse(raw);
   } catch (e) {
-    console.warn(
-      "⚠️ funnelConfig.json read failed, using defaults:",
-      e.message,
-    );
-    return { ...DEFAULT_FUNNEL_CONFIG };
+    return fallback;
   }
 }
 
-function getFunnelThresholds() {
-  const cfg = loadFunnelConfig();
+function writeJsonSafe(filePath, value) {
+  try {
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    fs.writeFileSync(filePath, JSON.stringify(value, null, 2), "utf8");
+    return true;
+  } catch (e) {
+    console.warn("⚠️ Не удалось записать JSON:", filePath, e.message);
+    return false;
+  }
+}
+
+function appendStockSnapshot(stocksMap, { maxDays = 180 } = {}) {
+  // stocksMap: { [sku]: { ozon_stock, in_transit } }
+  const ts = new Date().toISOString();
+
+  const items = [];
+  for (const [sku, v] of Object.entries(stocksMap || {})) {
+    const skuKey = String(sku || "").trim();
+    if (!skuKey) continue;
+    const ozon_stock = Number(v?.ozon_stock || 0);
+    const in_transit = Number(v?.in_transit || 0);
+    items.push({ sku: skuKey, ozon_stock, in_transit });
+  }
+
+  const next = { timestamp: ts, items };
+
+  const arr = readJsonSafe(STOCK_SNAPSHOTS_FILE, []);
+  const snaps = Array.isArray(arr) ? arr : [];
+
+  // анти-дубликат: если уже есть снапшот в эту минуту — заменим последний
+  const last = snaps[snaps.length - 1];
+  if (
+    last?.timestamp &&
+    String(last.timestamp).slice(0, 16) === ts.slice(0, 16)
+  ) {
+    snaps[snaps.length - 1] = next;
+  } else {
+    snaps.push(next);
+  }
+
+  // trim по дням (грубая обрезка по timestamp)
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - Math.max(1, Number(maxDays) || 180));
+  const cutoffIso = cutoff.toISOString();
+  const trimmed = snaps.filter((s) => String(s.timestamp || "") >= cutoffIso);
+
+  writeJsonSafe(STOCK_SNAPSHOTS_FILE, trimmed);
+}
+
+const THRESHOLDS = {
+  minImpressions: 100,
+  minClicks: 30,
+  minOrdersForStats: 5,
+
+  ctrLow: 0.03,
+  convLow: 0.05,
+
+  refundWarn: 0.05,
+  refundBad: 0.1,
+
+  drrWarn: 0.3,
+  drrBad: 0.5,
+};
+
+const DEFAULT_FUNNEL_CONFIG = {
+  CTR_LOW: THRESHOLDS.ctrLow,
+  CONV_LOW: THRESHOLDS.convLow,
+  REFUND_WARN: THRESHOLDS.refundWarn,
+  REFUND_BAD: THRESHOLDS.refundBad,
+  DRR_WARN: THRESHOLDS.drrWarn,
+  DRR_BAD: THRESHOLDS.drrBad,
+  MATURITY_THRESHOLDS: { ...FUNNEL_MIN_DATA },
+};
+
+function loadFunnelRuntimeConfig() {
+  const cfg = readJsonSafe(FUNNEL_CONFIG_FILE, null);
+  if (!cfg || typeof cfg !== "object") return { ...DEFAULT_FUNNEL_CONFIG };
+
   return {
-    ctrLow: Number(cfg.CTR_LOW ?? DEFAULT_FUNNEL_CONFIG.CTR_LOW),
-    convLow: Number(cfg.CONV_LOW ?? DEFAULT_FUNNEL_CONFIG.CONV_LOW),
-    refundWarn: Number(cfg.REFUND_WARN ?? DEFAULT_FUNNEL_CONFIG.REFUND_WARN),
-    refundBad: Number(cfg.REFUND_BAD ?? DEFAULT_FUNNEL_CONFIG.REFUND_BAD),
-    drrWarn: Number(cfg.DRR_WARN ?? DEFAULT_FUNNEL_CONFIG.DRR_WARN),
-    drrBad: Number(cfg.DRR_BAD ?? DEFAULT_FUNNEL_CONFIG.DRR_BAD),
-    maturity: {
-      IMPRESSIONS: Number(
-        cfg.MATURITY_THRESHOLDS?.IMPRESSIONS ??
-          DEFAULT_FUNNEL_CONFIG.MATURITY_THRESHOLDS.IMPRESSIONS,
-      ),
-      CLICKS_FOR_CTR: Number(
-        cfg.MATURITY_THRESHOLDS?.CLICKS_FOR_CTR ??
-          DEFAULT_FUNNEL_CONFIG.MATURITY_THRESHOLDS.CLICKS_FOR_CTR,
-      ),
-      CLICKS_FOR_CONV: Number(
-        cfg.MATURITY_THRESHOLDS?.CLICKS_FOR_CONV ??
-          DEFAULT_FUNNEL_CONFIG.MATURITY_THRESHOLDS.CLICKS_FOR_CONV,
-      ),
-      ORDERS_FOR_CONV: Number(
-        cfg.MATURITY_THRESHOLDS?.ORDERS_FOR_CONV ??
-          DEFAULT_FUNNEL_CONFIG.MATURITY_THRESHOLDS.ORDERS_FOR_CONV,
-      ),
-      ORDERS_FOR_REFUND: Number(
-        cfg.MATURITY_THRESHOLDS?.ORDERS_FOR_REFUND ??
-          DEFAULT_FUNNEL_CONFIG.MATURITY_THRESHOLDS.ORDERS_FOR_REFUND,
-      ),
+    ...DEFAULT_FUNNEL_CONFIG,
+    ...cfg,
+    MATURITY_THRESHOLDS: {
+      ...DEFAULT_FUNNEL_CONFIG.MATURITY_THRESHOLDS,
+      ...((cfg && cfg.MATURITY_THRESHOLDS) || {}),
     },
   };
+}
+
+function applyFunnelRuntimeConfig(cfg) {
+  // thresholds
+  THRESHOLDS.ctrLow = clamp(cfg.CTR_LOW, 0, 1);
+  THRESHOLDS.convLow = clamp(cfg.CONV_LOW, 0, 1);
+  THRESHOLDS.refundWarn = clamp(cfg.REFUND_WARN, 0, 1);
+  THRESHOLDS.refundBad = clamp(cfg.REFUND_BAD, 0, 1);
+  THRESHOLDS.drrWarn = clamp(cfg.DRR_WARN, 0, 10);
+  THRESHOLDS.drrBad = clamp(cfg.DRR_BAD, 0, 10);
+
+  // maturity thresholds
+  const mt = cfg.MATURITY_THRESHOLDS || {};
+  const asInt = (v, def) => {
+    const n = Number(v);
+    if (!Number.isFinite(n)) return def;
+    return Math.max(0, Math.round(n));
+  };
+
+  FUNNEL_MIN_DATA.IMPRESSIONS = asInt(
+    mt.IMPRESSIONS,
+    FUNNEL_MIN_DATA.IMPRESSIONS,
+  );
+  FUNNEL_MIN_DATA.CLICKS_FOR_CTR = asInt(
+    mt.CLICKS_FOR_CTR,
+    FUNNEL_MIN_DATA.CLICKS_FOR_CTR,
+  );
+  FUNNEL_MIN_DATA.CLICKS_FOR_CONV = asInt(
+    mt.CLICKS_FOR_CONV,
+    FUNNEL_MIN_DATA.CLICKS_FOR_CONV,
+  );
+  FUNNEL_MIN_DATA.ORDERS_FOR_CONV = asInt(
+    mt.ORDERS_FOR_CONV,
+    FUNNEL_MIN_DATA.ORDERS_FOR_CONV,
+  );
+  FUNNEL_MIN_DATA.ORDERS_FOR_REFUND = asInt(
+    mt.ORDERS_FOR_REFUND,
+    FUNNEL_MIN_DATA.ORDERS_FOR_REFUND,
+  );
+}
+
+function ensureRuntimeConfigApplied() {
+  try {
+    const cfg = loadFunnelRuntimeConfig();
+    applyFunnelRuntimeConfig(cfg);
+  } catch (e) {
+    // не падаем — просто останемся на дефолтах
+  }
 }
 
 function formatDate(d) {
@@ -157,21 +230,19 @@ function clamp(n, min, max) {
 // ------------------------------
 // Maturity helpers (коридор адекватности)
 // ------------------------------
-function getFunnelMaturity(
-  { impressions = 0, clicks = 0, orders = 0 } = {},
-  maturity = getFunnelThresholds().maturity,
-) {
+function getFunnelMaturity({ impressions = 0, clicks = 0, orders = 0 } = {}) {
   const imp = Number(impressions || 0);
   const clk = Number(clicks || 0);
   const ord = Number(orders || 0);
 
   const trafficOk =
-    imp >= maturity.IMPRESSIONS || clk >= maturity.CLICKS_FOR_CTR;
+    imp >= FUNNEL_MIN_DATA.IMPRESSIONS || clk >= FUNNEL_MIN_DATA.CLICKS_FOR_CTR;
 
   const cardOk =
-    clk >= maturity.CLICKS_FOR_CONV || ord >= maturity.ORDERS_FOR_CONV;
+    clk >= FUNNEL_MIN_DATA.CLICKS_FOR_CONV ||
+    ord >= FUNNEL_MIN_DATA.ORDERS_FOR_CONV;
 
-  const postOk = ord >= maturity.ORDERS_FOR_REFUND;
+  const postOk = ord >= FUNNEL_MIN_DATA.ORDERS_FOR_REFUND;
 
   const overallOk = trafficOk || cardOk || postOk;
 
@@ -180,7 +251,7 @@ function getFunnelMaturity(
     trafficOk,
     cardOk,
     postOk,
-    thresholds: maturity,
+    thresholds: FUNNEL_MIN_DATA,
   };
 }
 
@@ -336,6 +407,122 @@ async function getDailySalesPoints(sku, days = 14) {
   return points;
 }
 
+// ✅ Дневные продажи + возвраты по SKU (нужно для приблизительной реконструкции остатков)
+// Возвращает массив длины days: [{date, orders, returns}]
+async function getDailyOrdersReturnsPoints(sku, days = 30) {
+  const skuKey = String(sku || "").trim();
+  if (!skuKey) return [];
+
+  const today = new Date();
+  const dateTo = formatDate(today);
+  const dateFrom = formatDate(addDays(today, -(days - 1)));
+
+  const metrics = ["ordered_units", "returns"];
+
+  const candidates = [
+    {
+      date_from: dateFrom,
+      date_to: dateTo,
+      metrics,
+      dimension: ["day"],
+      filters: [{ field: "sku", values: [skuKey] }],
+      limit: 1000,
+      offset: 0,
+    },
+    {
+      date_from: dateFrom,
+      date_to: dateTo,
+      metrics,
+      dimension: ["day"],
+      filter: { sku: [skuKey] },
+      limit: 1000,
+      offset: 0,
+    },
+    {
+      date_from: dateFrom,
+      date_to: dateTo,
+      metrics,
+      dimension: ["sku", "day"],
+      limit: 1000,
+      offset: 0,
+    },
+  ];
+
+  let rows = null;
+  let used = null;
+
+  for (const body of candidates) {
+    try {
+      const json = await ozonPost("/v1/analytics/data", body);
+      const data = pickAnalyticsRows(json);
+      if (Array.isArray(data) && data.length) {
+        rows = data;
+        used = body;
+        break;
+      }
+    } catch (e) {}
+  }
+
+  if (!rows) {
+    // fallback: только заказы
+    const onlyOrders = await getDailySalesPoints(skuKey, days);
+    return (onlyOrders || []).map((p) => ({
+      date: p.date,
+      orders: Number(p.orders || 0),
+      returns: 0,
+    }));
+  }
+
+  const map = new Map(); // day -> {orders, returns}
+
+  for (const row of rows) {
+    // вариант dimension: ["day"]
+    if (
+      used.dimension &&
+      used.dimension.length === 1 &&
+      used.dimension[0] === "day"
+    ) {
+      const dayKey = getDim(row, 0);
+      if (!dayKey) continue;
+      const orders = getMetric(row, 0);
+      const ret = getMetric(row, 1);
+      const prev = map.get(dayKey) || { orders: 0, returns: 0 };
+      map.set(dayKey, {
+        orders: prev.orders + orders,
+        returns: prev.returns + ret,
+      });
+      continue;
+    }
+
+    // вариант dimension: ["sku","day"]
+    const skuDim = getDim(row, 0);
+    const dayDim = getDim(row, 1);
+    if (!skuDim || !dayDim) continue;
+    if (String(skuDim) !== skuKey) continue;
+
+    const orders = getMetric(row, 0);
+    const ret = getMetric(row, 1);
+    const prev = map.get(dayDim) || { orders: 0, returns: 0 };
+    map.set(dayDim, {
+      orders: prev.orders + orders,
+      returns: prev.returns + ret,
+    });
+  }
+
+  const points = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = formatDate(addDays(today, -i));
+    const v = map.get(d) || { orders: 0, returns: 0 };
+    points.push({
+      date: d,
+      orders: Number(v.orders || 0),
+      returns: Number(v.returns || 0),
+    });
+  }
+
+  return points;
+}
+
 // диагностика
 function classifyProblemSmart(params) {
   const {
@@ -348,18 +535,16 @@ function classifyProblemSmart(params) {
     refund_rate = 0,
   } = params;
 
-  const thr = getFunnelThresholds();
-  const mat = thr.maturity;
-
   const ctr = safeDiv(clicks, impressions);
   const conv = safeDiv(orders, clicks);
 
-  const drrColor = drr > thr.drrBad ? "🟥" : drr > thr.drrWarn ? "🟨" : "🟩";
+  const drrColor =
+    drr > THRESHOLDS.drrBad ? "🟥" : drr > THRESHOLDS.drrWarn ? "🟨" : "🟩";
 
   const refundColor =
-    refund_rate > thr.refundBad
+    refund_rate > THRESHOLDS.refundBad
       ? "🟥"
-      : refund_rate > thr.refundWarn
+      : refund_rate > THRESHOLDS.refundWarn
         ? "🟨"
         : "🟩";
 
@@ -440,7 +625,7 @@ function classifyProblemSmart(params) {
     };
   }
 
-  if (maturity.postOk && refund_rate >= thr.refundBad) {
+  if (maturity.postOk && refund_rate >= THRESHOLDS.refundBad) {
     stage = "послепродажа";
     mainProblem = "критично много возвратов";
     recommendation =
@@ -461,7 +646,7 @@ function classifyProblemSmart(params) {
     };
   }
 
-  if (maturity.postOk && refund_rate >= thr.refundWarn) {
+  if (maturity.postOk && refund_rate >= THRESHOLDS.refundWarn) {
     stage = "послепродажа";
     mainProblem = "повышенный уровень возвратов";
     recommendation =
@@ -470,7 +655,7 @@ function classifyProblemSmart(params) {
     tags.push("Возвраты");
   }
 
-  if (revenue > 0 && ad_spend > 0 && drr >= thr.drrBad) {
+  if (revenue > 0 && ad_spend > 0 && drr >= THRESHOLDS.drrBad) {
     stage = "реклама";
     mainProblem = "высокий DRR (реклама съедает маржу)";
     recommendation =
@@ -514,7 +699,7 @@ function classifyProblemSmart(params) {
       };
     }
 
-    if (ctr < thr.ctrLow) {
+    if (ctr < THRESHOLDS.ctrLow) {
       // Дробим причины плохого CTR:
       // 1) если карточка конвертит (conv норм) — вероятнее слабое превью/главное фото
       // 2) если и CTR, и конверсия низкие — чаще цена/ожидание (особенно в склейках с одинаковыми фото)
@@ -528,7 +713,7 @@ function classifyProblemSmart(params) {
           "сначала добери клики (или показы): проверь релевантность названия/тегов/категории и качество превью; потом уже делай выводы про конверсию";
         priority = "низкий";
         tags.push("Переходы", "CTR", "Релевантность", "Мало данных");
-      } else if (conv >= thr.convLow) {
+      } else if (conv >= THRESHOLDS.convLow) {
         mainProblem = "слабое превью (не кликают)";
         recommendation =
           "карточка продаёт, но в неё не заходят — усили главное фото/обложку, бейджи, читаемость, УТП на превью";
@@ -546,7 +731,7 @@ function classifyProblemSmart(params) {
     if (stage === "неопределено") {
       stage = "наблюдение";
       mainProblem = "мало данных по трафику (CTR пока не показатель)";
-      recommendation = `добрать статистику: ≥${mat.IMPRESSIONS} показов или ≥${mat.CLICKS_FOR_CTR} кликов`;
+      recommendation = `добрать статистику: ≥${FUNNEL_MIN_DATA.IMPRESSIONS} показов или ≥${FUNNEL_MIN_DATA.CLICKS_FOR_CTR} кликов`;
       priority = "низкий";
       tags.push("Мало данных");
     }
@@ -574,7 +759,7 @@ function classifyProblemSmart(params) {
       };
     }
 
-    if (conv < thr.convLow) {
+    if (conv < THRESHOLDS.convLow) {
       stage = "намерение";
       mainProblem = "низкая конверсия в покупку";
       recommendation =
@@ -586,7 +771,7 @@ function classifyProblemSmart(params) {
     if (stage === "неопределено") {
       stage = "наблюдение";
       mainProblem = "мало данных по карточке (конверсия пока не показатель)";
-      recommendation = `добрать статистику: ≥${mat.CLICKS_FOR_CONV} кликов или ≥${mat.ORDERS_FOR_CONV} заказов`;
+      recommendation = `добрать статистику: ≥${FUNNEL_MIN_DATA.CLICKS_FOR_CONV} кликов или ≥${FUNNEL_MIN_DATA.ORDERS_FOR_CONV} заказов`;
       priority = "низкий";
       tags.push("Мало данных");
     }
@@ -597,8 +782,8 @@ function classifyProblemSmart(params) {
     maturity.postOk &&
     drrColor === "🟩" &&
     refundColor === "🟩" &&
-    ctr >= thr.ctrLow &&
-    conv >= thr.convLow
+    ctr >= THRESHOLDS.ctrLow &&
+    conv >= THRESHOLDS.convLow
   ) {
     stage = "масштабирование";
     mainProblem = "карточка здорова, можно усиливать";
@@ -699,6 +884,14 @@ async function buildFunnel({
   }
 
   const stocksMap = await getStocksMap();
+
+  // ✅ Фиксируем факт-остатки (снапшот) при каждом обновлении воронки.
+  // Это даёт честную историю остатков без привязки к прогрузчику.
+  try {
+    appendStockSnapshot(stocksMap);
+  } catch (e) {
+    console.warn("⚠️ Не удалось сохранить stock snapshot:", e.message);
+  }
 
   const rows = [];
 
@@ -805,7 +998,59 @@ async function buildFunnel({
   return rows;
 }
 
+/**
+ * Быстрый пересчёт стадий/цветов/рекомендаций на уже готовых rows
+ * (без походов в OZON). Используется, чтобы "Сохранить" применялось мгновенно
+ * и не ловить 429 от частых пересборок.
+ */
+function reclassifyFunnelRows(inputRows) {
+  ensureRuntimeConfigApplied();
+
+  const rows = Array.isArray(inputRows) ? inputRows : [];
+  return rows.map((r) => {
+    const impressions = Number(r.impressions || 0);
+    const clicks = Number(r.clicks || 0);
+    const orders = Number(r.orders || 0);
+    const revenue = Number(r.revenue || 0);
+    const ad_spend = Number(r.ad_spend || 0);
+    const returns = Number(r.returns || 0);
+
+    const drr = safeDiv(ad_spend, revenue);
+    const refund_rate = clamp(safeDiv(returns, orders), 0, 1);
+
+    const problem = classifyProblemSmart({
+      impressions,
+      clicks,
+      orders,
+      revenue,
+      ad_spend,
+      drr,
+      refund_rate,
+    });
+
+    const funnel_maturity =
+      problem.maturity || getFunnelMaturity({ impressions, clicks, orders });
+
+    return {
+      ...r,
+      drr,
+      refund_rate,
+      stage: problem.stage,
+      priority: problem.priority,
+      mainProblem: problem.mainProblem,
+      recommendation: problem.recommendation,
+      drrColor: problem.drrColor,
+      refundColor: problem.refundColor,
+      ctr: problem.ctr,
+      conv: problem.conv,
+      funnel_maturity,
+    };
+  });
+}
+
 module.exports = {
   buildFunnel,
+  reclassifyFunnelRows,
   getDailySalesPoints,
+  getDailyOrdersReturnsPoints,
 };

@@ -535,14 +535,11 @@ async function getAdSpend(days = DAYS) {
 // =====================================================
 module.exports = {
   ozonPost,
-  analyticsBySku,
-
   getImpressionsClicks,
+  getAdSpend,
   getStocksMap,
-
-  getSalesMap,
   getWeekSalesMap,
   getReturns,
-
-  getAdSpend,
+  getSalesMap,
+  analyticsBySku,
 };

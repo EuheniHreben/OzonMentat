@@ -4,7 +4,12 @@ const express = require("express");
 const path = require("path");
 const fs = require("fs");
 
-const { buildFunnel, getDailySalesPoints } = require("./modules/funnel");
+const {
+  buildFunnel,
+  reclassifyFunnelRows,
+  getDailySalesPoints,
+  getDailyOrdersReturnsPoints,
+} = require("./modules/funnel");
 const { runLoader, openCutFolder } = require("./modules/loader");
 
 const {
@@ -38,6 +43,12 @@ const PUBLIC_DIR = fs.existsSync(path.join(ROOT_DIR, "public"))
 const DATA_DIR_EFFECTIVE = fs.existsSync(DATA_DIR)
   ? DATA_DIR
   : path.join(__dirname, "../../data");
+
+// ✅ История снапшотов остатков (факт)
+const STOCK_SNAPSHOTS_FILE = path.join(
+  DATA_DIR_EFFECTIVE,
+  "stockSnapshots.json",
+);
 
 app.use(express.static(PUBLIC_DIR));
 app.use(express.json());
@@ -126,10 +137,8 @@ function loadJsonConfig(filePath, defaults) {
     const raw = fs.readFileSync(filePath, "utf8");
     if (!raw.trim()) return { ...defaults };
     const json = JSON.parse(raw);
-
     // shallow merge + nested for known objects
     const merged = { ...defaults, ...json };
-
     if (defaults.MATURITY_THRESHOLDS) {
       merged.MATURITY_THRESHOLDS = {
         ...defaults.MATURITY_THRESHOLDS,
@@ -148,7 +157,6 @@ function loadJsonConfig(filePath, defaults) {
         ...(json.ADS_MIN_DATA || {}),
       };
     }
-
     return merged;
   } catch (e) {
     console.warn("⚠️ Не удалось прочитать конфиг:", filePath, e.message);
@@ -166,12 +174,9 @@ function loadModuleConfig(moduleKey) {
   return null;
 }
 
-// ✅ ВАЖНО: эта функция НЕ должна знать про moduleKey или res.
-// Она просто сохраняет конфиг и возвращает объект.
 function saveJsonConfig(filePath, defaults, patch) {
   const current = loadJsonConfig(filePath, defaults);
   const updated = { ...current, ...patch };
-
   // nested merges
   if (defaults.MATURITY_THRESHOLDS && patch.MATURITY_THRESHOLDS) {
     updated.MATURITY_THRESHOLDS = {
@@ -185,10 +190,7 @@ function saveJsonConfig(filePath, defaults, patch) {
   if (defaults.ADS_MIN_DATA && patch.ADS_MIN_DATA) {
     updated.ADS_MIN_DATA = { ...current.ADS_MIN_DATA, ...patch.ADS_MIN_DATA };
   }
-
-  // ✅ сохраняем ИМЕННО updated, а не defaults
   fs.writeFileSync(filePath, JSON.stringify(updated, null, 2), "utf8");
-
   return updated;
 }
 
@@ -220,6 +222,7 @@ function funnelKey({ days, adsEnabled }) {
 // =====================================================
 // Disabled SKU
 // =====================================================
+// 🧩 Единый источник правды: disabled-SKU хранится в /data
 const DISABLED_FILE = path.join(DATA_DIR_EFFECTIVE, "loaderDisabled.json");
 
 function loadDisabledMap() {
@@ -261,7 +264,7 @@ app.get("/api/funnel", async (req, res) => {
   if (cached && now - cached.ts < CACHE_TTL_MS) {
     return res.json({
       ok: true,
-      rows: cached.rows,
+      rows: reclassifyFunnelRows(cached.rows),
       cached: true,
       note: "cache-ttl",
       adsEnabled,
@@ -272,7 +275,7 @@ app.get("/api/funnel", async (req, res) => {
     const waitMs = nextAllowedAt - now;
     return res.json({
       ok: true,
-      rows: cached.rows,
+      rows: reclassifyFunnelRows(cached.rows),
       cached: true,
       stale: true,
       adsEnabled,
@@ -286,7 +289,7 @@ app.get("/api/funnel", async (req, res) => {
     if (cached) {
       return res.json({
         ok: true,
-        rows: cached.rows,
+        rows: reclassifyFunnelRows(cached.rows),
         cached: true,
         stale: true,
         adsEnabled,
@@ -370,10 +373,143 @@ app.get("/api/funnel/daily-sales", async (req, res) => {
       return res.status(400).json({ ok: false, error: "sku не задан" });
     }
 
-    const points = await getDailySalesPoints(sku, days);
+    // ✅ Теперь отдаём и возвраты (для реконструкции остатков)
+    const points = await getDailyOrdersReturnsPoints(sku, days);
     return res.json({ ok: true, points });
   } catch (e) {
     console.error("❌ /api/funnel/daily-sales error:", e);
+    return res.status(500).json({ ok: false, error: e.message || String(e) });
+  }
+});
+
+// ✅ NEW: API: STOCK HISTORY (fact snapshots + estimated backfill)
+// GET /api/stock-history?sku=...&days=30
+app.get("/api/stock-history", async (req, res) => {
+  try {
+    const sku = String(req.query.sku || "").trim();
+    const days = Number(req.query.days) || 30;
+    const estimate = String(req.query.estimate || "1") !== "0";
+
+    if (!sku) {
+      return res.status(400).json({ ok: false, error: "sku не задан" });
+    }
+
+    // 1) read snapshots
+    let snaps = [];
+    try {
+      if (fs.existsSync(STOCK_SNAPSHOTS_FILE)) {
+        const raw = fs.readFileSync(STOCK_SNAPSHOTS_FILE, "utf8");
+        const json = raw.trim() ? JSON.parse(raw) : [];
+        snaps = Array.isArray(json) ? json : [];
+      }
+    } catch (e) {
+      snaps = [];
+    }
+
+    // points per day from snapshots: day -> {stock,in_transit,ts}
+    const byDay = new Map();
+    for (const s of snaps) {
+      const ts = String(s.timestamp || "");
+      if (!ts) continue;
+      const day = ts.slice(0, 10);
+      const items = Array.isArray(s.items) ? s.items : [];
+      const row = items.find((it) => String(it.sku || "").trim() === sku);
+      if (!row) continue;
+      const stock = Number(row.ozon_stock || 0);
+      const in_transit = Number(row.in_transit || 0);
+
+      const prev = byDay.get(day);
+      if (!prev || String(ts) > String(prev.ts)) {
+        byDay.set(day, { stock, in_transit, ts });
+      }
+    }
+
+    const today = new Date();
+    const dateList = [];
+    for (let i = Math.max(1, days) - 1; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      dateList.push(d.toISOString().slice(0, 10));
+    }
+
+    // If no snapshots at all for this SKU, return empty (UI can handle it)
+    const snapshotDaysInRange = dateList.filter((d) => byDay.has(d));
+    if (!snapshotDaysInRange.length) {
+      return res.json({ ok: true, points: [] });
+    }
+
+    // Pick anchor = latest snapshot day within range
+    const anchorDay = snapshotDaysInRange.slice().sort().pop();
+    const anchor = byDay.get(anchorDay);
+    let series = new Map();
+
+    // Optionally build estimated series from orders/returns
+    let daily = null;
+    if (estimate) {
+      try {
+        daily = await getDailyOrdersReturnsPoints(sku, Math.max(1, days));
+      } catch (e) {
+        daily = null;
+      }
+    }
+
+    const dailyMap = new Map();
+    if (Array.isArray(daily)) {
+      for (const p of daily) {
+        dailyMap.set(String(p.date), {
+          orders: Number(p.orders || 0),
+          returns: Number(p.returns || 0),
+        });
+      }
+    }
+
+    // 2) Fill estimated backwards from anchor
+    if (estimate) {
+      // Build index for dateList
+      const idx = new Map(dateList.map((d, i) => [d, i]));
+      const aI = idx.get(anchorDay);
+      if (typeof aI === "number") {
+        let stockCur = Number(anchor.stock || 0);
+        // go backwards including anchor day
+        for (let i = aI; i >= 0; i--) {
+          const day = dateList[i];
+          series.set(day, { stock: stockCur, source: "estimated" });
+          const v = dailyMap.get(day) || { orders: 0, returns: 0 };
+          // stock(previous day) ≈ stock(today) + orders(today) - returns(today)
+          stockCur = stockCur + (v.orders || 0) - (v.returns || 0);
+        }
+
+        // go forward after anchor day
+        stockCur = Number(anchor.stock || 0);
+        for (let i = aI + 1; i < dateList.length; i++) {
+          const day = dateList[i];
+          const v = dailyMap.get(day) || { orders: 0, returns: 0 };
+          // stock(today) ≈ stock(yesterday) - orders(today) + returns(today)
+          stockCur = stockCur - (v.orders || 0) + (v.returns || 0);
+          series.set(day, { stock: stockCur, source: "estimated" });
+        }
+      }
+    }
+
+    // 3) Override with factual snapshots where we have them
+    for (const d of dateList) {
+      const snap = byDay.get(d);
+      if (snap)
+        series.set(d, { stock: Number(snap.stock || 0), source: "snapshot" });
+    }
+
+    const points = dateList.map((d) => {
+      const v = series.get(d);
+      return {
+        date: d,
+        ozon_stock: v ? Number(v.stock || 0) : 0,
+        source: v?.source || (byDay.has(d) ? "snapshot" : "estimated"),
+      };
+    });
+
+    return res.json({ ok: true, points });
+  } catch (e) {
+    console.error("❌ /api/stock-history error:", e);
     return res.status(500).json({ ok: false, error: e.message || String(e) });
   }
 });
@@ -432,6 +568,10 @@ app.get("/api/loader/cut-status", (req, res) => {
 // =====================================================
 // API: CONFIG
 // =====================================================
+// Унифицированный API (как у прогрузчика):
+// GET  /api/config/:module   -> { ok, config }
+// POST /api/config/:module   -> { ok, config }
+// POST /api/config/:module/reset -> { ok, config }
 app.get("/api/config/:module", (req, res) => {
   const moduleKey = String(req.params.module || "").trim();
   const cfg = loadModuleConfig(moduleKey);
@@ -446,6 +586,7 @@ app.post("/api/config/:module/reset", (req, res) => {
     if (!filePath)
       return res.status(404).json({ ok: false, error: "unknown-module" });
 
+    // перезаписать файл дефолтами (без merge)
     let defaults = null;
     if (moduleKey === "loader") defaults = defaultLoaderConfig;
     if (moduleKey === "funnel") defaults = defaultFunnelConfig;
@@ -454,14 +595,6 @@ app.post("/api/config/:module/reset", (req, res) => {
       return res.status(404).json({ ok: false, error: "unknown-module" });
 
     fs.writeFileSync(filePath, JSON.stringify(defaults, null, 2), "utf8");
-
-    // ✅ reset funnel/ads -> сброс кэша воронки
-    if (moduleKey === "funnel" || moduleKey === "ads") {
-      funnelCache.clear();
-      funnelNextAllowedAt.clear();
-      funnelInFlight.clear();
-    }
-
     return res.json({ ok: true, config: { ...defaults } });
   } catch (e) {
     return res.status(500).json({ ok: false, error: e.message });
@@ -474,6 +607,7 @@ app.post("/api/config/:module", (req, res) => {
     if (!CONFIG_FILES[moduleKey])
       return res.status(404).json({ ok: false, error: "unknown-module" });
 
+    // ✅ базовый clamp
     const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 
     let patch = {};
@@ -534,7 +668,6 @@ app.post("/api/config/:module", (req, res) => {
         Number.isFinite(Number(v))
           ? clamp(Math.round(Number(v)), min, max)
           : undefined;
-
       const mtPatch = {
         IMPRESSIONS: int(mt.IMPRESSIONS, 0, 1_000_000),
         CLICKS_FOR_CTR: int(mt.CLICKS_FOR_CTR, 0, 1_000_000),
@@ -546,10 +679,6 @@ app.post("/api/config/:module", (req, res) => {
         (k) => mtPatch[k] === undefined && delete mtPatch[k],
       );
       if (Object.keys(mtPatch).length) patch.MATURITY_THRESHOLDS = mtPatch;
-
-      Object.keys(patch).forEach(
-        (k) => patch[k] === undefined && delete patch[k],
-      );
     }
 
     if (moduleKey === "ads") {
@@ -615,21 +744,12 @@ app.post("/api/config/:module", (req, res) => {
     }
 
     const updated = saveModuleConfig(moduleKey, patch);
-
-    // ✅ СРАЗУ сбрасываем кэш воронки для funnel/ads
-    if (moduleKey === "funnel" || moduleKey === "ads") {
-      funnelCache.clear();
-      funnelNextAllowedAt.clear();
-      funnelInFlight.clear();
-    }
-
     return res.json({ ok: true, config: updated });
   } catch (e) {
     return res.status(500).json({ ok: false, error: e.message });
   }
 });
 
-// (оставил как у тебя — если используешь где-то ещё)
 app.get("/api/loader/config", (req, res) => {
   const cfg = loadModuleConfig("loader");
   res.json({ ok: true, config: cfg });
@@ -651,6 +771,7 @@ app.post("/api/loader/config", (req, res) => {
       "MAX_FUNNEL_HISTORY_DAYS",
     ];
 
+    // ✅ NEW: защита от “убийственных” значений
     const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
     const rules = {
       DEMAND_FACTOR: (v) => clamp(v, 0.2, 5),

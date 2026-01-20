@@ -28,6 +28,10 @@ let AdsConfig = null;
 let skuChart = null;
 let skuChartReqId = 0;
 
+// ✅ график остатков SKU (fact+estimated)
+let skuStockChart = null;
+let skuStockChartReqId = 0;
+
 // прогрузчик
 let loaderItems = [];
 

@@ -198,7 +198,7 @@ function makeCopyIcon(textToCopy) {
           setTimeout(() => {
             copySpan.textContent = original;
             copySpan.classList.remove("copied");
-          }, 600);
+          }, 1000);
         })
         .catch(() => {});
     }
@@ -377,6 +377,7 @@ function renderTable(rows) {
 
 // cache last drawn sku chart so we can redraw it after notes changes
 let __lastSkuChart = { row: null, points: [] };
+let __lastSkuStockChart = { row: null, points: [] };
 
 function redrawSkuChartIfNeeded(row) {
   if (!GRAPH_ENABLED) return;
@@ -390,9 +391,27 @@ function redrawSkuChartIfNeeded(row) {
   drawSkuChart(__lastSkuChart.points || [], __lastSkuChart.row);
 }
 
+function redrawSkuStockChartIfNeeded(row) {
+  if (!GRAPH_ENABLED) return;
+  if (!skuStockChart) return;
+  if (!__lastSkuStockChart.row) return;
+
+  if (
+    String(__lastSkuStockChart.row.offer_id || "") !==
+    String(row.offer_id || "")
+  )
+    return;
+
+  drawSkuStockChart(__lastSkuStockChart.points || [], __lastSkuStockChart.row);
+}
+
 function drawSkuChart(points, row) {
   if (!GRAPH_ENABLED) return;
-  const canvas = document.getElementById("sku-chart");
+
+  const canvas =
+    document.getElementById("sku-orders-chart") ||
+    document.getElementById("sku-orders-chart-canvas");
+
   if (!canvas || typeof Chart === "undefined") return;
 
   const ctx = canvas.getContext("2d");
@@ -504,6 +523,79 @@ function drawSkuChart(points, row) {
   });
 }
 
+function drawSkuStockChart(points, row) {
+  if (!GRAPH_ENABLED) return;
+  const canvas = document.getElementById("sku-stock-chart");
+  if (!canvas || typeof Chart === "undefined") return;
+
+  const ctx = canvas.getContext("2d");
+
+  if (skuStockChart) {
+    skuStockChart.destroy();
+    skuStockChart = null;
+  }
+
+  const safePoints = Array.isArray(points) ? points : [];
+  const labels = safePoints.map((p) => (p.date || "").slice(5)); // MM-DD
+
+  const est = safePoints.map((p) =>
+    p.source === "estimated" ? Number(p.ozon_stock || 0) : null,
+  );
+  const fact = safePoints.map((p) =>
+    p.source === "snapshot" ? Number(p.ozon_stock || 0) : null,
+  );
+
+  skuStockChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Остаток (оценка)",
+          data: est,
+          borderDash: [6, 4],
+          pointRadius: 2,
+          tension: 0.25,
+        },
+        {
+          label: "Остаток (факт)",
+          data: fact,
+          pointRadius: 3,
+          tension: 0.25,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: true, labels: { color: "#fff" } },
+        tooltip: {
+          callbacks: {
+            label: (item) => {
+              const i = item.dataIndex;
+              const p = safePoints[i];
+              if (!p) return "";
+              const src = p.source === "snapshot" ? "факт" : "оценка";
+              return `Остаток: ${Number(p.ozon_stock || 0)} (${src})`;
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          ticks: { color: "#fff" },
+          grid: { color: "rgba(255,255,255,0.1)" },
+        },
+        y: {
+          ticks: { color: "#fff" },
+          grid: { color: "rgba(255,255,255,0.1)" },
+        },
+      },
+    },
+  });
+}
+
 async function loadDailySalesChart(row) {
   // ✅ берем ТОЛЬКО sku (а не offer_id/название)
   const skuKey =
@@ -565,6 +657,61 @@ async function loadDailySalesChart(row) {
   }
 }
 
+async function loadSkuStockChart(row) {
+  const skuKey =
+    typeof getSkuKey === "function"
+      ? getSkuKey(row)
+      : String(row?.sku || "").trim();
+
+  if (typeof __lastSkuStockChart === "object" && __lastSkuStockChart) {
+    __lastSkuStockChart.row = row;
+  }
+
+  if (!skuKey) {
+    if (typeof __lastSkuStockChart === "object" && __lastSkuStockChart) {
+      __lastSkuStockChart.points = [];
+    }
+    return drawSkuStockChart([], row);
+  }
+
+  const reqId = ++skuStockChartReqId;
+  drawSkuStockChart([], row);
+
+  try {
+    const days = Number(periodDays || 14) * 3;
+    const json = window.DataService
+      ? await DataService.loadStockHistory(skuKey, days, true)
+      : await (async () => {
+          const r = await fetch(
+            `/api/stock-history?sku=${encodeURIComponent(skuKey)}&days=${days}`,
+          );
+          return await r.json();
+        })();
+
+    if (reqId !== skuStockChartReqId) return;
+
+    if (!json || !json.ok || !Array.isArray(json.points)) {
+      if (typeof __lastSkuStockChart === "object" && __lastSkuStockChart) {
+        __lastSkuStockChart.points = [];
+      }
+      return drawSkuStockChart([], row);
+    }
+
+    if (typeof __lastSkuStockChart === "object" && __lastSkuStockChart) {
+      __lastSkuStockChart = { row, points: json.points };
+    }
+
+    return drawSkuStockChart(json.points, row);
+  } catch (e) {
+    if (reqId !== skuStockChartReqId) return;
+    console.error("Ошибка загрузки графика остатков:", e);
+    if (typeof __lastSkuStockChart === "object" && __lastSkuStockChart) {
+      __lastSkuStockChart.points = [];
+    }
+    return drawSkuStockChart([], row);
+  }
+}
+
 function setDelta(id, change, inverse = false) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -618,7 +765,21 @@ function showDetails(row) {
     if (el) el.textContent = val;
   };
 
-  set("details-title", row.offer_id || "-");
+  const titleEl = document.getElementById("details-title");
+  if (titleEl) {
+    titleEl.innerHTML = ""; // очищаем при переключении SKU
+
+    const textSpan = document.createElement("span");
+    textSpan.textContent = row.offer_id || "-";
+
+    titleEl.appendChild(textSpan);
+
+    if (row.offer_id) {
+      const copyIcon = makeCopyIcon(row.offer_id);
+      titleEl.appendChild(copyIcon);
+    }
+  }
+
   set("d-period", periodDays + " дней");
 
   set("d-imp", formatNumber(row.impressions || 0));
@@ -681,7 +842,10 @@ function showDetails(row) {
     set("d-stock-days", layers.stock.daysOfStock.toFixed(1) + " дн.");
   else set("d-stock-days", "—");
 
-  if (GRAPH_ENABLED) loadDailySalesChart(row);
+  if (GRAPH_ENABLED) {
+    loadDailySalesChart(row);
+    loadSkuStockChart(row);
+  }
 
   // ✅ ЗАМЕТКИ: важно обновлять "текущий row" и отрисовать список
   setCurrentNotesRow(row);
@@ -696,11 +860,17 @@ function hideDetails() {
 
   // отменяем любые «висящие» ответы по графику
   skuChartReqId++;
+  skuStockChartReqId++;
 
   // очищаем график, чтобы при следующем SKU не мигал старый
   if (skuChart) {
     skuChart.destroy();
     skuChart = null;
+  }
+
+  if (skuStockChart) {
+    skuStockChart.destroy();
+    skuStockChart = null;
   }
 
   // снять подсветку активных строк
@@ -771,10 +941,36 @@ function formatDate(ts) {
  * Сколько дней прошло
  */
 function daysAgo(ts) {
-  const diffMs = Date.now() - ts;
-  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const now = new Date();
+  const d = new Date(ts);
 
-  if (days === 0) return "сегодня";
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const key = (x) =>
+    `${x.getFullYear()}-${pad2(x.getMonth() + 1)}-${pad2(x.getDate())}`;
+
+  const nowKey = key(now);
+  const dKey = key(d);
+
+  if (dKey === nowKey) return "сегодня";
+
+  // “вчера” по календарю
+  const y = new Date(now);
+  y.setDate(now.getDate() - 1);
+  if (dKey === key(y)) return "вчера";
+
+  // иначе — количество календарных дней
+  const startOfNow = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+  ).getTime();
+  const startOfD = new Date(
+    d.getFullYear(),
+    d.getMonth(),
+    d.getDate(),
+  ).getTime();
+  const days = Math.round((startOfNow - startOfD) / (1000 * 60 * 60 * 24));
+
   if (days === 1) return "1 день назад";
   return `${days} дней назад`;
 }
@@ -843,6 +1039,7 @@ function renderNotes(row) {
         deleteNote(storeId, offerId, note.id);
         renderNotes(row);
         redrawSkuChartIfNeeded(row);
+        redrawSkuStockChartIfNeeded(row);
       });
 
       const rightBox = document.createElement("span");
@@ -979,6 +1176,7 @@ function initNotesUi() {
 
     // ✅ сразу обновляем график, чтобы тултип увидел новую заметку
     redrawSkuChartIfNeeded(row);
+    redrawSkuStockChartIfNeeded(row);
   });
 }
 

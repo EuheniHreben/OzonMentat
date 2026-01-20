@@ -1,0 +1,7812 @@
+[
+  {
+    "timestamp": "2026-01-19T17:26:26.639Z",
+    "items": [
+      {
+        "sku": "2240896987",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246001452",
+        "ozon_stock": 13,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246117855",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246141137",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246178924",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246206789",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324133599",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324145502",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324177751",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354028243",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354042441",
+        "ozon_stock": 4,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354056789",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354065387",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354069462",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354071804",
+        "ozon_stock": 96,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072305",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072692",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073597",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073828",
+        "ozon_stock": 15,
+        "in_transit": 20
+      },
+      {
+        "sku": "2354074772",
+        "ozon_stock": 16,
+        "in_transit": 15
+      },
+      {
+        "sku": "2354074775",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354075878",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354081773",
+        "ozon_stock": 18,
+        "in_transit": 6
+      },
+      {
+        "sku": "2354082231",
+        "ozon_stock": 2,
+        "in_transit": 10
+      },
+      {
+        "sku": "2354082457",
+        "ozon_stock": 16,
+        "in_transit": 29
+      },
+      {
+        "sku": "2354085122",
+        "ozon_stock": 21,
+        "in_transit": 31
+      },
+      {
+        "sku": "2354085254",
+        "ozon_stock": 21,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085741",
+        "ozon_stock": 1,
+        "in_transit": 21
+      },
+      {
+        "sku": "2354086335",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354086657",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354087517",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2754879815",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755075564",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755122382",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2795478758",
+        "ozon_stock": 25,
+        "in_transit": 24
+      },
+      {
+        "sku": "2800895785",
+        "ozon_stock": 15,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066345",
+        "ozon_stock": 24,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066469",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067326",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067495",
+        "ozon_stock": 55,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899070937",
+        "ozon_stock": 22,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071004",
+        "ozon_stock": 29,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071764",
+        "ozon_stock": 114,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071820",
+        "ozon_stock": 21,
+        "in_transit": 10
+      },
+      {
+        "sku": "2899071823",
+        "ozon_stock": 28,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072161",
+        "ozon_stock": 32,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072977",
+        "ozon_stock": 66,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073013",
+        "ozon_stock": 35,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073051",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073424",
+        "ozon_stock": 35,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923719733",
+        "ozon_stock": 14,
+        "in_transit": 13
+      },
+      {
+        "sku": "2923719843",
+        "ozon_stock": 97,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720024",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720149",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168355596",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168357754",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168363671",
+        "ozon_stock": 19,
+        "in_transit": 5
+      },
+      {
+        "sku": "3168364386",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168364523",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365740",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365777",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368244",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368923",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168370879",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168376571",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744442",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744947",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745246",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745414",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259748568",
+        "ozon_stock": 9,
+        "in_transit": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-19T17:28:07.395Z",
+    "items": [
+      {
+        "sku": "2240896987",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246001452",
+        "ozon_stock": 13,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246117855",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246141137",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246178924",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246206789",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324133599",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324145502",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324177751",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354028243",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354042441",
+        "ozon_stock": 4,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354056789",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354065387",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354069462",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354071804",
+        "ozon_stock": 96,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072305",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072692",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073597",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073828",
+        "ozon_stock": 15,
+        "in_transit": 20
+      },
+      {
+        "sku": "2354074772",
+        "ozon_stock": 16,
+        "in_transit": 15
+      },
+      {
+        "sku": "2354074775",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354075878",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354081773",
+        "ozon_stock": 18,
+        "in_transit": 6
+      },
+      {
+        "sku": "2354082231",
+        "ozon_stock": 2,
+        "in_transit": 10
+      },
+      {
+        "sku": "2354082457",
+        "ozon_stock": 16,
+        "in_transit": 29
+      },
+      {
+        "sku": "2354085122",
+        "ozon_stock": 21,
+        "in_transit": 31
+      },
+      {
+        "sku": "2354085254",
+        "ozon_stock": 21,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085741",
+        "ozon_stock": 1,
+        "in_transit": 21
+      },
+      {
+        "sku": "2354086335",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354086657",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354087517",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2754879815",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755075564",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755122382",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2795478758",
+        "ozon_stock": 25,
+        "in_transit": 24
+      },
+      {
+        "sku": "2800895785",
+        "ozon_stock": 15,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066345",
+        "ozon_stock": 24,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066469",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067326",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067495",
+        "ozon_stock": 55,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899070937",
+        "ozon_stock": 22,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071004",
+        "ozon_stock": 29,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071764",
+        "ozon_stock": 114,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071820",
+        "ozon_stock": 21,
+        "in_transit": 10
+      },
+      {
+        "sku": "2899071823",
+        "ozon_stock": 28,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072161",
+        "ozon_stock": 32,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072977",
+        "ozon_stock": 66,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073013",
+        "ozon_stock": 35,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073051",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073424",
+        "ozon_stock": 35,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923719733",
+        "ozon_stock": 14,
+        "in_transit": 13
+      },
+      {
+        "sku": "2923719843",
+        "ozon_stock": 97,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720024",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720149",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168355596",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168357754",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168363671",
+        "ozon_stock": 19,
+        "in_transit": 5
+      },
+      {
+        "sku": "3168364386",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168364523",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365740",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365777",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368244",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368923",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168370879",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168376571",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744442",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744947",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745246",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745414",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259748568",
+        "ozon_stock": 9,
+        "in_transit": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-19T17:34:18.677Z",
+    "items": [
+      {
+        "sku": "2240896987",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246001452",
+        "ozon_stock": 13,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246117855",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246141137",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246178924",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246206789",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324133599",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324145502",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324177751",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354028243",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354042441",
+        "ozon_stock": 4,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354056789",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354065387",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354069462",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354071804",
+        "ozon_stock": 96,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072305",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072692",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073597",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073828",
+        "ozon_stock": 15,
+        "in_transit": 20
+      },
+      {
+        "sku": "2354074772",
+        "ozon_stock": 16,
+        "in_transit": 15
+      },
+      {
+        "sku": "2354074775",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354075878",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354081773",
+        "ozon_stock": 18,
+        "in_transit": 6
+      },
+      {
+        "sku": "2354082231",
+        "ozon_stock": 2,
+        "in_transit": 10
+      },
+      {
+        "sku": "2354082457",
+        "ozon_stock": 16,
+        "in_transit": 29
+      },
+      {
+        "sku": "2354085122",
+        "ozon_stock": 21,
+        "in_transit": 31
+      },
+      {
+        "sku": "2354085254",
+        "ozon_stock": 21,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085741",
+        "ozon_stock": 1,
+        "in_transit": 21
+      },
+      {
+        "sku": "2354086335",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354086657",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354087517",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2754879815",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755075564",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755122382",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2795478758",
+        "ozon_stock": 25,
+        "in_transit": 24
+      },
+      {
+        "sku": "2800895785",
+        "ozon_stock": 15,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066345",
+        "ozon_stock": 24,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066469",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067326",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067495",
+        "ozon_stock": 55,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899070937",
+        "ozon_stock": 22,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071004",
+        "ozon_stock": 29,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071764",
+        "ozon_stock": 114,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071820",
+        "ozon_stock": 21,
+        "in_transit": 10
+      },
+      {
+        "sku": "2899071823",
+        "ozon_stock": 28,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072161",
+        "ozon_stock": 32,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072977",
+        "ozon_stock": 66,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073013",
+        "ozon_stock": 35,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073051",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073424",
+        "ozon_stock": 35,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923719733",
+        "ozon_stock": 14,
+        "in_transit": 13
+      },
+      {
+        "sku": "2923719843",
+        "ozon_stock": 97,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720024",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720149",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168355596",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168357754",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168363671",
+        "ozon_stock": 19,
+        "in_transit": 5
+      },
+      {
+        "sku": "3168364386",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168364523",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365740",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365777",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368244",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368923",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168370879",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168376571",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744442",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744947",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745246",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745414",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259748568",
+        "ozon_stock": 9,
+        "in_transit": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-19T17:35:48.369Z",
+    "items": [
+      {
+        "sku": "2240896987",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246001452",
+        "ozon_stock": 13,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246117855",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246141137",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246178924",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246206789",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324133599",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324145502",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324177751",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354028243",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354042441",
+        "ozon_stock": 4,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354056789",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354065387",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354069462",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354071804",
+        "ozon_stock": 96,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072305",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072692",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073597",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073828",
+        "ozon_stock": 15,
+        "in_transit": 20
+      },
+      {
+        "sku": "2354074772",
+        "ozon_stock": 16,
+        "in_transit": 15
+      },
+      {
+        "sku": "2354074775",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354075878",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354081773",
+        "ozon_stock": 18,
+        "in_transit": 6
+      },
+      {
+        "sku": "2354082231",
+        "ozon_stock": 2,
+        "in_transit": 10
+      },
+      {
+        "sku": "2354082457",
+        "ozon_stock": 16,
+        "in_transit": 29
+      },
+      {
+        "sku": "2354085122",
+        "ozon_stock": 21,
+        "in_transit": 31
+      },
+      {
+        "sku": "2354085254",
+        "ozon_stock": 21,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085741",
+        "ozon_stock": 1,
+        "in_transit": 21
+      },
+      {
+        "sku": "2354086335",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354086657",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354087517",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2754879815",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755075564",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755122382",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2795478758",
+        "ozon_stock": 25,
+        "in_transit": 24
+      },
+      {
+        "sku": "2800895785",
+        "ozon_stock": 15,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066345",
+        "ozon_stock": 24,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066469",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067326",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067495",
+        "ozon_stock": 55,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899070937",
+        "ozon_stock": 22,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071004",
+        "ozon_stock": 29,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071764",
+        "ozon_stock": 114,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071820",
+        "ozon_stock": 21,
+        "in_transit": 10
+      },
+      {
+        "sku": "2899071823",
+        "ozon_stock": 28,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072161",
+        "ozon_stock": 32,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072977",
+        "ozon_stock": 66,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073013",
+        "ozon_stock": 35,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073051",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073424",
+        "ozon_stock": 35,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923719733",
+        "ozon_stock": 14,
+        "in_transit": 13
+      },
+      {
+        "sku": "2923719843",
+        "ozon_stock": 97,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720024",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720149",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168355596",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168357754",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168363671",
+        "ozon_stock": 19,
+        "in_transit": 5
+      },
+      {
+        "sku": "3168364386",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168364523",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365740",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365777",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368244",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368923",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168370879",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168376571",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744442",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744947",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745246",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745414",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259748568",
+        "ozon_stock": 9,
+        "in_transit": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-19T17:39:06.203Z",
+    "items": [
+      {
+        "sku": "2240896987",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246001452",
+        "ozon_stock": 13,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246117855",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246141137",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246178924",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246206789",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324133599",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324145502",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324177751",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354028243",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354042441",
+        "ozon_stock": 4,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354056789",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354065387",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354069462",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354071804",
+        "ozon_stock": 97,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072305",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072692",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073597",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073828",
+        "ozon_stock": 15,
+        "in_transit": 20
+      },
+      {
+        "sku": "2354074772",
+        "ozon_stock": 16,
+        "in_transit": 15
+      },
+      {
+        "sku": "2354074775",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354075878",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354081773",
+        "ozon_stock": 18,
+        "in_transit": 6
+      },
+      {
+        "sku": "2354082231",
+        "ozon_stock": 2,
+        "in_transit": 10
+      },
+      {
+        "sku": "2354082457",
+        "ozon_stock": 16,
+        "in_transit": 29
+      },
+      {
+        "sku": "2354085122",
+        "ozon_stock": 21,
+        "in_transit": 31
+      },
+      {
+        "sku": "2354085254",
+        "ozon_stock": 21,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085741",
+        "ozon_stock": 1,
+        "in_transit": 21
+      },
+      {
+        "sku": "2354086335",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354086657",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354087517",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2754879815",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755075564",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755122382",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2795478758",
+        "ozon_stock": 25,
+        "in_transit": 24
+      },
+      {
+        "sku": "2800895785",
+        "ozon_stock": 15,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066345",
+        "ozon_stock": 24,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066469",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067326",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067495",
+        "ozon_stock": 55,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899070937",
+        "ozon_stock": 22,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071004",
+        "ozon_stock": 29,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071764",
+        "ozon_stock": 114,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071820",
+        "ozon_stock": 21,
+        "in_transit": 10
+      },
+      {
+        "sku": "2899071823",
+        "ozon_stock": 28,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072161",
+        "ozon_stock": 32,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072977",
+        "ozon_stock": 66,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073013",
+        "ozon_stock": 35,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073051",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073424",
+        "ozon_stock": 35,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923719733",
+        "ozon_stock": 14,
+        "in_transit": 13
+      },
+      {
+        "sku": "2923719843",
+        "ozon_stock": 97,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720024",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720149",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168355596",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168357754",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168363671",
+        "ozon_stock": 19,
+        "in_transit": 5
+      },
+      {
+        "sku": "3168364386",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168364523",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365740",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365777",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368244",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368923",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168370879",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168376571",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744442",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744947",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745246",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745414",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259748568",
+        "ozon_stock": 9,
+        "in_transit": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-19T17:41:22.165Z",
+    "items": [
+      {
+        "sku": "2240896987",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246001452",
+        "ozon_stock": 13,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246117855",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246141137",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246178924",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246206789",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324133599",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324145502",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324177751",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354028243",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354042441",
+        "ozon_stock": 4,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354056789",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354065387",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354069462",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354071804",
+        "ozon_stock": 97,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072305",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072692",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073597",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073828",
+        "ozon_stock": 15,
+        "in_transit": 20
+      },
+      {
+        "sku": "2354074772",
+        "ozon_stock": 16,
+        "in_transit": 15
+      },
+      {
+        "sku": "2354074775",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354075878",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354081773",
+        "ozon_stock": 18,
+        "in_transit": 6
+      },
+      {
+        "sku": "2354082231",
+        "ozon_stock": 2,
+        "in_transit": 10
+      },
+      {
+        "sku": "2354082457",
+        "ozon_stock": 16,
+        "in_transit": 29
+      },
+      {
+        "sku": "2354085122",
+        "ozon_stock": 21,
+        "in_transit": 31
+      },
+      {
+        "sku": "2354085254",
+        "ozon_stock": 21,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085741",
+        "ozon_stock": 1,
+        "in_transit": 21
+      },
+      {
+        "sku": "2354086335",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354086657",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354087517",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2754879815",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755075564",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755122382",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2795478758",
+        "ozon_stock": 25,
+        "in_transit": 24
+      },
+      {
+        "sku": "2800895785",
+        "ozon_stock": 15,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066345",
+        "ozon_stock": 24,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066469",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067326",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067495",
+        "ozon_stock": 55,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899070937",
+        "ozon_stock": 22,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071004",
+        "ozon_stock": 29,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071764",
+        "ozon_stock": 114,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071820",
+        "ozon_stock": 21,
+        "in_transit": 10
+      },
+      {
+        "sku": "2899071823",
+        "ozon_stock": 28,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072161",
+        "ozon_stock": 32,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072977",
+        "ozon_stock": 66,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073013",
+        "ozon_stock": 35,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073051",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073424",
+        "ozon_stock": 35,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923719733",
+        "ozon_stock": 14,
+        "in_transit": 13
+      },
+      {
+        "sku": "2923719843",
+        "ozon_stock": 97,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720024",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720149",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168355596",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168357754",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168363671",
+        "ozon_stock": 19,
+        "in_transit": 5
+      },
+      {
+        "sku": "3168364386",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168364523",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365740",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365777",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368244",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368923",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168370879",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168376571",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744442",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744947",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745246",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745414",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259748568",
+        "ozon_stock": 9,
+        "in_transit": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-19T17:44:26.630Z",
+    "items": [
+      {
+        "sku": "2240896987",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246001452",
+        "ozon_stock": 13,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246117855",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246141137",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246178924",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246206789",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324133599",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324145502",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324177751",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354028243",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354042441",
+        "ozon_stock": 4,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354056789",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354065387",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354069462",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354071804",
+        "ozon_stock": 97,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072305",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072692",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073597",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073828",
+        "ozon_stock": 15,
+        "in_transit": 20
+      },
+      {
+        "sku": "2354074772",
+        "ozon_stock": 16,
+        "in_transit": 15
+      },
+      {
+        "sku": "2354074775",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354075878",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354081773",
+        "ozon_stock": 18,
+        "in_transit": 6
+      },
+      {
+        "sku": "2354082231",
+        "ozon_stock": 2,
+        "in_transit": 10
+      },
+      {
+        "sku": "2354082457",
+        "ozon_stock": 16,
+        "in_transit": 29
+      },
+      {
+        "sku": "2354085122",
+        "ozon_stock": 21,
+        "in_transit": 31
+      },
+      {
+        "sku": "2354085254",
+        "ozon_stock": 21,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085741",
+        "ozon_stock": 1,
+        "in_transit": 21
+      },
+      {
+        "sku": "2354086335",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354086657",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354087517",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2754879815",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755075564",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755122382",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2795478758",
+        "ozon_stock": 25,
+        "in_transit": 24
+      },
+      {
+        "sku": "2800895785",
+        "ozon_stock": 15,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066345",
+        "ozon_stock": 24,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066469",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067326",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067495",
+        "ozon_stock": 55,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899070937",
+        "ozon_stock": 22,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071004",
+        "ozon_stock": 29,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071764",
+        "ozon_stock": 114,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071820",
+        "ozon_stock": 21,
+        "in_transit": 10
+      },
+      {
+        "sku": "2899071823",
+        "ozon_stock": 28,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072161",
+        "ozon_stock": 32,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072977",
+        "ozon_stock": 66,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073013",
+        "ozon_stock": 35,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073051",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073424",
+        "ozon_stock": 35,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923719733",
+        "ozon_stock": 14,
+        "in_transit": 13
+      },
+      {
+        "sku": "2923719843",
+        "ozon_stock": 97,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720024",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720149",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168355596",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168357754",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168363671",
+        "ozon_stock": 19,
+        "in_transit": 5
+      },
+      {
+        "sku": "3168364386",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168364523",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365740",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365777",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368244",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368923",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168370879",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168376571",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744442",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744947",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745246",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745414",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259748568",
+        "ozon_stock": 9,
+        "in_transit": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-19T17:45:40.361Z",
+    "items": [
+      {
+        "sku": "2240896987",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246001452",
+        "ozon_stock": 13,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246117855",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246141137",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246178924",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246206789",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324133599",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324145502",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324177751",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354028243",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354042441",
+        "ozon_stock": 4,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354056789",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354065387",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354069462",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354071804",
+        "ozon_stock": 97,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072305",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072692",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073597",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073828",
+        "ozon_stock": 15,
+        "in_transit": 20
+      },
+      {
+        "sku": "2354074772",
+        "ozon_stock": 16,
+        "in_transit": 15
+      },
+      {
+        "sku": "2354074775",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354075878",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354081773",
+        "ozon_stock": 18,
+        "in_transit": 6
+      },
+      {
+        "sku": "2354082231",
+        "ozon_stock": 2,
+        "in_transit": 10
+      },
+      {
+        "sku": "2354082457",
+        "ozon_stock": 16,
+        "in_transit": 29
+      },
+      {
+        "sku": "2354085122",
+        "ozon_stock": 21,
+        "in_transit": 31
+      },
+      {
+        "sku": "2354085254",
+        "ozon_stock": 21,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085741",
+        "ozon_stock": 1,
+        "in_transit": 21
+      },
+      {
+        "sku": "2354086335",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354086657",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354087517",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2754879815",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755075564",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755122382",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2795478758",
+        "ozon_stock": 25,
+        "in_transit": 24
+      },
+      {
+        "sku": "2800895785",
+        "ozon_stock": 15,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066345",
+        "ozon_stock": 24,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066469",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067326",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067495",
+        "ozon_stock": 55,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899070937",
+        "ozon_stock": 22,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071004",
+        "ozon_stock": 29,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071764",
+        "ozon_stock": 114,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071820",
+        "ozon_stock": 21,
+        "in_transit": 10
+      },
+      {
+        "sku": "2899071823",
+        "ozon_stock": 28,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072161",
+        "ozon_stock": 32,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072977",
+        "ozon_stock": 66,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073013",
+        "ozon_stock": 35,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073051",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073424",
+        "ozon_stock": 35,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923719733",
+        "ozon_stock": 14,
+        "in_transit": 13
+      },
+      {
+        "sku": "2923719843",
+        "ozon_stock": 97,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720024",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720149",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168355596",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168357754",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168363671",
+        "ozon_stock": 19,
+        "in_transit": 5
+      },
+      {
+        "sku": "3168364386",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168364523",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365740",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365777",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368244",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368923",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168370879",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168376571",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744442",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744947",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745246",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745414",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259748568",
+        "ozon_stock": 9,
+        "in_transit": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-19T18:18:04.529Z",
+    "items": [
+      {
+        "sku": "2240896987",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246001452",
+        "ozon_stock": 13,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246117855",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246141137",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246178924",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246206789",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324133599",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324145502",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324177751",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354028243",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354042441",
+        "ozon_stock": 4,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354056789",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354065387",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354069462",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354071804",
+        "ozon_stock": 97,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072305",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072692",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073597",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073828",
+        "ozon_stock": 15,
+        "in_transit": 20
+      },
+      {
+        "sku": "2354074772",
+        "ozon_stock": 16,
+        "in_transit": 15
+      },
+      {
+        "sku": "2354074775",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354075878",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354081773",
+        "ozon_stock": 18,
+        "in_transit": 6
+      },
+      {
+        "sku": "2354082231",
+        "ozon_stock": 2,
+        "in_transit": 10
+      },
+      {
+        "sku": "2354082457",
+        "ozon_stock": 16,
+        "in_transit": 29
+      },
+      {
+        "sku": "2354085122",
+        "ozon_stock": 21,
+        "in_transit": 31
+      },
+      {
+        "sku": "2354085254",
+        "ozon_stock": 21,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085741",
+        "ozon_stock": 1,
+        "in_transit": 21
+      },
+      {
+        "sku": "2354086335",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354086657",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354087517",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2754879815",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755075564",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755122382",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2795478758",
+        "ozon_stock": 25,
+        "in_transit": 24
+      },
+      {
+        "sku": "2800895785",
+        "ozon_stock": 15,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066345",
+        "ozon_stock": 24,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066469",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067326",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067495",
+        "ozon_stock": 55,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899070937",
+        "ozon_stock": 22,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071004",
+        "ozon_stock": 29,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071764",
+        "ozon_stock": 114,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071820",
+        "ozon_stock": 21,
+        "in_transit": 10
+      },
+      {
+        "sku": "2899071823",
+        "ozon_stock": 28,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072161",
+        "ozon_stock": 32,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072977",
+        "ozon_stock": 66,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073013",
+        "ozon_stock": 35,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073051",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073424",
+        "ozon_stock": 35,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923719733",
+        "ozon_stock": 14,
+        "in_transit": 13
+      },
+      {
+        "sku": "2923719843",
+        "ozon_stock": 97,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720024",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720149",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168355596",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168357754",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168363671",
+        "ozon_stock": 19,
+        "in_transit": 5
+      },
+      {
+        "sku": "3168364386",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168364523",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365740",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365777",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368244",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368923",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168370879",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168376571",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744442",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744947",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745246",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745414",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259748568",
+        "ozon_stock": 9,
+        "in_transit": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-19T18:26:21.153Z",
+    "items": [
+      {
+        "sku": "2240896987",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246001452",
+        "ozon_stock": 13,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246117855",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246141137",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246178924",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246206789",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324133599",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324145502",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324177751",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354028243",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354042441",
+        "ozon_stock": 4,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354056789",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354065387",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354069462",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354071804",
+        "ozon_stock": 97,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072305",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072692",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073597",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073828",
+        "ozon_stock": 15,
+        "in_transit": 20
+      },
+      {
+        "sku": "2354074772",
+        "ozon_stock": 16,
+        "in_transit": 15
+      },
+      {
+        "sku": "2354074775",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354075878",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354081773",
+        "ozon_stock": 18,
+        "in_transit": 6
+      },
+      {
+        "sku": "2354082231",
+        "ozon_stock": 2,
+        "in_transit": 10
+      },
+      {
+        "sku": "2354082457",
+        "ozon_stock": 16,
+        "in_transit": 29
+      },
+      {
+        "sku": "2354085122",
+        "ozon_stock": 21,
+        "in_transit": 31
+      },
+      {
+        "sku": "2354085254",
+        "ozon_stock": 21,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085741",
+        "ozon_stock": 1,
+        "in_transit": 21
+      },
+      {
+        "sku": "2354086335",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354086657",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354087517",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2754879815",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755075564",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755122382",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2795478758",
+        "ozon_stock": 25,
+        "in_transit": 24
+      },
+      {
+        "sku": "2800895785",
+        "ozon_stock": 15,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066345",
+        "ozon_stock": 24,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066469",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067326",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067495",
+        "ozon_stock": 55,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899070937",
+        "ozon_stock": 22,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071004",
+        "ozon_stock": 29,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071764",
+        "ozon_stock": 114,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071820",
+        "ozon_stock": 21,
+        "in_transit": 10
+      },
+      {
+        "sku": "2899071823",
+        "ozon_stock": 28,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072161",
+        "ozon_stock": 32,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072977",
+        "ozon_stock": 66,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073013",
+        "ozon_stock": 35,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073051",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073424",
+        "ozon_stock": 35,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923719733",
+        "ozon_stock": 14,
+        "in_transit": 13
+      },
+      {
+        "sku": "2923719843",
+        "ozon_stock": 97,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720024",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720149",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168355596",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168357754",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168363671",
+        "ozon_stock": 19,
+        "in_transit": 5
+      },
+      {
+        "sku": "3168364386",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168364523",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365740",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365777",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368244",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368923",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168370879",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168376571",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744442",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744947",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745246",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745414",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259748568",
+        "ozon_stock": 9,
+        "in_transit": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-19T18:43:27.140Z",
+    "items": [
+      {
+        "sku": "2240896987",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246001452",
+        "ozon_stock": 13,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246117855",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246141137",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246178924",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246206789",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324133599",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324145502",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324177751",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354028243",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354042441",
+        "ozon_stock": 4,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354056789",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354065387",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354069462",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354071804",
+        "ozon_stock": 97,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072305",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072692",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073597",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073828",
+        "ozon_stock": 15,
+        "in_transit": 20
+      },
+      {
+        "sku": "2354074772",
+        "ozon_stock": 16,
+        "in_transit": 15
+      },
+      {
+        "sku": "2354074775",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354075878",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354081773",
+        "ozon_stock": 18,
+        "in_transit": 6
+      },
+      {
+        "sku": "2354082231",
+        "ozon_stock": 2,
+        "in_transit": 10
+      },
+      {
+        "sku": "2354082457",
+        "ozon_stock": 16,
+        "in_transit": 29
+      },
+      {
+        "sku": "2354085122",
+        "ozon_stock": 21,
+        "in_transit": 31
+      },
+      {
+        "sku": "2354085254",
+        "ozon_stock": 21,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085741",
+        "ozon_stock": 1,
+        "in_transit": 21
+      },
+      {
+        "sku": "2354086335",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354086657",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354087517",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2754879815",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755075564",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755122382",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2795478758",
+        "ozon_stock": 25,
+        "in_transit": 24
+      },
+      {
+        "sku": "2800895785",
+        "ozon_stock": 15,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066345",
+        "ozon_stock": 24,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066469",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067326",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067495",
+        "ozon_stock": 55,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899070937",
+        "ozon_stock": 22,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071004",
+        "ozon_stock": 29,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071764",
+        "ozon_stock": 114,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071820",
+        "ozon_stock": 21,
+        "in_transit": 10
+      },
+      {
+        "sku": "2899071823",
+        "ozon_stock": 28,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072161",
+        "ozon_stock": 32,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072977",
+        "ozon_stock": 66,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073013",
+        "ozon_stock": 35,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073051",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073424",
+        "ozon_stock": 35,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923719733",
+        "ozon_stock": 14,
+        "in_transit": 13
+      },
+      {
+        "sku": "2923719843",
+        "ozon_stock": 97,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720024",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720149",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168355596",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168357754",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168363671",
+        "ozon_stock": 19,
+        "in_transit": 5
+      },
+      {
+        "sku": "3168364386",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168364523",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365740",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365777",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368244",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368923",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168370879",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168376571",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744442",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744947",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745246",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745414",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259748568",
+        "ozon_stock": 9,
+        "in_transit": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-20T05:31:48.890Z",
+    "items": [
+      {
+        "sku": "2240896987",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246001452",
+        "ozon_stock": 13,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246117855",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246141137",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246178924",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246206789",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324133599",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324145502",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324177751",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354028243",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354042441",
+        "ozon_stock": 4,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354056789",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354065387",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354069462",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354071804",
+        "ozon_stock": 98,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072305",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072692",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073597",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073828",
+        "ozon_stock": 15,
+        "in_transit": 20
+      },
+      {
+        "sku": "2354074772",
+        "ozon_stock": 16,
+        "in_transit": 15
+      },
+      {
+        "sku": "2354074775",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354075878",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354081773",
+        "ozon_stock": 18,
+        "in_transit": 6
+      },
+      {
+        "sku": "2354082231",
+        "ozon_stock": 2,
+        "in_transit": 10
+      },
+      {
+        "sku": "2354082457",
+        "ozon_stock": 16,
+        "in_transit": 29
+      },
+      {
+        "sku": "2354085122",
+        "ozon_stock": 21,
+        "in_transit": 31
+      },
+      {
+        "sku": "2354085254",
+        "ozon_stock": 21,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085741",
+        "ozon_stock": 1,
+        "in_transit": 21
+      },
+      {
+        "sku": "2354086335",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354086657",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354087517",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2754879815",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755075564",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755122382",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2795478758",
+        "ozon_stock": 25,
+        "in_transit": 24
+      },
+      {
+        "sku": "2800895785",
+        "ozon_stock": 15,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066345",
+        "ozon_stock": 24,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066469",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067326",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067495",
+        "ozon_stock": 54,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899070937",
+        "ozon_stock": 22,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071004",
+        "ozon_stock": 28,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071764",
+        "ozon_stock": 114,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071820",
+        "ozon_stock": 21,
+        "in_transit": 10
+      },
+      {
+        "sku": "2899071823",
+        "ozon_stock": 27,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072161",
+        "ozon_stock": 32,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072977",
+        "ozon_stock": 66,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073013",
+        "ozon_stock": 34,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073051",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073424",
+        "ozon_stock": 36,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923719733",
+        "ozon_stock": 14,
+        "in_transit": 13
+      },
+      {
+        "sku": "2923719843",
+        "ozon_stock": 97,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720024",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720149",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168355596",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168357754",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168363671",
+        "ozon_stock": 19,
+        "in_transit": 5
+      },
+      {
+        "sku": "3168364386",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168364523",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365740",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365777",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368244",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368923",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168370879",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168376571",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744442",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744947",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745246",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745414",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259748568",
+        "ozon_stock": 9,
+        "in_transit": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-20T19:25:38.471Z",
+    "items": [
+      {
+        "sku": "2240896987",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246001452",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246117855",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246141137",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246178924",
+        "ozon_stock": 15,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246206789",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324133599",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324145502",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324177751",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354028243",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354042441",
+        "ozon_stock": 4,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354056789",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354065387",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354069462",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354071804",
+        "ozon_stock": 94,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072305",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072692",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073597",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073828",
+        "ozon_stock": 36,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354074772",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354074775",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354075878",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354081773",
+        "ozon_stock": 23,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354082231",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354082457",
+        "ozon_stock": 45,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085122",
+        "ozon_stock": 51,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085254",
+        "ozon_stock": 21,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085741",
+        "ozon_stock": 23,
+        "in_transit": 1
+      },
+      {
+        "sku": "2354086335",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354086657",
+        "ozon_stock": 17,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354087517",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2754879815",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755075564",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755122382",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2795478758",
+        "ozon_stock": 25,
+        "in_transit": 24
+      },
+      {
+        "sku": "2800895785",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066345",
+        "ozon_stock": 24,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066469",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067326",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067495",
+        "ozon_stock": 53,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899070937",
+        "ozon_stock": 22,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071004",
+        "ozon_stock": 28,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071764",
+        "ozon_stock": 111,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071820",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071823",
+        "ozon_stock": 27,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072161",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072977",
+        "ozon_stock": 66,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073013",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073051",
+        "ozon_stock": 45,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073424",
+        "ozon_stock": 36,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923719733",
+        "ozon_stock": 12,
+        "in_transit": 13
+      },
+      {
+        "sku": "2923719843",
+        "ozon_stock": 96,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720024",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720149",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168355596",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168357754",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168363671",
+        "ozon_stock": 11,
+        "in_transit": 5
+      },
+      {
+        "sku": "3168364386",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168364523",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365740",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365777",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368244",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368923",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168370879",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168376571",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744442",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744947",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745246",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745414",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259748568",
+        "ozon_stock": 9,
+        "in_transit": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-20T19:42:40.691Z",
+    "items": [
+      {
+        "sku": "2240896987",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246001452",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246117855",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246141137",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246178924",
+        "ozon_stock": 15,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246206789",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324133599",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324145502",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324177751",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354028243",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354042441",
+        "ozon_stock": 4,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354056789",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354065387",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354069462",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354071804",
+        "ozon_stock": 94,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072305",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072692",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073597",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073828",
+        "ozon_stock": 36,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354074772",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354074775",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354075878",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354081773",
+        "ozon_stock": 23,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354082231",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354082457",
+        "ozon_stock": 45,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085122",
+        "ozon_stock": 51,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085254",
+        "ozon_stock": 21,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085741",
+        "ozon_stock": 23,
+        "in_transit": 1
+      },
+      {
+        "sku": "2354086335",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354086657",
+        "ozon_stock": 17,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354087517",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2754879815",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755075564",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755122382",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2795478758",
+        "ozon_stock": 25,
+        "in_transit": 24
+      },
+      {
+        "sku": "2800895785",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066345",
+        "ozon_stock": 24,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066469",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067326",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067495",
+        "ozon_stock": 53,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899070937",
+        "ozon_stock": 22,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071004",
+        "ozon_stock": 28,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071764",
+        "ozon_stock": 111,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071820",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071823",
+        "ozon_stock": 27,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072161",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072977",
+        "ozon_stock": 66,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073013",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073051",
+        "ozon_stock": 45,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073424",
+        "ozon_stock": 36,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923719733",
+        "ozon_stock": 12,
+        "in_transit": 13
+      },
+      {
+        "sku": "2923719843",
+        "ozon_stock": 96,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720024",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720149",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168355596",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168357754",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168363671",
+        "ozon_stock": 11,
+        "in_transit": 5
+      },
+      {
+        "sku": "3168364386",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168364523",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365740",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365777",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368244",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368923",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168370879",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168376571",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744442",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744947",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745246",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745414",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259748568",
+        "ozon_stock": 9,
+        "in_transit": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-20T19:43:49.575Z",
+    "items": [
+      {
+        "sku": "2240896987",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246001452",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246117855",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246141137",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246178924",
+        "ozon_stock": 15,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246206789",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324133599",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324145502",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324177751",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354028243",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354042441",
+        "ozon_stock": 4,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354056789",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354065387",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354069462",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354071804",
+        "ozon_stock": 94,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072305",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072692",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073597",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073828",
+        "ozon_stock": 36,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354074772",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354074775",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354075878",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354081773",
+        "ozon_stock": 23,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354082231",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354082457",
+        "ozon_stock": 45,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085122",
+        "ozon_stock": 51,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085254",
+        "ozon_stock": 21,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085741",
+        "ozon_stock": 23,
+        "in_transit": 1
+      },
+      {
+        "sku": "2354086335",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354086657",
+        "ozon_stock": 17,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354087517",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2754879815",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755075564",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755122382",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2795478758",
+        "ozon_stock": 25,
+        "in_transit": 24
+      },
+      {
+        "sku": "2800895785",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066345",
+        "ozon_stock": 24,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066469",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067326",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067495",
+        "ozon_stock": 53,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899070937",
+        "ozon_stock": 22,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071004",
+        "ozon_stock": 28,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071764",
+        "ozon_stock": 111,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071820",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071823",
+        "ozon_stock": 27,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072161",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072977",
+        "ozon_stock": 66,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073013",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073051",
+        "ozon_stock": 45,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073424",
+        "ozon_stock": 36,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923719733",
+        "ozon_stock": 12,
+        "in_transit": 13
+      },
+      {
+        "sku": "2923719843",
+        "ozon_stock": 96,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720024",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720149",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168355596",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168357754",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168363671",
+        "ozon_stock": 11,
+        "in_transit": 5
+      },
+      {
+        "sku": "3168364386",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168364523",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365740",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365777",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368244",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368923",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168370879",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168376571",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744442",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744947",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745246",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745414",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259748568",
+        "ozon_stock": 9,
+        "in_transit": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-20T19:46:14.948Z",
+    "items": [
+      {
+        "sku": "2240896987",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246001452",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246117855",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246141137",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246178924",
+        "ozon_stock": 15,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246206789",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324133599",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324145502",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324177751",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354028243",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354042441",
+        "ozon_stock": 4,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354056789",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354065387",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354069462",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354071804",
+        "ozon_stock": 94,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072305",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072692",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073597",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073828",
+        "ozon_stock": 36,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354074772",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354074775",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354075878",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354081773",
+        "ozon_stock": 23,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354082231",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354082457",
+        "ozon_stock": 45,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085122",
+        "ozon_stock": 51,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085254",
+        "ozon_stock": 21,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085741",
+        "ozon_stock": 23,
+        "in_transit": 1
+      },
+      {
+        "sku": "2354086335",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354086657",
+        "ozon_stock": 17,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354087517",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2754879815",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755075564",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755122382",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2795478758",
+        "ozon_stock": 25,
+        "in_transit": 24
+      },
+      {
+        "sku": "2800895785",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066345",
+        "ozon_stock": 24,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066469",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067326",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067495",
+        "ozon_stock": 53,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899070937",
+        "ozon_stock": 22,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071004",
+        "ozon_stock": 28,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071764",
+        "ozon_stock": 111,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071820",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071823",
+        "ozon_stock": 27,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072161",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072977",
+        "ozon_stock": 66,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073013",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073051",
+        "ozon_stock": 45,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073424",
+        "ozon_stock": 36,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923719733",
+        "ozon_stock": 12,
+        "in_transit": 13
+      },
+      {
+        "sku": "2923719843",
+        "ozon_stock": 96,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720024",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720149",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168355596",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168357754",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168363671",
+        "ozon_stock": 11,
+        "in_transit": 5
+      },
+      {
+        "sku": "3168364386",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168364523",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365740",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365777",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368244",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368923",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168370879",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168376571",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744442",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744947",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745246",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745414",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259748568",
+        "ozon_stock": 9,
+        "in_transit": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-20T19:47:30.284Z",
+    "items": [
+      {
+        "sku": "2240896987",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246001452",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246117855",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246141137",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246178924",
+        "ozon_stock": 15,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246206789",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324133599",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324145502",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324177751",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354028243",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354042441",
+        "ozon_stock": 4,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354056789",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354065387",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354069462",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354071804",
+        "ozon_stock": 94,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072305",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072692",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073597",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073828",
+        "ozon_stock": 36,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354074772",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354074775",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354075878",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354081773",
+        "ozon_stock": 23,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354082231",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354082457",
+        "ozon_stock": 45,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085122",
+        "ozon_stock": 51,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085254",
+        "ozon_stock": 21,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085741",
+        "ozon_stock": 23,
+        "in_transit": 1
+      },
+      {
+        "sku": "2354086335",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354086657",
+        "ozon_stock": 17,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354087517",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2754879815",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755075564",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755122382",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2795478758",
+        "ozon_stock": 25,
+        "in_transit": 24
+      },
+      {
+        "sku": "2800895785",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066345",
+        "ozon_stock": 24,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066469",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067326",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067495",
+        "ozon_stock": 53,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899070937",
+        "ozon_stock": 22,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071004",
+        "ozon_stock": 28,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071764",
+        "ozon_stock": 111,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071820",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071823",
+        "ozon_stock": 27,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072161",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072977",
+        "ozon_stock": 66,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073013",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073051",
+        "ozon_stock": 45,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073424",
+        "ozon_stock": 36,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923719733",
+        "ozon_stock": 12,
+        "in_transit": 13
+      },
+      {
+        "sku": "2923719843",
+        "ozon_stock": 96,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720024",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720149",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168355596",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168357754",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168363671",
+        "ozon_stock": 11,
+        "in_transit": 5
+      },
+      {
+        "sku": "3168364386",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168364523",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365740",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365777",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368244",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368923",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168370879",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168376571",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744442",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744947",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745246",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745414",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259748568",
+        "ozon_stock": 9,
+        "in_transit": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-20T19:49:30.509Z",
+    "items": [
+      {
+        "sku": "2240896987",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246001452",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246117855",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246141137",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246178924",
+        "ozon_stock": 15,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246206789",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324133599",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324145502",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324177751",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354028243",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354042441",
+        "ozon_stock": 4,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354056789",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354065387",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354069462",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354071804",
+        "ozon_stock": 94,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072305",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072692",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073597",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073828",
+        "ozon_stock": 36,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354074772",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354074775",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354075878",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354081773",
+        "ozon_stock": 23,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354082231",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354082457",
+        "ozon_stock": 45,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085122",
+        "ozon_stock": 51,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085254",
+        "ozon_stock": 21,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085741",
+        "ozon_stock": 23,
+        "in_transit": 1
+      },
+      {
+        "sku": "2354086335",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354086657",
+        "ozon_stock": 17,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354087517",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2754879815",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755075564",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755122382",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2795478758",
+        "ozon_stock": 25,
+        "in_transit": 24
+      },
+      {
+        "sku": "2800895785",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066345",
+        "ozon_stock": 24,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066469",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067326",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067495",
+        "ozon_stock": 53,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899070937",
+        "ozon_stock": 22,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071004",
+        "ozon_stock": 28,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071764",
+        "ozon_stock": 111,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071820",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071823",
+        "ozon_stock": 27,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072161",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072977",
+        "ozon_stock": 66,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073013",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073051",
+        "ozon_stock": 45,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073424",
+        "ozon_stock": 36,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923719733",
+        "ozon_stock": 12,
+        "in_transit": 13
+      },
+      {
+        "sku": "2923719843",
+        "ozon_stock": 96,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720024",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720149",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168355596",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168357754",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168363671",
+        "ozon_stock": 11,
+        "in_transit": 5
+      },
+      {
+        "sku": "3168364386",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168364523",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365740",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365777",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368244",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368923",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168370879",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168376571",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744442",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744947",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745246",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745414",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259748568",
+        "ozon_stock": 9,
+        "in_transit": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-20T19:51:23.995Z",
+    "items": [
+      {
+        "sku": "2240896987",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246001452",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246117855",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246141137",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246178924",
+        "ozon_stock": 15,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246206789",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324133599",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324145502",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324177751",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354028243",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354042441",
+        "ozon_stock": 4,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354056789",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354065387",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354069462",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354071804",
+        "ozon_stock": 94,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072305",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072692",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073597",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073828",
+        "ozon_stock": 36,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354074772",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354074775",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354075878",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354081773",
+        "ozon_stock": 23,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354082231",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354082457",
+        "ozon_stock": 45,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085122",
+        "ozon_stock": 51,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085254",
+        "ozon_stock": 21,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085741",
+        "ozon_stock": 23,
+        "in_transit": 1
+      },
+      {
+        "sku": "2354086335",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354086657",
+        "ozon_stock": 17,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354087517",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2754879815",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755075564",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755122382",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2795478758",
+        "ozon_stock": 25,
+        "in_transit": 24
+      },
+      {
+        "sku": "2800895785",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066345",
+        "ozon_stock": 24,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066469",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067326",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067495",
+        "ozon_stock": 53,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899070937",
+        "ozon_stock": 22,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071004",
+        "ozon_stock": 28,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071764",
+        "ozon_stock": 111,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071820",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071823",
+        "ozon_stock": 27,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072161",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072977",
+        "ozon_stock": 66,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073013",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073051",
+        "ozon_stock": 45,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073424",
+        "ozon_stock": 36,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923719733",
+        "ozon_stock": 12,
+        "in_transit": 13
+      },
+      {
+        "sku": "2923719843",
+        "ozon_stock": 96,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720024",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720149",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168355596",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168357754",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168363671",
+        "ozon_stock": 11,
+        "in_transit": 5
+      },
+      {
+        "sku": "3168364386",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168364523",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365740",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365777",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368244",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368923",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168370879",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168376571",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744442",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744947",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745246",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745414",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259748568",
+        "ozon_stock": 9,
+        "in_transit": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-20T19:54:36.798Z",
+    "items": [
+      {
+        "sku": "2240896987",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246001452",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246117855",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246141137",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246178924",
+        "ozon_stock": 15,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246206789",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324133599",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324145502",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324177751",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354028243",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354042441",
+        "ozon_stock": 4,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354056789",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354065387",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354069462",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354071804",
+        "ozon_stock": 94,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072305",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072692",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073597",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073828",
+        "ozon_stock": 36,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354074772",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354074775",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354075878",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354081773",
+        "ozon_stock": 23,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354082231",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354082457",
+        "ozon_stock": 45,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085122",
+        "ozon_stock": 51,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085254",
+        "ozon_stock": 21,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085741",
+        "ozon_stock": 23,
+        "in_transit": 1
+      },
+      {
+        "sku": "2354086335",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354086657",
+        "ozon_stock": 17,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354087517",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2754879815",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755075564",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755122382",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2795478758",
+        "ozon_stock": 25,
+        "in_transit": 24
+      },
+      {
+        "sku": "2800895785",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066345",
+        "ozon_stock": 24,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066469",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067326",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067495",
+        "ozon_stock": 53,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899070937",
+        "ozon_stock": 22,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071004",
+        "ozon_stock": 28,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071764",
+        "ozon_stock": 111,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071820",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071823",
+        "ozon_stock": 27,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072161",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072977",
+        "ozon_stock": 66,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073013",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073051",
+        "ozon_stock": 45,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073424",
+        "ozon_stock": 36,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923719733",
+        "ozon_stock": 12,
+        "in_transit": 13
+      },
+      {
+        "sku": "2923719843",
+        "ozon_stock": 96,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720024",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720149",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168355596",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168357754",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168363671",
+        "ozon_stock": 11,
+        "in_transit": 5
+      },
+      {
+        "sku": "3168364386",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168364523",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365740",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365777",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368244",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368923",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168370879",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168376571",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744442",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744947",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745246",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745414",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259748568",
+        "ozon_stock": 9,
+        "in_transit": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-20T20:02:39.436Z",
+    "items": [
+      {
+        "sku": "2240896987",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246001452",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246117855",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246141137",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246178924",
+        "ozon_stock": 15,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246206789",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324133599",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324145502",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324177751",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354028243",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354042441",
+        "ozon_stock": 4,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354056789",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354065387",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354069462",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354071804",
+        "ozon_stock": 94,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072305",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072692",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073597",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073828",
+        "ozon_stock": 36,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354074772",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354074775",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354075878",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354081773",
+        "ozon_stock": 23,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354082231",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354082457",
+        "ozon_stock": 45,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085122",
+        "ozon_stock": 51,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085254",
+        "ozon_stock": 21,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085741",
+        "ozon_stock": 23,
+        "in_transit": 1
+      },
+      {
+        "sku": "2354086335",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354086657",
+        "ozon_stock": 17,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354087517",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2754879815",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755075564",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755122382",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2795478758",
+        "ozon_stock": 25,
+        "in_transit": 24
+      },
+      {
+        "sku": "2800895785",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066345",
+        "ozon_stock": 24,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066469",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067326",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067495",
+        "ozon_stock": 53,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899070937",
+        "ozon_stock": 22,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071004",
+        "ozon_stock": 28,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071764",
+        "ozon_stock": 111,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071820",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071823",
+        "ozon_stock": 27,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072161",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072977",
+        "ozon_stock": 66,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073013",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073051",
+        "ozon_stock": 45,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073424",
+        "ozon_stock": 36,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923719733",
+        "ozon_stock": 12,
+        "in_transit": 13
+      },
+      {
+        "sku": "2923719843",
+        "ozon_stock": 96,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720024",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720149",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168355596",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168357754",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168363671",
+        "ozon_stock": 11,
+        "in_transit": 5
+      },
+      {
+        "sku": "3168364386",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168364523",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365740",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365777",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368244",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368923",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168370879",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168376571",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744442",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744947",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745246",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745414",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259748568",
+        "ozon_stock": 9,
+        "in_transit": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-20T20:06:58.585Z",
+    "items": [
+      {
+        "sku": "2240896987",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246001452",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246117855",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246141137",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246178924",
+        "ozon_stock": 15,
+        "in_transit": 0
+      },
+      {
+        "sku": "2246206789",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324133599",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324145502",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2324177751",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354028243",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354042441",
+        "ozon_stock": 4,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354056789",
+        "ozon_stock": 7,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354065387",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354069462",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354071804",
+        "ozon_stock": 94,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072305",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354072692",
+        "ozon_stock": 11,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073597",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354073828",
+        "ozon_stock": 36,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354074772",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354074775",
+        "ozon_stock": 1,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354075878",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354081773",
+        "ozon_stock": 23,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354082231",
+        "ozon_stock": 12,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354082457",
+        "ozon_stock": 45,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085122",
+        "ozon_stock": 51,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085254",
+        "ozon_stock": 21,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354085741",
+        "ozon_stock": 23,
+        "in_transit": 1
+      },
+      {
+        "sku": "2354086335",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354086657",
+        "ozon_stock": 17,
+        "in_transit": 0
+      },
+      {
+        "sku": "2354087517",
+        "ozon_stock": 25,
+        "in_transit": 0
+      },
+      {
+        "sku": "2754879815",
+        "ozon_stock": 6,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755075564",
+        "ozon_stock": 2,
+        "in_transit": 0
+      },
+      {
+        "sku": "2755122382",
+        "ozon_stock": 3,
+        "in_transit": 0
+      },
+      {
+        "sku": "2795478758",
+        "ozon_stock": 25,
+        "in_transit": 24
+      },
+      {
+        "sku": "2800895785",
+        "ozon_stock": 14,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066345",
+        "ozon_stock": 24,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899066469",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067326",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899067495",
+        "ozon_stock": 53,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899070937",
+        "ozon_stock": 22,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071004",
+        "ozon_stock": 28,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071764",
+        "ozon_stock": 111,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071820",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899071823",
+        "ozon_stock": 27,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072161",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899072977",
+        "ozon_stock": 66,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073013",
+        "ozon_stock": 31,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073051",
+        "ozon_stock": 45,
+        "in_transit": 0
+      },
+      {
+        "sku": "2899073424",
+        "ozon_stock": 36,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923719733",
+        "ozon_stock": 12,
+        "in_transit": 13
+      },
+      {
+        "sku": "2923719843",
+        "ozon_stock": 96,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720024",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "2923720149",
+        "ozon_stock": 44,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168355596",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168357754",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168363671",
+        "ozon_stock": 11,
+        "in_transit": 5
+      },
+      {
+        "sku": "3168364386",
+        "ozon_stock": 38,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168364523",
+        "ozon_stock": 16,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365740",
+        "ozon_stock": 5,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168365777",
+        "ozon_stock": 26,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368244",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168368923",
+        "ozon_stock": 19,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168370879",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3168376571",
+        "ozon_stock": 30,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744442",
+        "ozon_stock": 18,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259744947",
+        "ozon_stock": 9,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745246",
+        "ozon_stock": 10,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259745414",
+        "ozon_stock": 20,
+        "in_transit": 0
+      },
+      {
+        "sku": "3259748568",
+        "ozon_stock": 9,
+        "in_transit": 0
+      }
+    ]
+  }
+]

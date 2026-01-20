@@ -61,7 +61,18 @@ const DataService = {
       days: String(days),
     });
     return await requestJson(`/api/funnel/daily-sales?${qs.toString()}`);
-    // { ok, points: [{date, orders}, ...] }
+    // { ok, points: [{date, orders, returns?}, ...] }
+  },
+
+  // ✅ График: остатки по дням (fact snapshots + estimated backfill)
+  async loadStockHistory(sku, days = 30, estimate = true) {
+    const qs = new URLSearchParams({
+      sku: String(sku || "").trim(),
+      days: String(days),
+      estimate: estimate ? "1" : "0",
+    });
+    return await requestJson(`/api/stock-history?${qs.toString()}`);
+    // { ok, points: [{date, ozon_stock, source}, ...] }
   },
 
   // Прогрузчик: запуск

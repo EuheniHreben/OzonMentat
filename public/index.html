@@ -334,7 +334,7 @@
     <!-- Боковая панель (для воронки) -->
     <aside id="details-panel" class="details-panel">
       <div class="details-header">
-        <h2 id="details-title">—</h2>
+        <h2 id="details-title" class="details-title">—</h2>
         <button id="details-close" class="button close-btn">✕</button>
       </div>
 
@@ -535,15 +535,17 @@
         <div class="funnel-col">
           <h3>📊 Срез по SKU</h3>
           <div class="chart-container chart-bottom">
-            <canvas id="sku-chart"></canvas>
+            <canvas id="sku-orders-chart"></canvas>
           </div>
-          <h3>📊 Срез по цене</h3>
-          <div class="chart-container chart-bottom">
-            <canvas id="sku-chart"></canvas>
-          </div>
+
           <h3>📊 Срез по остаткам</h3>
           <div class="chart-container chart-bottom">
-            <canvas id="sku-chart"></canvas>
+            <canvas id="sku-stock-chart"></canvas>
+          </div>
+
+          <h3>📊 Срез по цене</h3>
+          <div class="chart-container chart-bottom">
+            <canvas id="sku-price-chart"></canvas>
           </div>
         </div>
 
