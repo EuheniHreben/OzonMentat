@@ -3,7 +3,7 @@
 // Init glue extracted from app.js (keeps legacy behavior)
 // =====================================================
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
   loadSortState();
   initStoreSwitcher();
 
@@ -11,26 +11,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   startRefreshUiTicker();
   renderRefreshButtons();
 
-  initConfigModal();
-
-  await Promise.all([
-    loadModuleConfig("loader"),
-    loadModuleConfig("funnel"),
-    loadModuleConfig("ads"),
-  ]);
-
-  initFunnelTooltips();
-
+  // ✅ FIX: если вдруг скрипты подключились не в том порядке
   if (!window.DataService) {
     console.error("DataService не найден. Проверь подключение /dataService.js");
   }
 
   hydrateFunnelFromCache();
-
-  applyFunnelFiltersAndRender();
-  applyAdsFiltersAndRender();
-  applyLoaderFiltersAndRender();
-
   loadFunnel({ background: true }); // обновим в фоне
   scheduleNextAutoRefresh("init");
   setPageTitle(getActiveTab());
@@ -162,6 +148,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       applyAdsFiltersAndRender();
     });
   }
+
+  initConfigModal();
+  // подтянуть конфиги модулей на старте, чтобы статусы считались по актуальным порогам
+  loadModuleConfig("loader");
+  loadModuleConfig("funnel");
+  loadModuleConfig("ads");
+  initFunnelTooltips();
 });
 
 // =====================================================
@@ -302,27 +295,25 @@ function renderTable(rows) {
       const span = document.createElement("span");
       span.textContent = value;
 
-      const m =
-        typeof window.computeFunnelMaturityLocal === "function"
-          ? window.computeFunnelMaturityLocal(row)
-          : null;
-
+      const m = row?.funnel_maturity;
       if (m) {
         if (idx === 4 && !m.trafficOk) {
           span.classList.add("level-info");
-          span.title = `Мало данных для CTR: ≥${m.thresholds?.IMPRESSIONS ?? 200} показов или ≥${
-            m.thresholds?.CLICKS_FOR_CTR ?? 10
-          } кликов`;
+          span.title = `Мало данных для CTR: ≥${
+            m.thresholds?.IMPRESSIONS ?? 200
+          } показов или ≥${m.thresholds?.CLICKS_FOR_CTR ?? 10} кликов`;
         }
         if (idx === 6 && !m.cardOk) {
           span.classList.add("level-info");
-          span.title = `Мало данных для конверсии: ≥${m.thresholds?.CLICKS_FOR_CONV ?? 25} кликов или ≥${
-            m.thresholds?.ORDERS_FOR_CONV ?? 2
-          } заказов`;
+          span.title = `Мало данных для конверсии: ≥${
+            m.thresholds?.CLICKS_FOR_CONV ?? 25
+          } кликов или ≥${m.thresholds?.ORDERS_FOR_CONV ?? 2} заказов`;
         }
         if (idx === 13 && !m.postOk) {
           span.classList.add("level-info");
-          span.title = `Мало данных по возвратам: ≥${m.thresholds?.ORDERS_FOR_REFUND ?? 5} заказов`;
+          span.title = `Мало данных по возвратам: ≥${
+            m.thresholds?.ORDERS_FOR_REFUND ?? 5
+          } заказов`;
         }
       }
 
@@ -408,8 +399,7 @@ function redrawSkuPriceChartIfNeeded(row) {
   if (!__lastSkuPriceChart.row) return;
 
   if (
-    String(__lastSkuPriceChart.row.offer_id || "") !==
-    String(row.offer_id || "")
+    String(__lastSkuPriceChart.row.offer_id || "") !== String(row.offer_id || "")
   )
     return;
 
@@ -545,7 +535,6 @@ function drawSkuChart(points, row) {
           grid: { color: "rgba(255,255,255,0.1)" },
         },
         y: {
-          grace: "5%",
           ticks: { color: "#fff" },
           grid: { color: "rgba(255,255,255,0.1)" },
         },
@@ -604,7 +593,7 @@ function drawSkuPriceChart(points, row) {
   const pointRadiusArr = hasNoteArr.map((has) => (has ? 5 : 3));
   const pointBorderWidthArr = hasNoteArr.map((has) => (has ? 2 : 0));
   const pointBorderColorArr = hasNoteArr.map((has) =>
-    has ? "rgba(59, 130, 246, 1)" : "rgba(255,255,255,0.0)",
+    has ? "rgba(74, 222, 128, 0.95)" : "rgba(255,255,255,0.0)",
   );
 
   skuPriceChart = new Chart(ctx, {
@@ -635,7 +624,7 @@ function drawSkuPriceChart(points, row) {
               const v = item.raw;
               if (v == null) return "Нет заказов";
               // округляем до 1 знака, но без навязывания валюты
-              return `Цена: ${Number(v).toFixed(1)}`;
+              return `Факт. цена: ${Number(v).toFixed(1)}`;
             },
             afterBody: (items) => {
               if (!items || !items.length) return;
@@ -655,8 +644,7 @@ function drawSkuPriceChart(points, row) {
                 return `📝 ${cut}`;
               });
 
-              if (texts.length > max)
-                shown.push(`…и ещё ${texts.length - max}`);
+              if (texts.length > max) shown.push(`…и ещё ${texts.length - max}`);
 
               return shown;
             },
@@ -669,7 +657,6 @@ function drawSkuPriceChart(points, row) {
           grid: { color: "rgba(255,255,255,0.1)" },
         },
         y: {
-          grace: "5%",
           ticks: { color: "#fff" },
           grid: { color: "rgba(255,255,255,0.1)" },
         },
@@ -716,7 +703,7 @@ function drawSkuStockChart(points, row) {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { display: false },
+        legend: { display: false, },
         tooltip: {
           callbacks: {
             label: (item) => {
@@ -734,7 +721,6 @@ function drawSkuStockChart(points, row) {
           grid: { color: "rgba(255,255,255,0.1)" },
         },
         y: {
-          grace: "5%",
           ticks: { color: "#fff" },
           grid: { color: "rgba(255,255,255,0.1)" },
         },
@@ -1334,7 +1320,7 @@ function initNotesUi() {
     // ✅ сразу обновляем график, чтобы тултип увидел новую заметку
     redrawSkuChartIfNeeded(row);
     redrawSkuStockChartIfNeeded(row);
-    redrawSkuPriceChartIfNeeded(row);
+        redrawSkuPriceChartIfNeeded(row);
   });
 }
 

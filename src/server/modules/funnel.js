@@ -219,6 +219,14 @@ function safeDiv(num, den) {
   return num / den;
 }
 
+// Ozon Analytics фильтр по SKU иногда чувствителен к типу значения.
+// Если SKU выглядит как число, отправляем number, иначе string.
+function normalizeSkuForFilter(sku) {
+  const s = String(sku || "").trim();
+  if (!s) return "";
+  return /^\d+$/.test(s) ? Number(s) : s;
+}
+
 function clamp(n, min, max) {
   const x = Number(n);
   if (!Number.isFinite(x)) return min;
@@ -323,79 +331,56 @@ async function getPeriodMetrics(dateFrom, dateTo) {
 async function getDailySalesPoints(sku, days = 14) {
   const skuKey = String(sku || "").trim();
   if (!skuKey) return [];
+  const skuFilterVal = normalizeSkuForFilter(skuKey);
 
   const today = new Date();
   const dateTo = formatDate(today);
   const dateFrom = formatDate(addDays(today, -(days - 1)));
 
-  const candidates = [
-    {
-      date_from: dateFrom,
-      date_to: dateTo,
-      metrics: ["ordered_units"],
-      dimension: ["day"],
-      filters: [{ field: "sku", values: [skuKey] }],
-      limit: 1000,
-      offset: 0,
-    },
-    {
-      date_from: dateFrom,
-      date_to: dateTo,
-      metrics: ["ordered_units"],
-      dimension: ["day"],
-      filter: { sku: [skuKey] },
-      limit: 1000,
-      offset: 0,
-    },
-    {
+  // ⚠️ ВАЖНО: запросы dimension:["day"] иногда возвращают агрегат по всем SKU,
+  // даже если filters/filter указан. Тогда график будет одинаковый для всех товаров.
+  // Поэтому здесь используем только dimension:["sku","day"] и фильтруем строго по sku.
+
+  const LIMIT = 1000;
+  let offset = 0;
+  const map = new Map(); // day -> orders
+
+  while (true) {
+    const body = {
       date_from: dateFrom,
       date_to: dateTo,
       metrics: ["ordered_units"],
       dimension: ["sku", "day"],
-      limit: 1000,
-      offset: 0,
-    },
-  ];
+      // пробуем оба варианта фильтра (в разных аккаунтах/версиях API по-разному)
+      filters: [{ field: "sku", values: [skuFilterVal] }],
+      // @ts-ignore
+      filter: { sku: [skuFilterVal] },
+      limit: LIMIT,
+      offset,
+    };
 
-  let rows = null;
-  let used = null;
-
-  for (const body of candidates) {
+    let data = [];
     try {
       const json = await ozonPost("/v1/analytics/data", body);
-      const data = pickAnalyticsRows(json);
-      if (Array.isArray(data) && data.length) {
-        rows = data;
-        used = body;
-        break;
-      }
-    } catch (e) {}
-  }
-
-  if (!rows) return [];
-
-  const map = new Map();
-
-  for (const row of rows) {
-    if (
-      used.dimension &&
-      used.dimension.length === 1 &&
-      used.dimension[0] === "day"
-    ) {
-      const dayKey = getDim(row, 0);
-      if (!dayKey) continue;
-      const orders = getMetric(row, 0);
-      map.set(dayKey, (map.get(dayKey) || 0) + orders);
-      continue;
+      data = pickAnalyticsRows(json);
+    } catch (e) {
+      data = [];
     }
 
-    const skuDim = getDim(row, 0);
-    const dayDim = getDim(row, 1);
-    if (!skuDim || !dayDim) continue;
-    if (String(skuDim) !== skuKey) continue;
+    if (!Array.isArray(data) || !data.length) break;
 
-    const orders = getMetric(row, 0);
-    map.set(dayDim, (map.get(dayDim) || 0) + orders);
+    for (const row of data) {
+      const skuDim = getDim(row, 0);
+      const dayDim = getDim(row, 1);
+      if (!skuDim || !dayDim) continue;
+      if (String(skuDim) !== skuKey) continue;
+      const orders = getMetric(row, 0);
+      map.set(dayDim, (map.get(dayDim) || 0) + orders);
+    }
+
+    if (data.length < LIMIT) break;
+    offset += LIMIT;
+    if (offset > 10000) break; // safety
   }
 
   const points = [];
@@ -412,110 +397,73 @@ async function getDailySalesPoints(sku, days = 14) {
 async function getDailyOrdersReturnsPoints(sku, days = 30) {
   const skuKey = String(sku || "").trim();
   if (!skuKey) return [];
+  const skuFilterVal = normalizeSkuForFilter(skuKey);
 
   const today = new Date();
   const dateTo = formatDate(today);
   const dateFrom = formatDate(addDays(today, -(days - 1)));
 
-  const metrics = ["ordered_units", "returns"];
+  // ⚠️ ВАЖНО: dimension:["day"] иногда игнорит фильтр sku и отдаёт агрегат по всем товарам.
+  // Чтобы график был строго по SKU — работаем только через dimension:["sku","day"],
+  // а затем дополнительно фильтруем строки по sku.
 
-  const candidates = [
-    {
-      date_from: dateFrom,
-      date_to: dateTo,
-      metrics,
-      dimension: ["day"],
-      filters: [{ field: "sku", values: [skuKey] }],
-      limit: 1000,
-      offset: 0,
-    },
-    {
-      date_from: dateFrom,
-      date_to: dateTo,
-      metrics,
-      dimension: ["day"],
-      filter: { sku: [skuKey] },
-      limit: 1000,
-      offset: 0,
-    },
-    {
-      date_from: dateFrom,
-      date_to: dateTo,
-      metrics,
-      dimension: ["sku", "day"],
-      limit: 1000,
-      offset: 0,
-    },
-  ];
-
-  let rows = null;
-  let used = null;
-
-  for (const body of candidates) {
-    try {
-      const json = await ozonPost("/v1/analytics/data", body);
-      const data = pickAnalyticsRows(json);
-      if (Array.isArray(data) && data.length) {
-        rows = data;
-        used = body;
-        break;
-      }
-    } catch (e) {}
-  }
-
-  if (!rows) {
-    // fallback: только заказы
-    const onlyOrders = await getDailySalesPoints(skuKey, days);
-    return (onlyOrders || []).map((p) => ({
-      date: p.date,
-      orders: Number(p.orders || 0),
-      returns: 0,
-    }));
-  }
-
+  const LIMIT = 1000;
+  let offset = 0;
   const map = new Map(); // day -> {orders, returns}
 
-  for (const row of rows) {
-    // вариант dimension: ["day"]
-    if (
-      used.dimension &&
-      used.dimension.length === 1 &&
-      used.dimension[0] === "day"
-    ) {
-      const dayKey = getDim(row, 0);
-      if (!dayKey) continue;
-      const orders = getMetric(row, 0);
-      const ret = getMetric(row, 1);
-      const prev = map.get(dayKey) || { orders: 0, returns: 0 };
-      map.set(dayKey, {
-        orders: prev.orders + orders,
-        returns: prev.returns + ret,
-      });
-      continue;
+  while (true) {
+    const body = {
+      date_from: dateFrom,
+      date_to: dateTo,
+      metrics: ["ordered_units", "revenue", "returns"],
+      dimension: ["sku", "day"],
+      filters: [{ field: "sku", values: [skuFilterVal] }],
+      // @ts-ignore
+      filter: { sku: [skuFilterVal] },
+      limit: LIMIT,
+      offset,
+    };
+
+    let data = [];
+    try {
+      const json = await ozonPost("/v1/analytics/data", body);
+      data = pickAnalyticsRows(json);
+    } catch (e) {
+      data = [];
     }
 
-    // вариант dimension: ["sku","day"]
-    const skuDim = getDim(row, 0);
-    const dayDim = getDim(row, 1);
-    if (!skuDim || !dayDim) continue;
-    if (String(skuDim) !== skuKey) continue;
+    if (!Array.isArray(data) || !data.length) break;
 
-    const orders = getMetric(row, 0);
-    const ret = getMetric(row, 1);
-    const prev = map.get(dayDim) || { orders: 0, returns: 0 };
-    map.set(dayDim, {
-      orders: prev.orders + orders,
-      returns: prev.returns + ret,
-    });
+    for (const row of data) {
+      const skuDim = getDim(row, 0);
+      const dayDim = getDim(row, 1);
+      if (!skuDim || !dayDim) continue;
+      if (String(skuDim) !== skuKey) continue;
+
+      const orders = getMetric(row, 0);
+      const ret = getMetric(row, 1);
+      const revenue = getMetric(row, 1);
+      const prev = map.get(dayDim) || { orders: 0, revenue: 0, returns: 0 };
+      map.set(dayDim, {
+        orders: prev.orders + orders,
+        revenue: prev.revenue + revenue,
+        returns: prev.returns + ret,
+      });
+    }
+
+    if (data.length < LIMIT) break;
+    offset += LIMIT;
+    if (offset > 10000) break; // safety
   }
 
   const points = [];
   for (let i = days - 1; i >= 0; i--) {
     const d = formatDate(addDays(today, -i));
-    const v = map.get(d) || { orders: 0, returns: 0 };
+    const v = map.get(d) || { orders: 0, revenue: 0, returns: 0 };
     points.push({
       date: d,
       orders: Number(v.orders || 0),
+      revenue: Number(v.revenue || 0),
       returns: Number(v.returns || 0),
     });
   }

@@ -32,6 +32,9 @@ let skuChartReqId = 0;
 let skuStockChart = null;
 let skuStockChartReqId = 0;
 
+// ✅ график цены (avg_check = revenue/orders)
+let skuPriceChart = null;
+
 // прогрузчик
 let loaderItems = [];
 
@@ -282,6 +285,27 @@ function getFunnelConfig() {
     },
   };
 }
+
+function computeFunnelMaturityLocal(row) {
+  const cfg = getFunnelConfig();
+  const th = cfg.MATURITY_THRESHOLDS || {};
+
+  const imp = Number(row?.impressions || 0);
+  const clk = Number(row?.clicks || 0);
+  const ord = Number(row?.orders || 0);
+
+  const trafficOk =
+    imp >= Number(th.IMPRESSIONS || 0) || clk >= Number(th.CLICKS_FOR_CTR || 0);
+  const cardOk =
+    clk >= Number(th.CLICKS_FOR_CONV || 0) ||
+    ord >= Number(th.ORDERS_FOR_CONV || 0);
+  const postOk = ord >= Number(th.ORDERS_FOR_REFUND || 0);
+
+  return { trafficOk, cardOk, postOk, thresholds: th };
+}
+
+// чтобы было доступно из app.ui.js
+window.computeFunnelMaturityLocal = computeFunnelMaturityLocal;
 
 function getAdsConfig() {
   const cfg = AdsConfig || window.AdsConfig;
@@ -1222,34 +1246,41 @@ function evaluateFunnelLayers(row) {
   const DRR_WARN = Number(cfg.DRR_WARN || 0);
   const DRR_BAD = Number(cfg.DRR_BAD || 0);
 
-  // maturity comes from backend (if present)
-  const m = row?.funnel_maturity || null;
-  const th = m?.thresholds || cfg.MATURITY_THRESHOLDS;
+  // ✅ Всегда считаем maturity локально (единый источник правды)
+  const m = computeFunnelMaturityLocal(row);
+
+  // ✅ пороги берём из m.thresholds, а если вдруг их нет — из cfg, а если и там нет — жёсткие дефолты
+  const th = m?.thresholds || cfg?.MATURITY_THRESHOLDS || {};
+  const TH_IMPRESSIONS = Number(th.IMPRESSIONS ?? 200);
+  const TH_CLICKS_FOR_CTR = Number(th.CLICKS_FOR_CTR ?? 10);
+  const TH_CLICKS_FOR_CONV = Number(th.CLICKS_FOR_CONV ?? 25);
+  const TH_ORDERS_FOR_CONV = Number(th.ORDERS_FOR_CONV ?? 2);
+  const TH_ORDERS_FOR_REFUND = Number(th.ORDERS_FOR_REFUND ?? 5);
 
   const infoTraffic = {
     statusClass: "info",
     text: "⏳ Мало данных",
-    title: `Нужно: ≥${th.IMPRESSIONS} показов или ≥${th.CLICKS_FOR_CTR} кликов`,
+    title: `Нужно: ≥${TH_IMPRESSIONS} показов или ≥${TH_CLICKS_FOR_CTR} кликов`,
   };
 
   const infoIntent = {
     statusClass: "info",
     text: "⏳ Мало данных",
-    title: `Нужно: ≥${th.CLICKS_FOR_CONV} кликов или ≥${th.ORDERS_FOR_CONV} заказов`,
+    title: `Нужно: ≥${TH_CLICKS_FOR_CONV} кликов или ≥${TH_ORDERS_FOR_CONV} заказов`,
   };
 
   const infoPost = {
     statusClass: "info",
     text: "⏳ Мало данных",
-    title: `Нужно: ≥${th.ORDERS_FOR_REFUND} заказов`,
+    title: `Нужно: ≥${TH_ORDERS_FOR_REFUND} заказов`,
   };
 
-  // 1) Показы / трафик (есть ли вообще жизнь)
+  // 1) Показы / трафик
   let traffic = { statusClass: "ok", text: "ОК" };
 
   if (impressions === 0 && clicks === 0 && orders === 0) {
     traffic = { statusClass: "bad", text: "Нет трафика" };
-  } else if (m && !m.trafficOk) {
+  } else if (!m.trafficOk) {
     traffic = infoTraffic;
   } else {
     traffic = { statusClass: "ok", text: "ОК" };
@@ -1259,11 +1290,12 @@ function evaluateFunnelLayers(row) {
   let interest = { statusClass: "ok", text: "ОК" };
 
   if (impressions > 0 && clicks === 0) {
-    if (m && !m.trafficOk) interest = infoTraffic;
+    // если данных мало — не ругаем, иначе это реально тревожно
+    if (!m.trafficOk) interest = infoTraffic;
     else interest = { statusClass: "bad", text: "Показы есть, кликов нет" };
-  } else if (m && !m.trafficOk) {
+  } else if (!m.trafficOk) {
     interest = infoTraffic;
-  } else if ((row.ctr || 0) < CTR_LOW && impressions > 0) {
+  } else if (Number(row?.ctr || 0) < CTR_LOW && impressions > 0) {
     interest = { statusClass: "warn", text: "Низкий CTR" };
   }
 
@@ -1271,20 +1303,20 @@ function evaluateFunnelLayers(row) {
   let intent = { statusClass: "ok", text: "ОК" };
 
   if (clicks === 0 && impressions > 0) {
-    // кликов нет — намерение пока не оцениваем
     intent = { statusClass: "info", text: "—", title: "Сначала нужны клики" };
-  } else if (m && !m.cardOk) {
+  } else if (!m.cardOk) {
     intent = infoIntent;
-  } else if (clicks > 0 && orders === 0 && clicks >= 25) {
+  } else if (clicks > 0 && orders === 0 && clicks >= TH_CLICKS_FOR_CONV) {
+    // ✅ порог кликов берём из maturity-thresholds (а не магическое 25)
     intent = { statusClass: "bad", text: "Клики есть, заказов нет" };
-  } else if ((row.conv || 0) < CONV_LOW && clicks > 0) {
+  } else if (Number(row?.conv || 0) < CONV_LOW && clicks > 0) {
     intent = { statusClass: "warn", text: "Низкая конверсия" };
   }
 
   // 4) Возвраты
   let post = { statusClass: "ok", text: "ОК" };
 
-  if (m && !m.postOk) {
+  if (!m.postOk) {
     post = infoPost;
   } else if (refundRate >= REFUND_BAD) {
     post = { statusClass: "bad", text: "Критично много возвратов" };
